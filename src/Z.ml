@@ -17,6 +17,7 @@ module type Z = sig
   val of_float : float -> t
   val of_string : string -> t
   val of_substring : string -> pos:int -> len:int -> t
+
   val to_int : t -> int
   val to_int32 : t -> Int32.t
   val to_int64 : t -> Int64.t
