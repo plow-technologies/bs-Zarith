@@ -201,4 +201,39 @@ module Bigint = struct
   (* not complete *)
   let numbits (Bigint (_neg, value)) = List.length value
 
+  (* need to test theses *)
+  let shift_left x n = mul x (pow (of_int 2) (of_int n))
+  let shift_right x n = div x (pow (of_int 2) (of_int n))
+
+  let neg (Bigint (sn, n)) =
+    match sn with
+    | Pos -> Bigint (Neg, n)
+    | Neg -> Bigint (Pos, n)
+
+  let sign n =
+    if n == zero
+    then 0
+    else
+      let (Bigint (_neg, v)) = n in
+      let (Bigint (_neg, v0)) = zero in
+      if (cmp v v0) < 0
+      then -1
+      else 1
 end
+
+
+(*
+shift left
+x * (2 ** n)
+
+shift right
+x / (2 ** n)
+ dividing it by 2**n, but it always rounds down (towards negative infinity).
+
+let rec pow a = function
+  | 0 -> 1
+  | 1 -> a
+  | n -> 
+    let b = pow a (n / 2) in
+    b * b * (if n mod 2 = 0 then 1 else a)
+ *)

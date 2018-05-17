@@ -6,6 +6,11 @@ module Bigint : sig
   val one : t
   val minus_one : t
 
+  val shift_left : t -> int -> t
+  val shift_right : t -> int -> t
+  val neg : t -> t
+  val sign : t -> int
+
   val of_int: int -> t
   val of_int32 : Int32.t -> t
   val of_int64 : Int64.t -> t

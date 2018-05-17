@@ -48,7 +48,7 @@ module ZInt : Z = struct
   let shift_right = (asr)
   let neg = (~-)
   let sign n =
-    if n = 0
+    if n == 0
     then 0
     else
       if n < 0
