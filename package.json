@@ -1,0 +1,29 @@
+{
+  "name": "bs-Zarith",
+  "version": "1.0.0",
+  "description": "Support arithmetic and logical operations over arbitrary-precision integers and rational numbers in BuckleScript",
+  "main": "index.js",
+  "scripts": {
+    "build": "bsb -make-world",
+    "start": "bsb -make-world -w",
+    "test": "npm run build && jest",
+    "watch:bsb": "bsb -make-world -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plow-technologies/bs-Zarith.git"
+  },
+  "keywords": [
+    "bucklescript"
+  ],
+  "author": "mchaver",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/plow-technologies/bs-Zarith/issues"
+  },
+  "homepage": "https://github.com/plow-technologies/bs-Zarith#readme",
+  "devDependencies": {
+    "@glennsl/bs-jest": "^0.4.2",
+    "bs-platform": "^3.0.0"
+  }
+}
