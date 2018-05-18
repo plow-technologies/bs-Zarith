@@ -1,7 +1,6 @@
-module Bigint = struct
-  type sign = Pos | Neg
+type sign = Pos | Neg
 
-  type t    = Bigint of sign * int list
+type t    = Bigint of sign * int list
 
   let radix    = 10
   let radixlen = 1
@@ -43,6 +42,7 @@ module Bigint = struct
   let of_int32 i = of_string (Int32.to_string i)
   let of_int64 i = of_string (Int64.to_string i)
   let of_nativeint i = of_string (Nativeint.to_string i)
+
 
   let to_string (Bigint (sign, value)) =
       match value with
@@ -219,8 +219,10 @@ module Bigint = struct
       if (cmp v v0) < 0
       then -1
       else 1
-end
 
+
+let succ x = add x one
+let pred x = sub x one
 
 (*
 shift left
