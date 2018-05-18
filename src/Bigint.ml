@@ -63,135 +63,133 @@ type t    = Bigint of sign * int list
                   | car, cdr'  -> car::cdr'
       in trimzeros' listy
 
-  (* cmp list1 list2 = bigger list *)
-  let rec cmp list1 list2 =
-      if List.length list1 > List.length list2
-      then 1
-      else if List.length list1 < List.length list2
-      then -1
-      else match (list1, list2) with
-      | [], []        -> 0
-      | list1, list2  ->
-          let reverselist1 = reverse list1 in
-          let reverselist2 = reverse list2 in
-          if car reverselist1 > car reverselist2
-          then 1
-          else if car reverselist1 < car reverselist2
-          then -1
-          else let list1' = reverse (cdr reverselist1) in
-              let list2' = reverse (cdr reverselist2) in 
-              cmp list1' list2'
+(* cmp list1 list2 = bigger list *)
+let rec cmp list1 list2 =
+    if List.length list1 > List.length list2
+    then 1
+    else if List.length list1 < List.length list2
+    then -1
+    else match (list1, list2) with
+    | [], []        -> 0
+    | list1, list2  ->
+        let reverselist1 = reverse list1 in
+        let reverselist2 = reverse list2 in
+        if car reverselist1 > car reverselist2
+        then 1
+        else if car reverselist1 < car reverselist2
+        then -1
+        else let list1' = reverse (cdr reverselist1) in
+            let list2' = reverse (cdr reverselist2) in 
+            cmp list1' list2'
 
-  (* not finished *)
-  let compare (Bigint (neg1, value1)) (Bigint (neg2, value2)) = cmp value1 value2
   
-  let rec add' list1 list2 carry = match (list1, list2, carry) with
-      | list1, [], 0       -> list1
-      | [], list2, 0       -> list2
-      | list1, [], carry   -> add' list1 [carry] 0
-      | [], list2, carry   -> add' [carry] list2 0
-      | list1, list2, carry ->
-        let sum = (car list1) + (car list2) + carry
-         in  sum mod radix :: add' (cdr list1) (cdr list2) (sum / radix)
+let rec add' list1 list2 carry = match (list1, list2, carry) with
+    | list1, [], 0       -> list1
+    | [], list2, 0       -> list2
+    | list1, [], carry   -> add' list1 [carry] 0
+    | [], list2, carry   -> add' [carry] list2 0
+    | list1, list2, carry ->
+      let sum = (car list1) + (car list2) + carry
+       in  sum mod radix :: add' (cdr list1) (cdr list2) (sum / radix)
 
-  let rec sub' list1 list2 carry = match (list1, list2, carry) with
-      | [], [], 0         -> []
-      | list1, [], 0      -> list1
-      | list1, [], carry  -> sub' list1 [carry] 0
-      | list1, list2, carry ->
-          let diff = (car list1) - (car list2) - carry in
-              if (diff >= 0)
-              then diff :: sub' (cdr list1) (cdr list2) 0
-              else diff + 10 :: sub' (cdr list1) (cdr list2) 1
+let rec sub' list1 list2 carry = match (list1, list2, carry) with
+    | [], [], 0         -> []
+    | list1, [], 0      -> list1
+    | list1, [], carry  -> sub' list1 [carry] 0
+    | list1, list2, carry ->
+        let diff = (car list1) - (car list2) - carry in
+            if (diff >= 0)
+            then diff :: sub' (cdr list1) (cdr list2) 0
+            else diff + 10 :: sub' (cdr list1) (cdr list2) 1
 
-  let double listy = add' listy listy 0
+let double listy = add' listy listy 0
 
-  let rec mul' list1 list2' powerof2 =
-      if (cmp powerof2 list1) = 1
-      then list1, [0]
-      else let remainder, product =
-          mul' list1 (double list2') (double powerof2)
-          in if (cmp remainder powerof2) = -1
-              then remainder, product
-              else trimzeros (sub' remainder powerof2 0), 
-                  add' product list2' 0
+let rec mul' list1 list2' powerof2 =
+    if (cmp powerof2 list1) = 1
+    then list1, [0]
+    else let remainder, product =
+        mul' list1 (double list2') (double powerof2)
+        in if (cmp remainder powerof2) = -1
+            then remainder, product
+            else trimzeros (sub' remainder powerof2 0), 
+                add' product list2' 0
 
-  let rec divrem' list1 list2' powerof2 =
-      if (cmp list2' list1) = 1
-      then [0], list1
-      else let quotient, remainder =
-          divrem' list1 (double list2') (double powerof2)
-          in if (cmp remainder list2') = -1
-              then quotient, remainder
-              else add' quotient powerof2 0,
-                  trimzeros (sub' remainder list2' 0)
 
-  let even number = 
-      let _, remainder = divrem' number [2] [1]
-      in (remainder = [0])
+let add (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
+    if neg1 = neg2
+    then Bigint (neg1, add' value1 value2 0)
+    else if (cmp value1 value2) = 1
+    then Bigint (neg1, trimzeros (sub' value1 value2 0))
+    else if cmp value1 value2 = -1
+    then Bigint (neg2, trimzeros (sub' value2 value1 0))
+    else zero
 
-  let add (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-      if neg1 = neg2
-      then Bigint (neg1, add' value1 value2 0)
-      else if (cmp value1 value2) = 1
-      then Bigint (neg1, trimzeros (sub' value1 value2 0))
-      else if cmp value1 value2 = -1
-      then Bigint (neg2, trimzeros (sub' value2 value1 0))
-      else zero
+let sub (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
+    if neg1 = neg2
+    then (if (cmp value1 value2) = 1
+            then (if neg1 = Neg
+                    then Bigint (Neg, trimzeros(sub' value1 value2 0))
+                    else Bigint (Pos, trimzeros(sub' value1 value2 0)))
+            else if (cmp value1 value2) = -1
+            then (if neg1 = Neg
+                    then Bigint (Pos, trimzeros(sub' value2 value1 0))
+                    else Bigint (Neg, trimzeros(sub' value2 value1 0)))
+            else zero)
+    else Bigint (neg1, add' value1 value2 0)
 
-  let sub (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-      if neg1 = neg2
-      then (if (cmp value1 value2) = 1
-              then (if neg1 = Neg
-                      then Bigint (Neg, trimzeros(sub' value1 value2 0))
-                      else Bigint (Pos, trimzeros(sub' value1 value2 0)))
-              else if (cmp value1 value2) = -1
-              then (if neg1 = Neg
-                      then Bigint (Pos, trimzeros(sub' value2 value1 0))
-                      else Bigint (Neg, trimzeros(sub' value2 value1 0)))
-              else zero)
-      else Bigint (neg1, add' value1 value2 0)
+let mul (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
+    let _, product = mul' value1 value2 [1]
+    in if neg1 = neg2
+        then Bigint (Pos, product)
+        else Bigint (Neg, product)
 
-  let mul (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-      let _, product = mul' value1 value2 [1]
-      in if neg1 = neg2
-          then Bigint (Pos, product)
-          else Bigint (Neg, product)
+let rec div_rem' list1 list2' powerof2 =
+  if (cmp list2' list1) = 1
+  then [0], list1
+  else let quotient, remainder =
+    div_rem' list1 (double list2') (double powerof2)
+    in if (cmp remainder list2') = -1
+       then quotient, remainder
+       else add' quotient powerof2 0,
+         trimzeros (sub' remainder list2' 0)
 
-  let divrem list1 list2' = divrem' list1 list2' [1]
+let div_rem (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
+  let quotient, rem = div_rem' value1 value2 [1] in
+  let rem = if rem = [0] then [0;0] else rem 
+    in if neg1 = neg2
+      then (Bigint (Pos, quotient), Bigint (neg1, rem))
+      else (Bigint (Neg, quotient), Bigint (neg1, rem))
 
-  (* not finished *)
-  let div_rem (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-      let quotient, rem = divrem value1 value2
-      in if neg1 = neg2
-          then (Bigint (Pos, quotient), Bigint (neg1, rem))
-          else (Bigint (Neg, quotient), Bigint (neg1, rem))
+let div a b =
+  let quotient, _ = div_rem a b
+  in quotient
 
-  let div (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-      let quotient, _ = divrem value1 value2
-      in if neg1 = neg2
-          then Bigint (Pos, quotient)
-          else Bigint (Neg, quotient)
+let rem a b =
+  let _, remainder = div_rem a b
+  in remainder
 
-  let rem (Bigint (neg1, value1)) (Bigint (_neg2, value2)) =
-      let _, remainder = divrem value1 value2
-      in Bigint (neg1, remainder)
+let is_even (Bigint (_neg, value)) = 
+  let _, remainder = div_rem' value [2] [1]
+  in (remainder = [] || remainder = [0])
 
-  let rec pow' base exp acc =
-    if exp <= 0
-    then acc
-    else (pow' base (exp - 1) (mul acc base))
+let is_odd a = 
+  not (is_even a)
 
-  let pow base exp =
-    if exp < 0
-    then raise (Invalid_argument "The exponent must be greater zero or greater.")
-    else if exp = 0
-      then one
-      else if exp = 1
-      then base
-      else pow' base exp one
+let rec pow' base exp acc =
+  if exp <= 0
+  then acc
+  else (pow' base (exp - 1) (mul acc base))
 
-  let abs (Bigint (_neg, value)) = Bigint (Pos, value)
+let pow base exp =
+  if exp < 0
+  then raise (Invalid_argument "The exponent must be greater zero or greater.")
+  else if exp = 0
+    then one
+    else if exp = 1
+    then base
+    else pow' base exp one
+
+let abs (Bigint (_neg, value)) = Bigint (Pos, value)
 
   (* not complete *)
   let numbits (Bigint (_neg, value)) = List.length value
@@ -206,13 +204,28 @@ let neg (Bigint (sn, n)) =
   | Pos -> Bigint (Neg, n)
   | Neg -> Bigint (Pos, n)
 
+let compare (Bigint (neg1, v1)) (Bigint (neg2, v2)) =
+  match (neg1, neg2) with
+  | (Neg,Pos) -> -1
+  | (Pos,Neg) -> 1
+  | (Neg,Neg) -> ~-(cmp v1 v2)
+  | (Pos,Pos) -> cmp v1 v2
+
+let equal x y = (compare x y) = 0
+
+let leq x y = (compare x y) < 1
+
+let geq x y = (compare x y) > -1
+
+let lt x y = (compare x y) < 0
+
+let gt x y = (compare x y) > 0
+
 let sign n =
-  if n == zero
+  if n = zero'
   then 0
   else
-    let (Bigint (_neg, v)) = n in
-    let (Bigint (_neg, v0)) = zero in
-    if (cmp v v0) < 0
+    if (compare n zero') < 0
     then -1
     else 1
 
@@ -257,17 +270,17 @@ let (~$) = of_int
 
 let ( ** ) = pow
 
-(* val (=): t -> t -> bool *)
+let (=) = equal
 
-(* val (<): t -> t -> bool *)
+let (<) = lt
 
-(* val (>): t -> t -> bool *)
+let (>) = gt
 
-(* val (<=): t -> t -> bool *)
+let (<=) = leq
 
-(* val (>=): t -> t -> bool *)
+let (>=) = geq
 
-(* val (<>): t -> t -> bool *)
+let (<>) x y = not (equal x y)
 
 
 (*

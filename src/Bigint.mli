@@ -291,22 +291,22 @@ val compare : t -> t -> int
     only on OCaml 3.12.1 and later versions.
  *)
 
-val sign : t -> int
+val equal: t -> t -> bool
 (** Equality test. *)
 
-(* val leq: t -> t -> bool *)
+val leq: t -> t -> bool
 (** Less than or equal. *)
 
-(* val geq: t -> t -> bool *)
+val geq: t -> t -> bool
 (** Greater than or equal. *)
 
-(* val lt: t -> t -> bool *)
+val lt: t -> t -> bool
 (** Less than (and not equal). *)
 
-(* val gt: t -> t -> bool *)
+val gt: t -> t -> bool
 (** Greater than (and not equal). *)
 
-(* val sign: t -> int *)
+val sign: t -> int
 (** Returns -1, 0, or 1 when the argument is respectively negative, null, or
     positive.
  *)
@@ -317,10 +317,10 @@ val sign : t -> int
 (* val max: t -> t -> t *)
 (** Returns the maximum of its arguments. *)
 
-(* val is_even: t -> bool *)
+val is_even: t -> bool
 (** Returns true if the argument is even (divisible by 2), false if odd. *)
 
-(* val is_odd: t -> bool *)
+val is_odd: t -> bool
 (** Returns true if the argument is odd, false if even. *)
 
 (* val hash: t -> int *)
@@ -539,22 +539,22 @@ val (~$): int -> t
 val ( ** ): t -> int -> t
 (** Power [pow]. *)
 
-(* val (=): t -> t -> bool *)
+val (=): t -> t -> bool
 (** Same as [equal]. *)
 
-(* val (<): t -> t -> bool *)
+val (<): t -> t -> bool
 (** Same as [lt]. *)
 
-(* val (>): t -> t -> bool *)
+val (>): t -> t -> bool
 (** Same as [gt]. *)
 
-(* val (<=): t -> t -> bool *)
+val (<=): t -> t -> bool
 (** Same as [leq]. *)
 
-(* val (>=): t -> t -> bool *)
+val (>=): t -> t -> bool
 (** Same as [geq]. *)
 
-(* val (<>): t -> t -> bool *)
+val (<>): t -> t -> bool
 (** [a <> b] is equivalent to [not (equal a b)]. *)
 
 

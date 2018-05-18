@@ -122,6 +122,169 @@ describe "Bigint" (fun () ->
 
   test "div_rem" (fun () ->
     expect @@ Bigint.(div_rem (of_int (-7)) (of_int (-3))) |> toEqual (Bigint.(of_int 2, of_int (-1))));
-  
+(*
+  test "is_even" (fun () ->
+    Js.log((Bigint.of_int (0)));
+    Js.log((Bigint.zero'));
+    Js.log(Bigint.(rem (of_int (8)) (of_int 2)));
+    expect @@ Bigint.(rem (of_int (8)) (of_int 2)) |> toEqual (Bigint.zero'));  
+*)
+
+  test "is_even" (fun () ->
+    expect @@ Bigint.(is_even (of_int (8))) |> toEqual true);  
+
+  test "is_even" (fun () ->
+    expect @@ Bigint.(is_even (of_int (9))) |> toEqual false);
+
+  test "is_even" (fun () ->
+    expect @@ Bigint.(is_even (of_string "839816238764918263491726983776763728736482736846")) |> toEqual true);  
+
+  test "is_even" (fun () ->
+    expect @@ Bigint.(is_even (of_string "98382938792846298734695872639470987109877098703")) |> toEqual false);
+
+  test "is_odd" (fun () ->
+    expect @@ Bigint.(is_odd (of_string "839816238764918263491726983776763728736482736846")) |> toEqual false);  
+
+  test "is_odd" (fun () ->
+    expect @@ Bigint.(is_odd (of_string "98382938792846298734695872639470987109877098703")) |> toEqual true);
+
+
+  test "sign" (fun () ->
+    expect @@ Bigint.(sign (of_string "98382938792846298734695872639470987109877098703")) |> toEqual 1);
+
+  test "sign" (fun () ->
+    expect @@ Bigint.(sign (of_string "0")) |> toEqual 0);
+
+  test "sign" (fun () ->
+    expect @@ Bigint.(sign (of_string "-2839849727247283728372837287378723")) |> toEqual (-1));
+
+(* comparisons *)
+
+  test "2 = 3" (fun () ->
+    expect @@ Bigint.((of_int 2) = (of_int 3) ) |> toEqual false);
+
+  test "2 = 2" (fun () ->
+    expect @@ Bigint.((of_int 2) = (of_int 2) ) |> toEqual true);
+
+  test "0 = 0" (fun () ->
+    expect @@ Bigint.((of_int 0) = (of_int 0) ) |> toEqual true);
+
+  test "0 = 0" (fun () ->
+    expect @@ Bigint.((of_int 0) = (of_int 0) ) |> toEqual true);
+
+  test "0 = 0" (fun () ->
+    expect @@ Bigint.(zero' = (of_int 0) ) |> toEqual true);
+
+  test "0 = 0" (fun () ->
+    expect @@ Bigint.(zero' = (of_string "0") ) |> toEqual true);
+
+  test "0 = 0" (fun () ->
+    expect @@ Bigint.((of_int 0) = (of_string "0") ) |> toEqual true);
+
+  test "-1 = -1" (fun () ->
+    expect @@ Bigint.((of_int (-1)) = (of_int (-1)) ) |> toEqual true);
+
+  test "-1 = 1" (fun () ->
+    expect @@ Bigint.((of_int (-1)) = (of_int 1) ) |> toEqual false);
+
+
+  test "2 <= 3" (fun () ->
+    expect @@ Bigint.((of_int 2) <= (of_int 3) ) |> toEqual true);
+
+  test "2 <= 3" (fun () ->
+    expect @@ Bigint.((of_int 2) <= (of_int 3) ) |> toEqual true);
+
+  test "3 <= 3" (fun () ->
+    expect @@ Bigint.((of_int 3) <= (of_int 3) ) |> toEqual true);
+
+  test "0 <= 0" (fun () ->
+    expect @@ Bigint.((of_int 0) <= (of_int 0) ) |> toEqual true);
+
+  test "-1 <= 0" (fun () ->
+    expect @@ Bigint.((of_int (-1)) <= (of_int 0) ) |> toEqual true);
+
+  test "-3 <= -2" (fun () ->
+    expect @@ Bigint.((of_int (-3)) <= (of_int (-2)) ) |> toEqual true);
+
+  test "1 <= 0" (fun () ->
+    expect @@ Bigint.((of_int 1) <= (of_int 0) ) |> toEqual false);
+
+
+  test "2 < 3" (fun () ->
+    expect @@ Bigint.((of_int 2) < (of_int 3) ) |> toEqual true);
+
+  test "3 < 3" (fun () ->
+    expect @@ Bigint.((of_int 3) < (of_int 3) ) |> toEqual false);
+
+  test "-1 < 0" (fun () ->
+    expect @@ Bigint.((of_int (-1)) < (of_int 0) ) |> toEqual true);
+
+  test "-3 < -2" (fun () ->
+    expect @@ Bigint.((of_int (-3)) < (of_int (-2)) ) |> toEqual true);
+
+  test "1 < 0" (fun () ->
+    expect @@ Bigint.((of_int 1) < (of_int 0) ) |> toEqual false);
+
+
+  test "2 >= 3" (fun () ->
+    expect @@ Bigint.((of_int 2) >= (of_int 3) ) |> toEqual false);
+
+  test "3 >= 3" (fun () ->
+    expect @@ Bigint.((of_int 3) >= (of_int 3) ) |> toEqual true);
+
+  test "-1 >= 0" (fun () ->
+    expect @@ Bigint.((of_int (-1)) >= (of_int 0) ) |> toEqual false);
+
+  test "-3 >= -2" (fun () ->
+    expect @@ Bigint.((of_int (-3)) >= (of_int (-2)) ) |> toEqual false);
+
+  test "1 >= 0" (fun () ->
+    expect @@ Bigint.((of_int 1) >= (of_int 0) ) |> toEqual true);
+
+  test "3 >= 2" (fun () ->
+    expect @@ Bigint.((of_int 3) >= (of_int 2) ) |> toEqual true);
+
+  test "3 >= -2" (fun () ->
+    expect @@ Bigint.((of_int 3) >= (of_int (-2)) ) |> toEqual true);
+
+
+  test "2 > 3" (fun () ->
+    expect @@ Bigint.((of_int 2) > (of_int 3) ) |> toEqual false);
+
+  test "3 > 3" (fun () ->
+    expect @@ Bigint.((of_int 3) > (of_int 3) ) |> toEqual false);
+
+  test "-1 > 0" (fun () ->
+    expect @@ Bigint.((of_int (-1)) > (of_int 0) ) |> toEqual false);
+
+  test "-3 > -2" (fun () ->
+    expect @@ Bigint.((of_int (-3)) > (of_int (-2)) ) |> toEqual false);
+
+  test "1 > 0" (fun () ->
+    expect @@ Bigint.((of_int 1) > (of_int 0) ) |> toEqual true);
+
+  test "3 > 2" (fun () ->
+    expect @@ Bigint.((of_int 3) > (of_int 2) ) |> toEqual true);
+
+  test "3 > -2" (fun () ->
+    expect @@ Bigint.((of_int 3) > (of_int (-2)) ) |> toEqual true);
+
+
+
+
+
+  test "3 <> 2" (fun () ->
+    expect @@ Bigint.((of_int 3) <> (of_int 2)) |> toEqual true);
+
+  test "2 <> 2" (fun () ->
+    expect @@ Bigint.((of_int 2) <> (of_int 2)) |> toEqual false);
+
+  test "0 <> 1" (fun () ->
+    expect @@ Bigint.((of_int 0) <> (of_int 1)) |> toEqual true);
+
+
+
+
+
   test "pow" (fun () ->
     expect @@ Bigint.(pow (of_int 2) 2) |> toEqual (Bigint.of_int 4))
