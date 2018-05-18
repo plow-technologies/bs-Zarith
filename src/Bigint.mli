@@ -392,12 +392,13 @@ val sign : t -> int
 
 (** {1 Powers} *)
 
-(* val pow: t -> int -> t *)
+val pow: t -> int -> t
 (** [pow base exp] raises [base] to the [exp] power.
     [exp] must be non-negative.
     Note that only exponents fitting in a machine integer are supported, as
     larger exponents would surely make the result's size overflow the
     address space.
+    Raises an [Invalid_argument] on negative [exp].    
  *)
 
 (* val sqrt: t -> t *)

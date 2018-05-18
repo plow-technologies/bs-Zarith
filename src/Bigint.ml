@@ -130,13 +130,6 @@ type t    = Bigint of sign * int list
       let _, remainder = divrem' number [2] [1]
       in (remainder = [0])
 
-  let rec pow' list1 list2 result = match list2 with
-      | [0]                   -> result
-      | list2 when even list2 -> pow' (let _, product = mul' list1 list1 [1] in product) 
-          (let q, _ = divrem' list2 [2] [1] in q) result
-      | list2                 -> pow' list1 (sub' list2 [1] 0) 
-          (let _, product = mul' list1 result [1] in product)
-
   let add (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
       if neg1 = neg2
       then Bigint (neg1, add' value1 value2 0)
@@ -182,6 +175,15 @@ type t    = Bigint of sign * int list
       let _, remainder = divrem value1 value2
       in Bigint (Pos, remainder)
 
+(*
+  let rec pow' list1 list2 result = match list2 with
+      | [0]                   -> result
+      | list2 when even list2 -> pow' (let _, product = mul' list1 list1 [1] in product) 
+          (let q, _ = divrem' list2 [2] [1] in q) result
+      | list2                 -> pow' list1 (sub' list2 [1] 0) 
+          (let _, product = mul' list1 result [1] in product)
+
+
   let pow (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
       if neg2 = Pos
       then (if neg1 = Neg
@@ -194,7 +196,22 @@ type t    = Bigint of sign * int list
                       then Bigint (Pos, pow' (let q, _ = divrem' [1] value1 [1] in q) value2 [1])
                       else Bigint (Neg, pow' (let q, _ = divrem' [1] value1 [1] in q) value2 [1]))
                       else Bigint (Pos, pow' (let q, _ = divrem' [1] value1 [1] in q) value2 [1]))
+*)
 
+  (* let poww = raise (Invalid_argument "") *)
+  let rec pow' base exp acc =
+    if exp <= 0
+    then acc
+    else (pow' base (exp - 1) (mul acc base))
+
+  let pow base exp =
+    if exp < 0
+    then raise (Invalid_argument "The exponent must be greater zero or greater.")
+    else if exp = 0
+      then one
+      else if exp = 1
+      then base
+      else pow' base exp one
 
   let abs (Bigint (_neg, value)) = Bigint (Pos, value)
 
@@ -202,8 +219,9 @@ type t    = Bigint of sign * int list
   let numbits (Bigint (_neg, value)) = List.length value
 
   (* need to test theses *)
-  let shift_left x n = mul x (pow (of_int 2) (of_int n))
-  let shift_right x n = div x (pow (of_int 2) (of_int n))
+  let shift_left x n = mul x (pow x 2)
+
+  let shift_right x n = div x (pow x 2)
 
   let neg (Bigint (sn, n)) =
     match sn with

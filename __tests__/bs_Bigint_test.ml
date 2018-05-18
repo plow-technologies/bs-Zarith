@@ -51,5 +51,16 @@ describe "Bigint" (fun () ->
     expect @@ Bigint.to_string(Bigint.minus_one) |> toEqual "-1");
 
   test "big to string" (fun () ->
-    expect @@ Bigint.to_string(Bigint.of_string "32389176649991293809043094891992939836566132213") |> toEqual "32389176649991293809043094891992939836566132213");
-);
+    expect @@ Bigint.to_string(Bigint.of_string "32389176649991293809043094891992939836566132213") |> toEqual "32389176649991293809043094891992939836566132213"));
+
+  test "pow" (fun () ->
+    expect @@ Bigint.(pow (of_int 2) 0) |> toEqual (Bigint.of_int 1));
+
+  test "pow" (fun () ->
+    expect @@ Bigint.(pow (of_int 2) 1) |> toEqual (Bigint.of_int 2));
+
+  test "pow" (fun () ->
+    expect @@ Bigint.(pow (of_int 4) 4) |> toEqual (Bigint.of_int 256));
+
+  test "pow" (fun () ->
+    expect @@ Bigint.(pow (of_int 2) 2) |> toEqual (Bigint.of_int 4))
