@@ -161,9 +161,11 @@ type t    = Bigint of sign * int list
   let divrem list1 list2' = divrem' list1 list2' [1]
 
   (* not finished *)
-  let div_rem (Bigint (_neg1, value1)) (Bigint (neg2, value2)) =
-    let (a,b) = divrem value1 value2 in
-    (Bigint (Pos, a), Bigint (Pos, b))
+  let div_rem (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
+      let quotient, rem = divrem value1 value2
+      in if neg1 = neg2
+          then (Bigint (Pos, quotient), Bigint (neg1, rem))
+          else (Bigint (Neg, quotient), Bigint (neg1, rem))
 
   let div (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
       let quotient, _ = divrem value1 value2
@@ -171,34 +173,10 @@ type t    = Bigint of sign * int list
           then Bigint (Pos, quotient)
           else Bigint (Neg, quotient)
 
-  let rem (Bigint (_neg1, value1)) (Bigint (_neg2, value2)) =
+  let rem (Bigint (neg1, value1)) (Bigint (_neg2, value2)) =
       let _, remainder = divrem value1 value2
-      in Bigint (Pos, remainder)
+      in Bigint (neg1, remainder)
 
-(*
-  let rec pow' list1 list2 result = match list2 with
-      | [0]                   -> result
-      | list2 when even list2 -> pow' (let _, product = mul' list1 list1 [1] in product) 
-          (let q, _ = divrem' list2 [2] [1] in q) result
-      | list2                 -> pow' list1 (sub' list2 [1] 0) 
-          (let _, product = mul' list1 result [1] in product)
-
-
-  let pow (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-      if neg2 = Pos
-      then (if neg1 = Neg
-              then (if even value2
-                      then Bigint (Pos, pow' value1 value2 [1])
-                      else Bigint (Neg, pow' value1 value2 [1]))
-              else Bigint (Pos, pow' value1 value2 [1]))
-      else (if neg1 = Neg
-              then (if even value2
-                      then Bigint (Pos, pow' (let q, _ = divrem' [1] value1 [1] in q) value2 [1])
-                      else Bigint (Neg, pow' (let q, _ = divrem' [1] value1 [1] in q) value2 [1]))
-                      else Bigint (Pos, pow' (let q, _ = divrem' [1] value1 [1] in q) value2 [1]))
-*)
-
-  (* let poww = raise (Invalid_argument "") *)
   let rec pow' base exp acc =
     if exp <= 0
     then acc
