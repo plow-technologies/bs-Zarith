@@ -485,22 +485,22 @@ val pow: t -> int -> t
    [Z.(~$2 + ~$5 * ~$10)].
  *)
 
-(* val (~-): t -> t *)
+val (~-): t -> t
 (** Negation [neg]. *)
 
 (* val (~+): t -> t *)
 (** Identity. *)
 
-(* (+): t -> t -> t *)
+val (+): t -> t -> t
 (** Addition [add]. *)
 
-(* (-): t -> t -> t *)
+val (-): t -> t -> t
 (** Subtraction [sub]. *)
 
-(* ( * ): t -> t -> t *)
+val ( * ): t -> t -> t
 (** Multiplication [mul]. *)
 
-(* (/): t -> t -> t *)
+val (/): t -> t -> t
 (** Truncated division [div]. *)
 
 (* (/>): t -> t -> t *)
@@ -527,16 +527,16 @@ val pow: t -> int -> t
 (* (~!): t -> t *)
 (** Bit-wise logical negation [lognot]. *)
 
-(* (lsl): t -> int -> t *)
+val (lsl): t -> int -> t
 (** Bit-wise shift to the left [shift_left]. *)
 
-(* (asr): t -> int -> t *)
+val (asr): t -> int -> t
 (** Bit-wise shift to the right [shift_right]. *)
 
-(* (~$): int -> t *)
+val (~$): int -> t
 (** Conversion from [int] [of_int]. *)
 
-(* ( ** ): t -> int -> t *)
+val ( ** ): t -> int -> t
 (** Power [pow]. *)
 
 (* val (=): t -> t -> bool *)

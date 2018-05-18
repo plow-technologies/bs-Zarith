@@ -219,28 +219,78 @@ type t    = Bigint of sign * int list
   let numbits (Bigint (_neg, value)) = List.length value
 
   (* need to test theses *)
-  let shift_left x n = mul x (pow x 2)
+  let shift_left x n = mul x (pow (of_int 2) n)
 
-  let shift_right x n = div x (pow x 2)
+  let shift_right x n = div x (pow (of_int 2) n)
 
-  let neg (Bigint (sn, n)) =
-    match sn with
-    | Pos -> Bigint (Neg, n)
-    | Neg -> Bigint (Pos, n)
+let neg (Bigint (sn, n)) =
+  match sn with
+  | Pos -> Bigint (Neg, n)
+  | Neg -> Bigint (Pos, n)
 
-  let sign n =
-    if n == zero
-    then 0
-    else
-      let (Bigint (_neg, v)) = n in
-      let (Bigint (_neg, v0)) = zero in
-      if (cmp v v0) < 0
-      then -1
-      else 1
-
+let sign n =
+  if n == zero
+  then 0
+  else
+    let (Bigint (_neg, v)) = n in
+    let (Bigint (_neg, v0)) = zero in
+    if (cmp v v0) < 0
+    then -1
+    else 1
 
 let succ x = add x one
+
 let pred x = sub x one
+
+
+let (~-) = neg
+
+(* val (~+): t -> t *)
+
+let (+) = add
+
+let (-) = sub
+
+let ( * ) = mul
+
+let (/) = div
+
+(* (/>): t -> t -> t *)
+
+(* (/<): t -> t -> t *)
+
+(* (/|): t -> t -> t *)
+
+(* (mod): t -> t -> t *)
+
+(* (land): t -> t -> t *)
+
+(* (lor): t -> t -> t *)
+
+(* (lxor): t -> t -> t *)
+
+(* (~!): t -> t *)
+
+let (lsl) = shift_left
+
+let (asr) = shift_right
+
+let (~$) = of_int
+
+let ( ** ) = pow
+
+(* val (=): t -> t -> bool *)
+
+(* val (<): t -> t -> bool *)
+
+(* val (>): t -> t -> bool *)
+
+(* val (<=): t -> t -> bool *)
+
+(* val (>=): t -> t -> bool *)
+
+(* val (<>): t -> t -> bool *)
+
 
 (*
 shift left
