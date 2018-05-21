@@ -90,7 +90,7 @@ val div_rem: t -> t -> (t * t)
     Can raise a [Division_by_zero].
  *)
 
-(* val ediv_rem: t -> t -> (t * t) *)
+val ediv_rem: t -> t -> (t * t)
 (** Euclidean division and remainder.  [ediv_rem a b] returns a pair [(q, r)]
     such that [a = b * q + r] and [0 <= r < |b|].
     Raises [Division_by_zero] if [b = 0].
@@ -333,7 +333,7 @@ val is_odd: t -> bool
 
 (** {1 Elementary number theory} *)
 
-(* val gcd: t -> t -> t *)
+val gcd: t -> t -> t
 (** Greatest common divisor.
     The result is always positive.
     Raises a [Division_by_zero] is either argument is null.

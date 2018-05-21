@@ -4,14 +4,23 @@ open Expect
 let () = 
 
 describe "Bigint" (fun () ->
-  test "zero" (fun () ->
+  test "zero equal to (Bigint.of_int 0)" (fun () ->
     expect @@ Bigint.zero' |> toEqual (Bigint.of_int 0));
                        
-  test "one" (fun () ->
+  test "one equal to (Bigint.of_int 1)" (fun () ->
     expect @@ Bigint.one |> toEqual (Bigint.of_int 1));
 
-  test "minus_one" (fun () ->
+  test "minus_one equal to (Bigint.of_int (-1))" (fun () ->
     expect @@ Bigint.minus_one |> toEqual (Bigint.of_int (-1)));
+
+  test "zero equal to (Bigint.of_int 0)" (fun () ->
+    expect @@ Bigint.zero' |> toEqual (Bigint.of_string "0"));
+                       
+  test "one equal to (Bigint.of_int 1)" (fun () ->
+    expect @@ Bigint.one |> toEqual (Bigint.of_string "1"));
+
+  test "minus_one equal to (Bigint.of_int (-1))" (fun () ->
+    expect @@ Bigint.minus_one |> toEqual (Bigint.of_string "-1"));
                        
   test "simple addition" (fun () ->
     let x = Bigint.of_int 1 in
@@ -26,6 +35,14 @@ describe "Bigint" (fun () ->
     let z = Bigint.add x y in
 
     expect @@ z |> toEqual (Bigint.of_string "-3"));
+
+  test "0 + 0" (fun () ->    
+    let x = Bigint.zero' in
+    let y = Bigint.zero' in
+    let z = Bigint.add x y in
+
+    expect @@ z |> toEqual Bigint.zero');
+
 
   test "addition with negative numbers from int" (fun () ->
     let x = Bigint.of_int (-1) in
@@ -81,6 +98,17 @@ describe "Bigint" (fun () ->
   test "div" (fun () ->
     expect @@ Bigint.(div (of_int 7) (of_int 3)) |> toEqual (Bigint.of_int 2));
 
+  test "2 - 1 = 1" (fun () ->
+    expect @@ Bigint.((of_int 2) - (of_int 1)) |> toEqual (Bigint.of_int 1));
+
+  test "10 - 7 = 3" (fun () ->
+    expect @@ Bigint.((of_int 10) - (of_int 7)) |> toEqual (Bigint.of_int 3));
+
+  test "7 - 10 = -3" (fun () ->
+    expect @@ Bigint.((of_int 7) - (of_int 10)) |> toEqual (Bigint.of_int (-3)));
+
+
+
   test "rem" (fun () ->
     expect @@ Bigint.(rem (of_int 7) (of_int 3)) |> toEqual (Bigint.of_int 1));
 
@@ -111,24 +139,61 @@ describe "Bigint" (fun () ->
     let c = Bigint.(b * (div a b) + (rem a b)) in
     expect @@ a |> toEqual c);
 
-  test "div_rem" (fun () ->
+  test "div_rem 7 3" (fun () ->
     expect @@ Bigint.(div_rem (of_int 7) (of_int 3)) |> toEqual (Bigint.(of_int 2, of_int 1)));
 
-  test "div_rem" (fun () ->
+  test "div_rem 7 (-3)" (fun () ->
     expect @@ Bigint.(div_rem (of_int 7) (of_int (-3))) |> toEqual (Bigint.(of_int (-2), of_int 1)));
 
-  test "div_rem" (fun () ->
+  test "div_rem (-7) 3" (fun () ->
     expect @@ Bigint.(div_rem (of_int (-7)) (of_int 3)) |> toEqual (Bigint.(of_int (-2), of_int (-1))));
 
-  test "div_rem" (fun () ->
+  test "div_rem (-7) (-3)" (fun () ->
     expect @@ Bigint.(div_rem (of_int (-7)) (of_int (-3))) |> toEqual (Bigint.(of_int 2, of_int (-1))));
-(*
-  test "is_even" (fun () ->
-    Js.log((Bigint.of_int (0)));
-    Js.log((Bigint.zero'));
-    Js.log(Bigint.(rem (of_int (8)) (of_int 2)));
-    expect @@ Bigint.(rem (of_int (8)) (of_int 2)) |> toEqual (Bigint.zero'));  
-*)
+
+  test "div_rem 9 3" (fun () ->
+    expect @@ Bigint.(div_rem (of_int 9) (of_int 3)) |> toEqual (Bigint.(of_int 3, of_int 0)));
+
+  test "div_rem 9 (-3)" (fun () ->
+    expect @@ Bigint.(div_rem (of_int 9) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), of_int 0)));
+  
+  test "div_rem (-9) 3" (fun () ->
+    expect @@ Bigint.(div_rem (of_int (-9)) (of_int 3)) |> toEqual (Bigint.(of_int (-3), of_int 0)));
+
+  test "div_rem (-9) (-3)" (fun () ->
+    expect @@ Bigint.(div_rem (of_int (-9)) (of_int (-3))) |> toEqual (Bigint.(of_int 3, of_int 0)));
+
+
+
+  test "ediv_rem 7 3" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int 7) (of_int 3)) |> toEqual (Bigint.(of_int 2, of_int 1)));
+
+  test "ediv_rem 7 (-3)" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int 7) (of_int (-3))) |> toEqual (Bigint.(of_int (-2), of_int 1)));
+
+  test "ediv_rem (-7) 3" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int (-7)) (of_int 3)) |> toEqual (Bigint.(of_int (-3), of_int 2)));
+
+  test "ediv_rem (-7) (-3)" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int (-7)) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), of_int 2)));
+
+  test "ediv_rem (-8) 3" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int (-8)) (of_int 3)) |> toEqual (Bigint.(of_int (-3), of_int 1)));
+
+  test "ediv_rem (-8) (-3)" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int (-8)) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), of_int 1)));
+
+  test "ediv_rem 9 3" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int 9) (of_int 3)) |> toEqual (Bigint.(of_int 3, of_int 0 )));
+
+  test "ediv_rem 9 (-3)" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int 9) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), zero' )));
+  
+  test "ediv_rem (-9) 3" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int (-9)) (of_int 3)) |> toEqual (Bigint.(of_int (-3), of_int 0 )));
+
+  test "ediv_rem (-9) (-3)" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int (-9)) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), zero' )));
 
   test "is_even" (fun () ->
     expect @@ Bigint.(is_even (of_int (8))) |> toEqual true);  
@@ -282,9 +347,13 @@ describe "Bigint" (fun () ->
   test "0 <> 1" (fun () ->
     expect @@ Bigint.((of_int 0) <> (of_int 1)) |> toEqual true);
 
+(*
+  test "gcd 2 12" (fun () ->
+    expect @@ Bigint.(gcd (of_int 2) (of_int 12)) |> toEqual (Bigint.of_int 2));
 
-
-
+  test "gcd 36 60" (fun () ->
+    expect @@ Bigint.(gcd (of_int 36) (of_int 60)) |> toEqual (Bigint.of_int 6));
+*)
 
   test "pow" (fun () ->
     expect @@ Bigint.(pow (of_int 2) 2) |> toEqual (Bigint.of_int 4))

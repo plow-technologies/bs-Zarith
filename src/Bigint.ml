@@ -1,67 +1,67 @@
 type sign = Pos | Neg
 
-type t    = Bigint of sign * int list
+type t    = Bigint of sign * int list 
 
-  let radix    = 10
-  let radixlen = 1
+let radix    = 10
+let radixlen = 1
 
-  let car       = List.hd
-  let cdr       = List.tl
-  let map       = List.map
-  let reverse   = List.rev
-  let strcat    = String.concat
-  let strlen    = String.length
-  let strsub    = String.sub
+let car       = List.hd
+let cdr       = List.tl
+let map       = List.map
+let reverse   = List.rev
+let strcat    = String.concat
+let strlen    = String.length
+let strsub    = String.sub
 
-  let zero = Bigint (Pos, [])
-  let zero' = Bigint (Pos, [0])
-  let one = Bigint (Pos, [1])
-  let minus_one = Bigint (Neg, [1])
+let zero = Bigint (Pos, [])
+let zero' = Bigint (Pos, [0])
+let one = Bigint (Pos, [1])
+let minus_one = Bigint (Neg, [1])
 
-  let charlist_of_string str = 
-      let last = strlen str - 1
-      in  let rec charlist pos result =
-          if pos < 0
-          then result
-          else charlist (pos - 1) (str.[pos] :: result)
-      in  charlist last []
+let charlist_of_string str = 
+  let last = strlen str - 1
+  in  let rec charlist pos result =
+      if pos < 0
+      then result
+      else charlist (pos - 1) (str.[pos] :: result)
+  in  charlist last []
     
-  let of_string str =
-      let len = strlen str
-      in  let to_intlist first =
-              let substr = strsub str first (len - first) in
-              let digit char = int_of_char char - int_of_char '0' in
-              map digit (reverse (charlist_of_string substr))
-          in  if   len = 0
-              then zero
-              else if   str.[0] = '-'
-                   then Bigint (Neg, to_intlist 1)
-                   else Bigint (Pos, to_intlist 0)
+let of_string str =
+  let len = strlen str
+  in  let to_intlist first =
+          let substr = strsub str first (len - first) in
+          let digit char = int_of_char char - int_of_char '0' in
+          map digit (reverse (charlist_of_string substr))
+      in  if   len = 0
+          then zero
+          else if   str.[0] = '-'
+               then Bigint (Neg, to_intlist 1)
+               else Bigint (Pos, to_intlist 0)
 
-  let of_int i = of_string (string_of_int i)
-  let of_int32 i = of_string (Int32.to_string i)
-  let of_int64 i = of_string (Int64.to_string i)
-  let of_nativeint i = of_string (Nativeint.to_string i)
+let of_int i = of_string (string_of_int i)
+let of_int32 i = of_string (Int32.to_string i)
+let of_int64 i = of_string (Int64.to_string i)
+let of_nativeint i = of_string (Nativeint.to_string i)
 
+let to_string (Bigint (sign, value)) =
+  match value with
+  | []    -> "0"
+  | value -> let reversed = reverse value
+             in  strcat ""
+                 ((if sign = Pos then "" else "-") ::
+                  (map string_of_int reversed))
 
-  let to_string (Bigint (sign, value)) =
-      match value with
-      | []    -> "0"
-      | value -> let reversed = reverse value
-                 in  strcat ""
-                     ((if sign = Pos then "" else "-") ::
-                      (map string_of_int reversed))
-
-  let trimzeros listy =
-      let rec trimzeros' listy' = match listy' with
-          | []        -> []
-          | [0]       -> []
-          | car::cdr ->
-              let cdr' = trimzeros' cdr
-              in match (car, cdr') with
-                  | 0, []      -> []
-                  | car, cdr'  -> car::cdr'
-      in trimzeros' listy
+let trimzeros listy =
+  let rec trimzeros' listy' = 
+    match listy' with
+    | []        -> []
+    | [0]       -> []
+    | car::cdr ->
+        let cdr' = trimzeros' cdr
+        in match (car, cdr') with
+           | 0, []      -> []
+           | car, cdr'  -> car::cdr'
+  in trimzeros' listy
 
 (* cmp list1 list2 = bigger list *)
 let rec cmp list1 list2 =
@@ -105,43 +105,43 @@ let rec sub' list1 list2 carry = match (list1, list2, carry) with
 let double listy = add' listy listy 0
 
 let rec mul' list1 list2' powerof2 =
-    if (cmp powerof2 list1) = 1
-    then list1, [0]
-    else let remainder, product =
-        mul' list1 (double list2') (double powerof2)
-        in if (cmp remainder powerof2) = -1
-            then remainder, product
-            else trimzeros (sub' remainder powerof2 0), 
-                add' product list2' 0
+  if (cmp powerof2 list1) = 1
+  then list1, [0]
+  else let remainder, product =
+    mul' list1 (double list2') (double powerof2)
+    in if (cmp remainder powerof2) = -1
+        then remainder, product
+        else trimzeros (sub' remainder powerof2 0), 
+            add' product list2' 0
 
 
 let add (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-    if neg1 = neg2
-    then Bigint (neg1, add' value1 value2 0)
-    else if (cmp value1 value2) = 1
+  if neg1 = neg2
+  then Bigint (neg1, add' value1 value2 0)
+  else if (cmp value1 value2) = 1
     then Bigint (neg1, trimzeros (sub' value1 value2 0))
     else if cmp value1 value2 = -1
-    then Bigint (neg2, trimzeros (sub' value2 value1 0))
-    else zero
+      then Bigint (neg2, trimzeros (sub' value2 value1 0))
+      else zero
 
 let sub (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-    if neg1 = neg2
-    then (if (cmp value1 value2) = 1
-            then (if neg1 = Neg
-                    then Bigint (Neg, trimzeros(sub' value1 value2 0))
-                    else Bigint (Pos, trimzeros(sub' value1 value2 0)))
-            else if (cmp value1 value2) = -1
-            then (if neg1 = Neg
-                    then Bigint (Pos, trimzeros(sub' value2 value1 0))
-                    else Bigint (Neg, trimzeros(sub' value2 value1 0)))
-            else zero)
-    else Bigint (neg1, add' value1 value2 0)
+  if neg1 = neg2
+  then (if (cmp value1 value2) = 1
+    then (if neg1 = Neg
+      then Bigint (Neg, trimzeros(sub' value1 value2 0))
+      else Bigint (Pos, trimzeros(sub' value1 value2 0)))
+    else if (cmp value1 value2) = -1
+    then (if neg1 = Neg
+      then Bigint (Pos, trimzeros(sub' value2 value1 0))
+      else Bigint (Neg, trimzeros(sub' value2 value1 0)))
+    else zero)
+  else Bigint (neg1, add' value1 value2 0)
 
 let mul (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
-    let _, product = mul' value1 value2 [1]
-    in if neg1 = neg2
-        then Bigint (Pos, product)
-        else Bigint (Neg, product)
+  let _, product = mul' value1 value2 [1]
+  in if neg1 = neg2
+    then Bigint (Pos, product)
+    else Bigint (Neg, product)
 
 let rec div_rem' list1 list2' powerof2 =
   if (cmp list2' list1) = 1
@@ -155,10 +155,55 @@ let rec div_rem' list1 list2' powerof2 =
 
 let div_rem (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
   let quotient, rem = div_rem' value1 value2 [1] in
-  let rem = if rem = [0] then [0;0] else rem 
+  let rem = if rem = [] then Bigint (Pos, [0]) else Bigint (neg1, rem)
     in if neg1 = neg2
-      then (Bigint (Pos, quotient), Bigint (neg1, rem))
-      else (Bigint (Neg, quotient), Bigint (neg1, rem))
+      then (Bigint (Pos, quotient), rem)
+      else (Bigint (Neg, quotient), rem)
+
+let rec ediv_rem' t0 t1 cum =
+  let (Bigint (_, v0)) = t0 in
+  let t0' = (Bigint (Pos, v0)) in
+  let (Bigint (_, v1)) = t1 in
+  let t1' = (Bigint (Pos, v1)) in
+  let r = sub t0' t1' in
+  if (cmp v0 v1) = 1
+  then ediv_rem' r t1' (add cum one)
+  else
+    let (Bigint (_, rv)) = r in
+    if (cmp rv [0]) = 0
+    then (cum, r)
+    else ((add cum one), r)
+
+let ediv_rem a b =
+  let (Bigint (neg1, _)) = a in
+  let (Bigint (neg2, _)) = b in
+  match (neg1, neg2) with
+  | (Pos, Pos) -> div_rem a b
+  | (Pos, Neg) -> div_rem a b
+  | (Neg, _) ->
+    let (Bigint (_, q), Bigint(_, r)) = ediv_rem' a b zero in
+    let r = trimzeros r in
+    let r = if r = [] then [0] else r in
+    (Bigint (Neg, q), Bigint (Pos, r))
+
+(* let ediv_rem a b 
+a dividend
+b divisor
+q quotient
+r remainder
+*)
+(* a = bq + r *)
+(* 0 ≤ r < |b| *)
+(*
+r is always positive
+
+    If a = 7 and b = 3, then q = 2 and r = 1, since 7 = 3 × 2 + 1.
+    If a = 7 and b = −3, then q = −2 and r = 1, since 7 = −3 × (−2) + 1.
+    If a = −7 and b = 3, then q = −3 and r = 2, since −7 = 3 × (−3) + 2.
+    If a = −7 and b = −3, then q = 3 and r = 2, since −7 = −3 × 3 + 2.
+
+*)
+
 
 let div a b =
   let quotient, _ = div_rem a b
@@ -174,6 +219,16 @@ let is_even (Bigint (_neg, value)) =
 
 let is_odd a = 
   not (is_even a)
+
+(** Elementary number theory *)
+
+let rec gcd' a b =
+  let c = rem a b
+  in if c = zero
+    then b
+    else gcd' b c
+
+let gcd x y = gcd' x y
 
 let rec pow' base exp acc =
   if exp <= 0
