@@ -5,7 +5,7 @@ let () =
 
 describe "Bigint" (fun () ->
   test "zero equal to (Bigint.of_int 0)" (fun () ->
-    expect @@ Bigint.zero' |> toEqual (Bigint.of_int 0));
+    expect @@ Bigint.zero |> toEqual (Bigint.of_int 0));
                        
   test "one equal to (Bigint.of_int 1)" (fun () ->
     expect @@ Bigint.one |> toEqual (Bigint.of_int 1));
@@ -14,7 +14,7 @@ describe "Bigint" (fun () ->
     expect @@ Bigint.minus_one |> toEqual (Bigint.of_int (-1)));
 
   test "zero equal to (Bigint.of_int 0)" (fun () ->
-    expect @@ Bigint.zero' |> toEqual (Bigint.of_string "0"));
+    expect @@ Bigint.zero |> toEqual (Bigint.of_string "0"));
                        
   test "one equal to (Bigint.of_int 1)" (fun () ->
     expect @@ Bigint.one |> toEqual (Bigint.of_string "1"));
@@ -22,34 +22,20 @@ describe "Bigint" (fun () ->
   test "minus_one equal to (Bigint.of_int (-1))" (fun () ->
     expect @@ Bigint.minus_one |> toEqual (Bigint.of_string "-1"));
                        
-  test "simple addition" (fun () ->
-    let x = Bigint.of_int 1 in
-    let y = Bigint.of_int 2 in
-    let z = Bigint.add x y in
-                       
-    expect @@ z |> toEqual (Bigint.of_int 3));
+  test "2 + 1 = 3" (fun () ->                       
+    expect @@ Bigint.((of_int 1) + (of_int 2)) |> toEqual (Bigint.of_int 3));
 
-  test "addition with negative numbers from string" (fun () ->    
-    let x = Bigint.of_string "-1" in
-    let y = Bigint.of_string "-2" in
-    let z = Bigint.add x y in
+  test "(-2) + (-1) = (-3)" (fun () ->    
+    expect @@ Bigint.((of_int (-1)) + (of_int (-2))) |> toEqual (Bigint.of_int (-3)));
 
-    expect @@ z |> toEqual (Bigint.of_string "-3"));
+  test "0 + 0 = 0" (fun () ->    
+    expect @@ Bigint.(zero + zero) |> toEqual Bigint.zero);
 
-  test "0 + 0" (fun () ->    
-    let x = Bigint.zero' in
-    let y = Bigint.zero' in
-    let z = Bigint.add x y in
+  test "-3 + 3 = 0" (fun () ->    
+    expect @@ Bigint.((of_int (-3)) + (of_int 3)) |> toEqual (Bigint.of_int 0));
 
-    expect @@ z |> toEqual Bigint.zero');
-
-
-  test "addition with negative numbers from int" (fun () ->
-    let x = Bigint.of_int (-1) in
-    let y = Bigint.of_int (-2) in
-    let z = Bigint.add x y in
-
-    expect @@ z |> toEqual (Bigint.of_int (-3)));
+  test "of_string: 2 + 1 = 3" (fun () ->                       
+    expect @@ Bigint.((of_string "1") + (of_string "2")) |> toEqual (Bigint.of_int 3));
 
   test "addition with numbers larger than int64 can hold" (fun () ->
     let x = Bigint.of_string "1000000000000000000000000000000" in
@@ -59,7 +45,7 @@ describe "Bigint" (fun () ->
     expect @@ z |> toEqual (Bigint.of_string "2000000000000000000000000000000"));
 
   test "zero to string" (fun () ->
-    expect @@ Bigint.to_string(Bigint.zero') |> toEqual "0");
+    expect @@ Bigint.to_string(Bigint.zero) |> toEqual "0");
 
   test "one to string" (fun () ->
     expect @@ Bigint.to_string(Bigint.one) |> toEqual "1");
@@ -187,13 +173,13 @@ describe "Bigint" (fun () ->
     expect @@ Bigint.(ediv_rem (of_int 9) (of_int 3)) |> toEqual (Bigint.(of_int 3, of_int 0 )));
 
   test "ediv_rem 9 (-3)" (fun () ->
-    expect @@ Bigint.(ediv_rem (of_int 9) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), zero' )));
+    expect @@ Bigint.(ediv_rem (of_int 9) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), zero )));
   
   test "ediv_rem (-9) 3" (fun () ->
     expect @@ Bigint.(ediv_rem (of_int (-9)) (of_int 3)) |> toEqual (Bigint.(of_int (-3), of_int 0 )));
 
   test "ediv_rem (-9) (-3)" (fun () ->
-    expect @@ Bigint.(ediv_rem (of_int (-9)) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), zero' )));
+    expect @@ Bigint.(ediv_rem (of_int (-9)) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), zero )));
 
   test "is_even" (fun () ->
     expect @@ Bigint.(is_even (of_int (8))) |> toEqual true);  
@@ -238,10 +224,10 @@ describe "Bigint" (fun () ->
     expect @@ Bigint.((of_int 0) = (of_int 0) ) |> toEqual true);
 
   test "0 = 0" (fun () ->
-    expect @@ Bigint.(zero' = (of_int 0) ) |> toEqual true);
+    expect @@ Bigint.(zero = (of_int 0) ) |> toEqual true);
 
   test "0 = 0" (fun () ->
-    expect @@ Bigint.(zero' = (of_string "0") ) |> toEqual true);
+    expect @@ Bigint.(zero = (of_string "0") ) |> toEqual true);
 
   test "0 = 0" (fun () ->
     expect @@ Bigint.((of_int 0) = (of_string "0") ) |> toEqual true);
@@ -334,8 +320,56 @@ describe "Bigint" (fun () ->
   test "3 > -2" (fun () ->
     expect @@ Bigint.((of_int 3) > (of_int (-2)) ) |> toEqual true);
 
+  test "to_int max_int" (fun () ->
+    expect @@ Bigint.(to_int (of_int max_int)) |> toEqual max_int);
+
+  test "to_int min_int" (fun () ->
+    expect @@ Bigint.(to_int (of_int min_int)) |> toEqual min_int);
+
+  test "to_int greater than max_int should throw Overflow" (fun () ->
+    expect @@ (fun () -> Bigint.(to_int (of_string "21474836478"))) |> toThrowException Bigint.Overflow );
+
+  test "to_int smaller than min_int should throw Overflow" (fun () ->
+    expect @@ (fun () -> Bigint.(to_int (of_string "-21474836478"))) |> toThrowException Bigint.Overflow );
+
+  test "to_int32 max_int" (fun () ->
+    expect @@ Bigint.(to_int32 (of_int32 Int32.max_int)) |> toEqual Int32.max_int);
+
+  test "to_int32 min_int" (fun () ->
+    expect @@ Bigint.(to_int32 (of_int32 Int32.min_int)) |> toEqual Int32.min_int);
+
+  test "to_int32 greater than max_int should throw Overflow" (fun () ->
+    expect @@ (fun () -> Bigint.(to_int32 (of_string "21474836478"))) |> toThrowException Bigint.Overflow );
+
+  test "to_int32 smaller than min_int should throw Overflow" (fun () ->
+    expect @@ (fun () -> Bigint.(to_int32 (of_string "-21474836478"))) |> toThrowException Bigint.Overflow );
 
 
+  test "to_int64 max_int" (fun () ->
+    expect @@ Bigint.(to_int64 (of_int64 Int64.max_int)) |> toEqual Int64.max_int);
+
+  test "to_int64 min_int" (fun () ->
+    expect @@ Bigint.(to_int64 (of_int64 Int64.min_int)) |> toEqual Int64.min_int);
+
+  test "to_int64 greater than max_int should throw Overflow" (fun () ->
+    expect @@ (fun () -> Bigint.(to_int64 (of_string "9223372036854775808"))) |> toThrowException Bigint.Overflow );
+
+  test "to_navtiveint max_int" (fun () ->
+    Js.log(Nativeint.max_int);                                
+    expect @@ Bigint.(to_nativeint (of_nativeint (Nativeint.of_int 1 ))) |> toEqual (Nativeint.of_int 1));
+
+  test "to_float" (fun () ->
+    expect @@ Bigint.(to_float (of_string "9007199254740992")) |> toEqual (9007199254740993.0));
+
+(*
+  test "to_navtiveint max_int" (fun () ->
+    Js.log(Nativeint.max_int);                                
+    expect @@ Bigint.(to_nativeint (of_nativeint Nativeint.max_int)) |> toEqual Nativeint.max_int);
+
+
+  test "to_nativeint min_int" (fun () ->
+    expect @@ Bigint.(to_nativeint (of_nativeint Nativeint.min_int)) |> toEqual Nativeint.min_int);
+*)
 
 
   test "3 <> 2" (fun () ->

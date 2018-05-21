@@ -1,4 +1,4 @@
-(* exception Overflow *)
+exception Overflow
 (** Raised by conversion functions when the value cannot be represented in
     the destination type.
   *)
@@ -11,7 +11,7 @@ type t    = Bigint of sign * int list
 
 (** {1 Construction} *)
 
-val zero' : t
+val zero: t
 (** The number 0. *)
 
 val one: t
@@ -108,7 +108,7 @@ val erem: t -> t -> t
     [a = b * ediv a b + erem a b].  Raises [Division_by_zero] if [b = 0].
 *)
 
-(* val divexact: t -> t -> t *)
+val divexact: t -> t -> t
 (** [divexact a b] divides [a] by [b], only producing correct result when the
     division is exact, i.e., when [b] evenly divides [a].
     It should be faster than general division.
@@ -195,19 +195,19 @@ val numbits : t -> int
     converted value, an [Overflow] exception is raised.
   *)
 
-(* val to_int: t -> int *)
+val to_int: t -> int
 (** Converts to a base integer. May raise [Overflow]. *)
 
-(* val to_int32: t -> int32 *)
+val to_int32: t -> int32
 (** Converts to a 32-bit integer. May raise [Overflow]. *)
 
-(* val to_int64: t -> int64 *)
+val to_int64: t -> int64
 (** Converts to a 64-bit integer. May raise [Overflow]. *)
 
-(* to_nativeint: t -> nativeint *)
+val to_nativeint: t -> nativeint
 (** Converts to a native integer. May raise [Overflow]. *)
 
-(* val to_float: t -> float *)
+val to_float: t -> float
 (** Converts to a floating-point value.
     This function rounds the given integer according to the current
     rounding mode of the processor.  In default mode, it returns
@@ -509,8 +509,8 @@ val (/): t -> t -> t
 (* (/<): t -> t -> t *)
 (** Flooring division [fdiv]. *)
 
-(* (/|): t -> t -> t *)
-(** Exact division [div_exact]. *)
+val (/|): t -> t -> t
+(** Exact division [divexact]. *)
 
 (* (mod): t -> t -> t *)
 (** Remainder [rem]. *)

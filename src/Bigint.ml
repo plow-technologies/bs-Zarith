@@ -1,10 +1,16 @@
+exception Overflow
+
 type sign = Pos | Neg
 
 type t    = Bigint of sign * int list 
 
-let radix    = 10
-let radixlen = 1
+let zero      = Bigint (Pos, [])
+let one       = Bigint (Pos, [1])
+let minus_one = Bigint (Neg, [1])
 
+(* internal *)
+let radix     = 10
+let radixlen  = 1
 let car       = List.hd
 let cdr       = List.tl
 let map       = List.map
@@ -12,44 +18,6 @@ let reverse   = List.rev
 let strcat    = String.concat
 let strlen    = String.length
 let strsub    = String.sub
-
-let zero = Bigint (Pos, [])
-let zero' = Bigint (Pos, [0])
-let one = Bigint (Pos, [1])
-let minus_one = Bigint (Neg, [1])
-
-let charlist_of_string str = 
-  let last = strlen str - 1
-  in  let rec charlist pos result =
-      if pos < 0
-      then result
-      else charlist (pos - 1) (str.[pos] :: result)
-  in  charlist last []
-    
-let of_string str =
-  let len = strlen str
-  in  let to_intlist first =
-          let substr = strsub str first (len - first) in
-          let digit char = int_of_char char - int_of_char '0' in
-          map digit (reverse (charlist_of_string substr))
-      in  if   len = 0
-          then zero
-          else if   str.[0] = '-'
-               then Bigint (Neg, to_intlist 1)
-               else Bigint (Pos, to_intlist 0)
-
-let of_int i = of_string (string_of_int i)
-let of_int32 i = of_string (Int32.to_string i)
-let of_int64 i = of_string (Int64.to_string i)
-let of_nativeint i = of_string (Nativeint.to_string i)
-
-let to_string (Bigint (sign, value)) =
-  match value with
-  | []    -> "0"
-  | value -> let reversed = reverse value
-             in  strcat ""
-                 ((if sign = Pos then "" else "-") ::
-                  (map string_of_int reversed))
 
 let trimzeros listy =
   let rec trimzeros' listy' = 
@@ -62,6 +30,38 @@ let trimzeros listy =
            | 0, []      -> []
            | car, cdr'  -> car::cdr'
   in trimzeros' listy
+
+let charlist_of_string str = 
+  let last = strlen str - 1
+  in  let rec charlist pos result =
+      if pos < 0
+      then result
+      else charlist (pos - 1) (str.[pos] :: result)
+  in  charlist last []
+    
+let of_string str =
+  let len = strlen str
+  in  let to_intlist first =
+        let substr = strsub str first (len - first) in
+        let digit char = int_of_char char - int_of_char '0' in
+        trimzeros (map digit (reverse (charlist_of_string substr)))
+      in  if str.[0] = '-'
+            then Bigint (Neg, to_intlist 1)
+            else Bigint (Pos, to_intlist 0)
+
+let of_int i = of_string (string_of_int i)
+let of_int32 i = of_string (Int32.to_string i)
+let of_int64 i = of_string (Int64.to_string i)
+let of_nativeint i = of_string (Nativeint.to_string i)
+
+let to_string (Bigint (sign, value)) =
+  match value with
+  | []    -> "0"
+  | value -> 
+      let reversed = reverse value
+         in  strcat ""
+             ((if sign = Pos then "" else "-") ::
+              (map string_of_int reversed))
 
 (* cmp list1 list2 = bigger list *)
 let rec cmp list1 list2 =
@@ -155,7 +155,7 @@ let rec div_rem' list1 list2' powerof2 =
 
 let div_rem (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
   let quotient, rem = div_rem' value1 value2 [1] in
-  let rem = if rem = [] then Bigint (Pos, [0]) else Bigint (neg1, rem)
+  let rem = if rem = [] then zero else Bigint (neg1, rem)
     in if neg1 = neg2
       then (Bigint (Pos, quotient), rem)
       else (Bigint (Neg, quotient), rem)
@@ -183,6 +183,9 @@ let rec ediv_rem' t0 t1 cum =
     else ((add cum one), r)
 
 let ediv_rem a b =
+  if b = zero
+  then raise Division_by_zero
+  else
   let (Bigint (neg1, _)) = a in
   let (Bigint (neg2, _)) = b in
   match (neg1, neg2) with
@@ -191,7 +194,6 @@ let ediv_rem a b =
   | (Neg, _) ->
     let (Bigint (_, q), Bigint(_, r)) = ediv_rem' a b zero in
     let r = trimzeros r in
-    let r = if r = [] then [0] else r in
     (Bigint (Neg, q), Bigint (Pos, r))
 
 let ediv a b =
@@ -201,6 +203,10 @@ let ediv a b =
 let erem a b =
   let _, remainder = ediv_rem a b
   in remainder
+
+let divexact a b =
+  let quotient, _ = div_rem a b
+  in quotient
 
 let is_even (Bigint (_neg, value)) = 
   let _, remainder = div_rem' value [2] [1]
@@ -213,7 +219,7 @@ let is_odd a =
 
 let rec gcd' a b =
   let c = erem a b
-  in if c = zero'
+  in if c = zero
     then b
     else gcd' b c
 
@@ -266,10 +272,10 @@ let lt x y = (compare x y) < 0
 let gt x y = (compare x y) > 0
 
 let sign n =
-  if n = zero'
+  if n = zero
   then 0
   else
-    if (compare n zero') < 0
+    if (compare n zero) < 0
     then -1
     else 1
 
@@ -294,7 +300,7 @@ let (/) = div
 
 (* (/<): t -> t -> t *)
 
-(* (/|): t -> t -> t *)
+let (/|) = divexact
 
 (* (mod): t -> t -> t *)
 
@@ -341,4 +347,30 @@ let rec pow a = function
   | n -> 
     let b = pow a (n / 2) in
     b * b * (if n mod 2 = 0 then 1 else a)
+ *)
+
+let to_int i =
+  if ((i > of_int max_int) || (i < of_int min_int) )
+  then raise Overflow
+  else int_of_string (to_string i)
+
+let to_int32 i =
+  if ((i > of_int32 Int32.max_int) || (i < of_int32 Int32.min_int) )
+  then raise Overflow
+  else Int32.of_string (to_string i)
+
+let to_int64 i =
+  if ((i > of_int64 Int64.max_int) || (i < of_int64 Int64.min_int) )
+  then raise Overflow
+  else Int64.of_string (to_string i)
+
+let to_nativeint i =
+  if ((i > of_nativeint Nativeint.max_int) || (i < of_nativeint Nativeint.min_int) )
+  then raise Overflow
+  else Nativeint.of_string (to_string i)
+
+let to_float i =
+  float_of_string (to_string i)
+(*
+9007199254740992 	18014398509481982
  *)
