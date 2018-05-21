@@ -96,13 +96,13 @@ val ediv_rem: t -> t -> (t * t)
     Raises [Division_by_zero] if [b = 0].
  *)
 
-(* val ediv: t -> t -> t *)
+val ediv: t -> t -> t
 (** Euclidean division. [ediv a b] is equal to [fst (ediv_rem a b)].
     The result satisfies [0 <= a - b * ediv a b < |b|].
     Raises [Division_by_zero] if [b = 0].
  *)
 
-(* val erem: t -> t -> t *)
+val erem: t -> t -> t
 (** Euclidean remainder.  [erem a b] is equal to [snd (ediv_rem a b)].
     The result satisfies [0 <= erem a b < |b|] and
     [a = b * ediv a b + erem a b].  Raises [Division_by_zero] if [b = 0].

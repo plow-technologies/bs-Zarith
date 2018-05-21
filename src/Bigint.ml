@@ -160,6 +160,14 @@ let div_rem (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
       then (Bigint (Pos, quotient), rem)
       else (Bigint (Neg, quotient), rem)
 
+let div a b =
+  let quotient, _ = div_rem a b
+  in quotient
+
+let rem a b =
+  let _, remainder = div_rem a b
+  in remainder
+
 let rec ediv_rem' t0 t1 cum =
   let (Bigint (_, v0)) = t0 in
   let t0' = (Bigint (Pos, v0)) in
@@ -186,31 +194,12 @@ let ediv_rem a b =
     let r = if r = [] then [0] else r in
     (Bigint (Neg, q), Bigint (Pos, r))
 
-(* let ediv_rem a b 
-a dividend
-b divisor
-q quotient
-r remainder
-*)
-(* a = bq + r *)
-(* 0 ≤ r < |b| *)
-(*
-r is always positive
-
-    If a = 7 and b = 3, then q = 2 and r = 1, since 7 = 3 × 2 + 1.
-    If a = 7 and b = −3, then q = −2 and r = 1, since 7 = −3 × (−2) + 1.
-    If a = −7 and b = 3, then q = −3 and r = 2, since −7 = 3 × (−3) + 2.
-    If a = −7 and b = −3, then q = 3 and r = 2, since −7 = −3 × 3 + 2.
-
-*)
-
-
-let div a b =
-  let quotient, _ = div_rem a b
+let ediv a b =
+  let quotient, _ = ediv_rem a b
   in quotient
 
-let rem a b =
-  let _, remainder = div_rem a b
+let erem a b =
+  let _, remainder = ediv_rem a b
   in remainder
 
 let is_even (Bigint (_neg, value)) = 
@@ -223,8 +212,8 @@ let is_odd a =
 (** Elementary number theory *)
 
 let rec gcd' a b =
-  let c = rem a b
-  in if c = zero
+  let c = erem a b
+  in if c = zero'
     then b
     else gcd' b c
 

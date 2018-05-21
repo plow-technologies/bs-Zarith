@@ -347,13 +347,14 @@ describe "Bigint" (fun () ->
   test "0 <> 1" (fun () ->
     expect @@ Bigint.((of_int 0) <> (of_int 1)) |> toEqual true);
 
-(*
   test "gcd 2 12" (fun () ->
     expect @@ Bigint.(gcd (of_int 2) (of_int 12)) |> toEqual (Bigint.of_int 2));
 
+  test "gcd 12 20" (fun () ->
+    expect @@ Bigint.(gcd (of_int 12) (of_int 20)) |> toEqual (Bigint.of_int 4));
+
   test "gcd 36 60" (fun () ->
-    expect @@ Bigint.(gcd (of_int 36) (of_int 60)) |> toEqual (Bigint.of_int 6));
-*)
+    expect @@ Bigint.(gcd (of_int 36) (of_int 60)) |> toEqual (Bigint.of_int 12));
 
   test "pow" (fun () ->
     expect @@ Bigint.(pow (of_int 2) 2) |> toEqual (Bigint.of_int 4))
