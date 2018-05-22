@@ -578,9 +578,6 @@ val (<>): t -> t -> bool
 end
 
 
-
-
-
 module ZInt : Z = struct
   exception Overflow
   type t = int
@@ -610,6 +607,7 @@ module ZInt : Z = struct
 
   let div x y = x / y
   let rem x y = x mod y
+  (* x = (x / y) * y + x mod y and abs(x mod y) <= abs(y) - 1 *)
   let div_rem a b = (a / b, rem a b)
 
   (* val cdiv: t -> t -> t *)
@@ -689,13 +687,7 @@ module ZInt : Z = struct
   let geq x y = x >= y
   let lt x y = x < y
   let gt x y = x > y
-  let sign n =
-    if n == 0
-    then 0
-    else
-      if n < 0
-      then -1
-      else 1
+  let sign = sign
 
   (* val min: t -> t -> t *)
   (* val max: t -> t -> t *)
@@ -754,7 +746,7 @@ module ZInt : Z = struct
   let (lsl) = (lsl)
   let (asr) = (asr)
   let (~$) = of_int
-  let ( ** ) a b = 0
+  let ( ** ) a b = pow a b
   let (=) = equal
   let (<) = (<)
   let (>) = (>)

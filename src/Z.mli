@@ -576,3 +576,5 @@ val (<>): t -> t -> bool
 (** For internal use in module [Q]. *)
 (* val round_to_float: t -> bool -> float *)
 end
+
+module ZInt : Z
