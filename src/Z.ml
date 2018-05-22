@@ -607,7 +607,6 @@ module ZInt : Z = struct
 
   let div x y = x / y
   let rem x y = x mod y
-  (* x = (x / y) * y + x mod y and abs(x mod y) <= abs(y) - 1 *)
   let div_rem a b = (a / b, rem a b)
 
   (* val cdiv: t -> t -> t *)
@@ -621,15 +620,29 @@ module ZInt : Z = struct
       then -1
       else 1
 
+  let rec ediv_rem' a b cum =
+    let a = abs a in
+    let b = abs b in
+    let r = sub a b in
+    if (compare a b) = 1
+    then ediv_rem' r b (succ cum)
+    else (succ cum, r)
+
   let ediv_rem a b =
-     let q,r = div_rem a b in
-     if sign r >= 0 then (q,r) else
-     if sign b >= 0 then (pred q, add r b)
-     else (succ q, sub r b)
+    if a > -1
+    then div_rem a b
+    else
+      let q,r = ediv_rem' a b zero in
+      (neg q, abs r)
 
-  let ediv a b = 0
+  let ediv a b =
+    let quotient, _ = ediv_rem a b
+    in quotient
 
-  let erem a b = 0
+  let erem a b =
+    let _, remainder = ediv_rem a b
+    in remainder
+
   let divexact = div
 
   (** Bit-level operations *)
@@ -691,8 +704,8 @@ module ZInt : Z = struct
 
   (* val min: t -> t -> t *)
   (* val max: t -> t -> t *)
-  let is_even i = false
-  let is_odd i = false
+  let is_even i = (i mod 2) = 0
+  let is_odd i = (i mod 2) <> 0
   (* val hash: t -> int *)
 
   let rec gcd' a b =
