@@ -1,713 +1,578 @@
 module type Z = sig
-  type t
-  val zero : t
-  val one : t
-  val minus_one : t
-  val shift_left : t -> int -> t
-  val shift_right : t -> int -> t
-  val neg : t -> t
-  val sign : t -> int
-  val equal : t -> t -> bool
 
-  val of_int : int -> t
-  val of_int32 : Int32.t -> t
-  val of_int64 : Int64.t -> t
-  val of_nativeint : nativeint -> t
-  val (mod) : t -> t -> t
-  val of_float : float -> t
-  val of_string : string -> t
-  val of_substring : string -> pos:int -> len:int -> t
-
-  val to_int : t -> int
-  val to_int32 : t -> Int32.t
-  val to_int64 : t -> Int64.t
-  val to_nativeint : t -> nativeint
-  val to_string : t -> string
-
-  val numbits: t -> int
-  val div : t -> t -> t
-  val mul : t -> t -> t
-  val add : t -> t -> t
-  val sub : t -> t -> t
-  val compare : t -> t -> int
-  val abs : t -> t
-  val gcd : t -> t -> t
-
-  val rem : t -> t -> t
-  val div_rem: t -> t -> (t * t)
-  val ediv_rem: t -> t -> (t * t)
-  val round_to_float: t -> bool -> float
-end
-
-module ZInt : Z = struct
-  type t = int
-  let zero = 0
-  let one = 1
-  let minus_one = -1
-  let shift_left = (lsl)
-  let shift_right = (asr)
-  let neg = (~-)
-  let sign n =
-    if n == 0
-    then 0
-    else
-      if n < 0
-      then -1
-      else 1
-  let equal x y = x == y
-  let of_int x = x
-  let of_int32 = Int32.to_int
-  let of_int64 = Int64.to_int
-  let of_nativeint = Nativeint.to_int
-  let of_float = int_of_float
-  let to_int x = x
-  let to_int32 = Int32.of_int
-  let to_int64 = Int64.of_int
-  let to_nativeint = Nativeint.of_int
-  let to_string = string_of_int
-  let (mod) = (mod)
-  let div x y = x / y
-  let mul x y = x * y
-  let add x y = x + y
-  let sub x y = x - y
-  let compare = compare
-  let abs = abs
-  let rec gcd a b =
-    let c = (mod) a b in
-    if c == 0
-    then b
-    else gcd b c
-
-  let numbits n =
-    let nref  = ref n in
-    let count = ref 0 in
-    while (!nref > !count) do
-      if (!nref land !count == 1)
-      then (count := !count + 1)
-      else (nref := !nref lsr 1)
-    done;
-    !count
-  
-  let rem x y = x mod y
-  let div_rem a b = (a / b, rem a b)
-
-  let ediv_rem a b =
-    (* we have a = q * b + r, but [Big_int]'s remainder satisfies 0 <= r < |b|,
-       while [Z]'s remainder satisfies -|b| < r < |b| and sign(r) = sign(a)
-     *)
-     let q,r = div_rem a b in
-     if sign r >= 0 then (q,r) else
-     if sign b >= 0 then (pred q, add r b)
-     else (succ q, sub r b)
-
-  let round_to_float x exact =
-    let m = to_int64 x in
-    (* Unless the fractional part is exactly 0, round m to an odd integer *)
-    let m = if exact then m else Int64.logor m 1L in
-    (* Then convert m to float, with the current rounding mode. *)
-    Int64.to_float m
-
-  let of_string = int_of_string
-  let of_substring s ~pos ~len = int_of_string (String.sub s pos len)
-end
-
-module ZInt32 : Z = struct
-  type t = Int32.t
-  let zero = Int32.zero
-  let one = Int32.one
-  let minus_one = Int32.minus_one
-  let shift_left = Int32.shift_left
-  let shift_right = Int32.shift_right
-  let neg = Int32.neg
-  let sign n =
-    if n == (Int32.of_int 0)
-    then 0
-    else
-      if (Int32.compare n (Int32.of_int 0)) < 0
-      then -1
-      else 1
-  let equal x y = x == y
-
-  let of_int = Int32.of_int
-  let of_int32 x = x
-  let of_int64 = Int64.to_int32
-  let of_nativeint = Nativeint.to_int32
-  let of_float = Int32.of_float
-  let to_int = Int32.to_int
-  let to_int32 x = x
-  let to_int64 = Int64.of_int32
-  let to_nativeint = Nativeint.of_int32
-  let to_string = Int32.to_string
-  let (mod) a n = Int32.sub a (Int32.mul n (Int32.div a n))
-
-  let div = Int32.div
-  let mul = Int32.mul
-  let add = Int32.add
-  let sub = Int32.sub
-  let compare = Int32.compare
-
-  let abs = Int32.abs
-
-  let rec gcd a b =
-    let c = (mod) a b in
-    if c == zero
-    then b
-    else gcd b c
-
-  let numbits n =
-    let nref  = ref n in
-    let count = ref (Int32.of_int 0) in
-    while (!nref > !count) do
-      if (Int32.logand !nref !count == (Int32.of_int 1))
-      then (count := Int32.add !count (Int32.of_int 1))
-      else (nref := Int32.shift_right_logical !nref 1)
-    done;
-    to_int !count
-  
-  let rem x y = x mod y
-  let div_rem a b = (Int32.div a b, rem a b)
-
-  let ediv_rem a b =
-    (* we have a = q * b + r, but [Big_int]'s remainder satisfies 0 <= r < |b|,
-       while [Z]'s remainder satisfies -|b| < r < |b| and sign(r) = sign(a)
-     *)
-     let q,r = div_rem a b in
-     if sign r >= 0 then (q,r) else
-     if sign b >= 0 then (Int32.pred q, add r b)
-     else (Int32.succ q, sub r b)
-
-  let round_to_float x exact =
-    let m = to_int64 x in
-    (* Unless the fractional part is exactly 0, round m to an odd integer *)
-    let m = if exact then m else Int64.logor m 1L in
-    (* Then convert m to float, with the current rounding mode. *)
-    Int64.to_float m
-
-
-  let of_string = Int32.of_string
-  let of_substring s ~pos ~len = Int32.of_string (String.sub s pos len)
-end
-
-module ZInt64 : Z = struct
-  type t = Int64.t
-  let zero = Int64.zero
-  let one = Int64.one
-  let minus_one = Int64.minus_one
-  let shift_left = Int64.shift_left
-  let shift_right = Int64.shift_right
-  let neg = Int64.neg
-  let sign n =
-    if n == zero
-    then 0
-    else
-      if (Int64.compare n zero) < 0
-      then -1
-      else 1
-  let equal x y = x == y
-
-  let of_int = Int64.of_int
-  let of_int32 = Int64.of_int32
-  let of_int64 x = x
-  let of_nativeint = Int64.of_nativeint
-  let of_float = Int64.of_float
-  let to_int = Int64.to_int
-  let to_int32 = Int64.to_int32
-  let to_int64 x = x
-  let to_nativeint = Int64.to_nativeint
-  let to_string = Int64.to_string
-  let (mod) a n = Int64.sub a (Int64.mul n (Int64.div a n))
-
-  let div = Int64.div
-  let mul = Int64.mul
-  let add = Int64.add
-  let sub = Int64.sub
-  let compare = Int64.compare
-
-  let abs = Int64.abs
-
-  let rec gcd a b =
-    let c = (mod) a b in
-    if c == zero
-    then b
-    else gcd b c
-
-  let numbits n =
-    let nref  = ref n in
-    let count = ref zero in
-    while (!nref > !count) do
-      if (Int64.logand !nref !count == one)
-      then (count := Int64.add !count one)
-      else (nref := Int64.shift_right_logical !nref 1)
-    done;
-    to_int !count
-  
-  let rem x y = x mod y
-  let div_rem a b = (Int64.div a b, rem a b)
-
-  let ediv_rem a b =
-    (* we have a = q * b + r, but [Big_int]'s remainder satisfies 0 <= r < |b|,
-       while [Z]'s remainder satisfies -|b| < r < |b| and sign(r) = sign(a)
-     *)
-     let q,r = div_rem a b in
-     if sign r >= 0 then (q,r) else
-     if sign b >= 0 then (Int64.pred q, add r b)
-     else (Int64.succ q, sub r b)
-
-  let round_to_float x exact =
-    let m = to_int64 x in
-    (* Unless the fractional part is exactly 0, round m to an odd integer *)
-    let m = if exact then m else Int64.logor m 1L in
-    (* Then convert m to float, with the current rounding mode. *)
-    Int64.to_float m
-
-
-  let of_string = Int64.of_string
-  let of_substring s ~pos ~len = Int64.of_string (String.sub s pos len)
-end
-
-module ZNativeint : Z = struct
-  type t = Nativeint.t
-  let zero = Nativeint.zero
-  let one = Nativeint.one
-  let minus_one = Nativeint.minus_one
-  let shift_left = Nativeint.shift_left
-  let shift_right = Nativeint.shift_right
-  let neg = Nativeint.neg
-  let sign n =
-    if n == (Nativeint.of_int 0)
-    then 0
-    else
-      if (Nativeint.compare n (Nativeint.of_int 0)) < 0
-      then -1
-      else 1
-  let equal x y = x == y
-
-  let of_int = Nativeint.of_int
-  let of_int32 = Nativeint.of_int32
-  let of_int64 = Int64.to_nativeint
-  let of_nativeint x = x
-  let of_float = Nativeint.of_float
-  let to_int = Nativeint.to_int
-  let to_int32 = Nativeint.to_int32
-  let to_int64 = Int64.of_nativeint
-  let to_nativeint x = x
-  let to_string = Nativeint.to_string
-  let (mod) a n = Nativeint.sub a (Nativeint.mul n (Nativeint.div a n))
-
-  let div = Nativeint.div
-  let mul = Nativeint.mul
-  let add = Nativeint.add
-  let sub = Nativeint.sub
-  let compare = Nativeint.compare
-
-  let abs = Nativeint.abs
-
-  let rec gcd a b =
-    let c = (mod) a b in
-    if c == zero
-    then b
-    else gcd b c
-
-  let numbits n =
-    let nref  = ref n in
-    let count = ref (Nativeint.of_int 0) in
-    while (!nref > !count) do
-      if (Nativeint.logand !nref !count == (Nativeint.of_int 1))
-      then (count := Nativeint.add !count (Nativeint.of_int 1))
-      else (nref := Nativeint.shift_right_logical !nref 1)
-    done;
-    to_int !count
-  
-  let rem x y = x mod y
-  let div_rem a b = (Nativeint.div a b, rem a b)
-
-  let ediv_rem a b =
-    (* we have a = q * b + r, but [Big_int]'s remainder satisfies 0 <= r < |b|,
-       while [Z]'s remainder satisfies -|b| < r < |b| and sign(r) = sign(a)
-     *)
-     let q,r = div_rem a b in
-     if sign r >= 0 then (q,r) else
-     if sign b >= 0 then (Nativeint.pred q, add r b)
-     else (Nativeint.succ q, sub r b)
-
-  let round_to_float x exact =
-    let m = to_int64 x in
-    (* Unless the fractional part is exactly 0, round m to an odd integer *)
-    let m = if exact then m else Int64.logor m 1L in
-    (* Then convert m to float, with the current rounding mode. *)
-    Int64.to_float m
-
-
-  let of_string = Nativeint.of_string
-  let of_substring s ~pos ~len = Nativeint.of_string (String.sub s pos len)
-end
-
-module Rational (Z: Z) = struct
-  type t =
-    { num : Z.t
-    ; den : Z.t
-    }
-
-  let mk n d =
-    { num = n
-    ; den = d
-    }
-
-  (* make and normalize n/d, assuming d > 0 *)
-  let make_real n d =
-    if n == Z.zero || d == Z.one then mk n Z.one
-    else
-      let g = Z.gcd n d in
-      if g == Z.one
-      then mk n d
-      else mk (Z.div n g) (Z.div d g)
-
-  (* make and normalize any fraction *)
-  let make n d =
-    let sd = Z.sign d in
-    if sd = 0 then mk (Z.of_int (Z.sign n)) Z.zero else
-    if sd > 0 then make_real n d else
-      make_real (Z.neg n) (Z.neg d)
-
-  let of_bigint n = mk n Z.one
-  (* n/1 *)
-
-  let of_int n = of_bigint (Z.of_int n)
-
-  let of_int32 n = of_bigint (Z.of_int32 n)
-
-  let of_int64 n = of_bigint (Z.of_int64 n)
-
-  let of_nativeint n = of_bigint (Z.of_nativeint n)
-
-  let of_ints n d = make (Z.of_int n) (Z.of_int d)
-
-  let zero = of_bigint Z.zero
-  (* 0/1 *)
-
-  let one = of_bigint Z.one
-  (* 1/1 *)
-
-  let minus_one = of_bigint Z.minus_one
-  (* -1/1 *)
-
-  let inf = mk Z.one Z.zero
-  (* 1/0 *)
-
-  let minus_inf = mk Z.minus_one Z.zero
-  (* -1/0 *)
-
-  let undef = mk Z.zero Z.zero
-  (* 0/0 *)
-
-  let of_float d =
-    if d = infinity then inf else
-    if d = neg_infinity then minus_inf else
-    if classify_float d = FP_nan then undef else
-    let m,e = frexp d in
-    (* put into the form m * 2^e, where m is an integer *)
-    let m,e = Z.of_float (ldexp m 53), e-53 in
-    if e >= 0 then of_bigint (Z.shift_left m e)
-    else make_real m (Z.shift_left Z.one (-e))
-
-  let of_string s =
-    try
-      let i  = String.index s '/' in
-      make
-        (Z.of_substring s ~pos:0 ~len:i)
-        (Z.of_substring s ~pos:(i+1) ~len:(String.length s-i-1))
-    with Not_found ->
-      if s = "inf" || s = "+inf" then inf
-      else if s = "-inf" then minus_inf
-      else if s = "undef" then undef
-      else of_bigint (Z.of_string s)
-
-  (* queries *)
-  (* ------- *)
-
-  type kind =
-    | ZERO   (* 0 *)
-    | INF    (* 1/0 *)
-    | MINF   (* -1/0 *)
-    | UNDEF  (* 0/0 *)
-    | NZERO  (* non-special, non-0 *)
-
-  let classify n =
-    if n.den == Z.zero then
-      match Z.sign n.num with
-      | 1  -> INF
-      | -1 -> MINF
-      | _ -> UNDEF
-    else
-      if n.num == Z.zero
-      then ZERO
-      else NZERO
-
-  let is_real n = (n.den != Z.zero)
-
-  let num x = x.num
-
-  let den x = x.den
-
-  let sign x = Z.sign x.num
-  (* sign undef = 0
-     sign inf = 1
-     sign -inf = -1
+exception Overflow
+(** Raised by conversion functions when the value cannot be represented in
+    the destination type.
   *)
 
-  let equal x y =
-    (Z.equal x.num y.num) && (Z.equal x.den y.den)
+type t
+(** Type of Bigint, arbitrary length integer. *)
 
-  let compare x y =
-    match classify x, classify y with
-    | UNDEF,UNDEF | INF,INF | MINF,MINF -> 0
-    | UNDEF,_ -> -1
-    | _,UNDEF -> 1
-    | MINF,_ | _,INF -> -1
-    | INF,_ | _,MINF -> 1
-    | _ ->
-      if x.den == y.den (* implies equality,
-                           especially if immediate value and not a pointer,
-                           in particular in the case den = 1 *)
-      then Z.compare x.num y.num
-      else
-        Z.compare
-          (Z.mul x.num y.den)
-          (Z.mul y.num x.den)
-  
-  let min a b = if compare a b <= 0 then a else b
-  let max a b = if compare a b >= 0 then a else b
+(** {1 Construction} *)
 
-  let leq a b = compare a b <= 0
-  let geq a b = compare a b >= 0
-  let lt a b = compare a b < 0
-  let gt a b = compare a b > 0
+val zero: t
+(** The number 0. *)
 
-  let to_string n =
-    match classify n with
-    | UNDEF -> "undef"
-    | INF -> "+inf"
-    | MINF -> "-inf"
-    | ZERO -> "0"
-    | NZERO ->
-        if Z.equal n.den Z.one then Z.to_string n.num
-        else (Z.to_string n.num) ^ "/" ^ (Z.to_string n.den)
-  
-  let to_bigint x = Z.div x.num x.den
-  (* raises a Division by zero in case x is undefined or infinity *)
+val one: t
+(** The number 1. *)
 
-  let to_int x = Z.to_int (to_bigint x)
+val minus_one: t
+(** The number -1. *)
 
-  let to_int32 x = Z.to_int32 (to_bigint x)
+val of_int: int -> t
+(** Converts from a base integer. *)
 
-  let to_int64 x = Z.to_int64 (to_bigint x)
+val of_int32: Int32.t -> t
+(** Converts from a 32-bit integer. *)
 
-  let to_nativeint x = Z.to_nativeint (to_bigint x)
+val of_int64: Int64.t -> t
+(** Converts from a 64-bit integer. *)
 
-  let to_float x =
-    match classify x with
-    | ZERO -> 0.0
-    | INF  -> infinity
-    | MINF -> neg_infinity
-    | UNDEF -> nan
-    | NZERO ->
-      let p = x.num and q = x.den in
-      let np = Z.numbits p and nq = Z.numbits q in
-      if np <= 53 && nq <= 53 then
-        (* p and q convert to floats exactly; use FP division to get the
-           correctly-rounded result. *)
-        Int64.to_float (Z.to_int64 p) /. Int64.to_float (Z.to_int64 q)
-      else begin
-        (* |p| is in [2^(np-1), 2^np)
-           q is in [2^(nq-1), 2^nq)
-           hence |p/q| is in (2^(np-nq-1), 2^(np-nq+1)).
-           We define n such that |p/q*2^n| is in [2^54, 2^56).
-           >= 2^54 so that the round to odd technique applies.
-           < 2^56 so that the integral part is representable as an int64. *)
-        let n = 55 - (np - nq) in
-        (* Scaling p/q by 2^n *)
-        let (p', q') =
-          if n >= 0
-          then (Z.shift_left p n, q)
-          else (p, Z.shift_left q (-n)) in
-        (* Euclidean division of p' by q' *)
-        let (quo, rem) = Z.ediv_rem p' q' in
-        (* quo is the integral part of p/q*2^n
-           rem/q' is the fractional part. *)
-        (* Round quo to float *)
-        let f = Z.round_to_float quo (Z.sign rem = 0) in
-        (* Apply exponent *)
-        ldexp f (-n)
-    end
+val of_nativeint: nativeint -> t
+(** Converts from a native integer. *)
 
-  (* operations *)
-  (* ---------- *)
+val of_float: float -> t
+(** Converts a float to an integer. *)
 
-  let neg x =
-    mk (Z.neg x.num) x.den
-  (* neg undef = undef
-     neg inf = -inf
-     neg -inf = inf
-   *)
+val of_string: string -> t
+(** Converts a string to an integer.
+    An optional [-] prefix indicates a negative number.
+*)
 
-  let abs x =
-    mk (Z.abs x.num) x.den
-  (* abs undef = undef
-     abs inf = abs -inf = inf
-   *)
-  (* addition or substraction (zaors) of finite numbers *)
-  let aors zaors x y =
-    if x.den == y.den then  (* implies equality,
-                               especially if immediate value and not a pointer,
-                               in particular in the case den = 1 *)
-      make_real (zaors x.num y.num) x.den
-    else
-      make_real
-        (zaors
-           (Z.mul x.num y.den)
-           (Z.mul y.num x.den))
-        (Z.mul x.den y.den)
+val of_substring : string -> pos:int -> len:int -> t
+(**
 
-  let add x y =
-    if x.den == Z.zero || y.den == Z.zero then match classify x, classify y with
-    | ZERO,_ -> y
-    | _,ZERO -> x
-    | UNDEF,_ | _,UNDEF -> undef
-    | INF,MINF | MINF,INF -> undef
-    | INF,_ | _,INF -> inf
-    | MINF,_ | _,MINF -> minus_inf
-    | NZERO,NZERO -> failwith "impossible case"
-    else
-      aors Z.add x y
-  (* undef + x = x + undef = undef
-     inf + -inf = -inf + inf = undef
-     inf + x = x + inf = inf
-     -inf + x = x + -inf = -inf
-   *)
+*)
+ 
+(** {1 Basic arithmetic operations} *)
 
-  let sub x y =
-    if x.den == Z.zero || y.den == Z.zero then match classify x, classify y with
-    | ZERO,_ -> neg y
-    | _,ZERO -> x
-    | UNDEF,_ | _,UNDEF -> undef
-    | INF,INF | MINF,MINF -> undef
-    | INF,_ | _,MINF -> inf
-    | MINF,_ | _,INF -> minus_inf
-    | NZERO,NZERO -> failwith "impossible case"
-    else
-      aors Z.sub x y
-  (* sub x y = add x (neg y) *)
+val succ: t -> t
+(** Returns its argument plus one. *)
 
-  let mul x y =
-    if x.den == Z.zero || y.den == Z.zero then
-      mk
-        (Z.of_int ((Z.sign x.num) * (Z.sign y.num)))
-        Z.zero
-    else
-      make_real (Z.mul x.num y.num) (Z.mul x.den y.den)
-  (* undef * x = x * undef = undef
-     0 * inf = inf * 0 = 0 * -inf = -inf * 0 = undef
-     inf * x = x * inf = sign x * inf
-     -inf * x = x * -inf = - sign x * inf
-     *)
+val pred: t -> t
+(** Returns its argument minus one. *)
 
-  let inv x =
-    match Z.sign x.num with
-    | 1 -> mk x.den x.num
-    | -1 -> mk (Z.neg x.den) (Z.neg x.num)
-    | _ -> if x.den == Z.zero then undef else inf
-    (* 1 / undef = undef
-       1 / inf = 1 / -inf = 0
-       1 / 0 = inf
-       note that: inv (inv -inf) = inf <> -inf
-       *)
+val abs: t -> t
+(** Absolute value. *)
 
-  let div x y =
-    if Z.sign y.num >= 0
-    then mul x (mk y.den y.num)
-    else mul x (mk (Z.neg y.den) (Z.neg y.num))
-(* undef / x = x / undef = undef
-   0 / 0 = undef
-   inf / inf = inf / -inf = -inf / inf = -inf / -inf = undef
-   0 / inf = 0 / -inf = x / inf = x / -inf = 0
-   inf / x = sign x * inf
-   -inf / x = - sign x * inf
-   inf / 0 = inf
-   -inf / 0 = -inf
-   x / 0 = sign x * inf
-   we have div x y = mul x (inv y)
-   *)
+val neg: t -> t
+(** Unary negation. *)
 
+val add: t -> t -> t
+(** Addition. *)
 
-  let  mul_2exp x n =
-    if x.den == Z.zero then x
-    else make_real (Z.shift_left x.num n) x.den
+val sub: t -> t -> t
+(** Subtraction. *)
 
-  let  div_2exp x n =
-    if x.den == Z.zero then x
-    else make_real x.num (Z.shift_left x.den n)
+val mul: t -> t -> t
+(** Multiplication. *)
 
-  let print x = print_string (to_string x)
+val div: t -> t -> t
+(** Integer division. The result is truncated towards zero
+    and obeys the rule of signs.
+    Raises [Division_by_zero] if the divisor (second argument) is 0.
+  *)
 
-  (* prefix and infix *)
-  (* ---------------- *)
-
-  let (~-) = neg
-  let (~+) x = x
-  let (+)  = add
-  let (-) = sub
-  let ( * ) = mul
-  let (/) = div
-  let (lsl) = mul_2exp
-  let (asr) = div_2exp
-  let (~$) = of_int
-  let (//) = of_ints
-  let (~$$) = of_bigint
-  let (///) = make
-  let (=) = equal
-  let (<) = lt
-  let (>) = gt
-  let (<=) = leq
-  let (>=) = geq
-  let (<>) a b = not (equal a b)
-end
-
-
-module RationalInt = Rational(ZInt)
-module RationalInt32 = Rational(ZInt32)
-module RationalInt64 = Rational(ZInt64)
-module RationalNativeint = Rational(ZNativeint)
-
-
-(*
- Nativeint
- Int64
- *)
-  
-(*
-
-external rem: t -> t -> t = rem@ASM
+val rem: t -> t -> t
 (** Integer remainder. Can raise a [Division_by_zero].
     The result of [rem a b] has the sign of [a], and its absolute value is
     strictly smaller than the absolute value of [b].
     The result satisfies the equality [a = b * div a b + rem a b].
- *)
+  *)
 
-external div_rem: t -> t -> (t * t) = "ml_z_div_rem"
+val div_rem: t -> t -> (t * t)
 (** Computes both the integer quotient and the remainder.
     [div_rem a b] is equal to [(div a b, rem a b)].
     Raises [Division_by_zero] if [b = 0].
+  *)
+
+(* val cdiv: t -> t -> t *)
+(** Integer division with rounding towards +oo (ceiling).
+    Can raise a [Division_by_zero].
+ *)
+
+(* val fdiv: t -> t -> t = "ml_z_fdiv" *)
+(** Integer division with rounding towards -oo (floor).
+    Can raise a [Division_by_zero].
+ *)
+
+val ediv_rem: t -> t -> (t * t)
+(** Euclidean division and remainder.  [ediv_rem a b] returns a pair [(q, r)]
+    such that [a = b * q + r] and [0 <= r < |b|].
+    Raises [Division_by_zero] if [b = 0].
+ *)
+
+val ediv: t -> t -> t
+(** Euclidean division. [ediv a b] is equal to [fst (ediv_rem a b)].
+    The result satisfies [0 <= a - b * ediv a b < |b|].
+    Raises [Division_by_zero] if [b = 0].
+ *)
+
+val erem: t -> t -> t
+(** Euclidean remainder.  [erem a b] is equal to [snd (ediv_rem a b)].
+    The result satisfies [0 <= erem a b < |b|] and
+    [a = b * ediv a b + erem a b].  Raises [Division_by_zero] if [b = 0].
+*)
+
+val divexact: t -> t -> t
+(** [divexact a b] divides [a] by [b], only producing correct result when the
+    division is exact, i.e., when [b] evenly divides [a].
+    It should be faster than general division.
+    Can raise a [Division_by_zero].
 *)
 
 
-from pervasives
-(mod) : int -> int -> int
-Integer remainder. If y is not zero, the result of x mod y satisfies the following properties: x = (x / y) * y + x mod y and abs(x mod y) <= abs(y) - 1. If y = 0, x mod y raises Division_by_zero. Note that x mod y is negative only if x < 0. Raise Division_by_zero if y is zero. Left-associative operator at precedence level 7/11.
+(** {1 Bit-level operations} *)
+
+(** For all bit-level operations, negative numbers are considered in 2's
+    complement representation, starting with a virtual infinite number of
+    1s.
+  *)
+
+(* val logand: t -> t -> t *)
+(** Bitwise logical and. *)
+
+(* val logor: t -> t -> t *)
+(** Bitwise logical or. *)
+
+(* val logxor: t -> t -> t *)
+(** Bitwise logical exclusive or. *)
+
+(* val lognot: t -> t *)
+(** Bitwise logical negation.
+    The identity [lognot a]=[-a-1] always hold.
+  *)
+
+val shift_left : t -> int -> t
+(** Shifts to the left.
+    Equivalent to a multiplication by a power of 2.
+    The second argument must be non-negative.
+  *)
+
+val shift_right : t -> int -> t
+(** Shifts to the right.
+    This is an arithmetic shift,
+    equivalent to a division by a power of 2 with rounding towards -oo.
+    The second argument must be non-negative.
+  *)
+
+(* val shift_right_trunc: t -> int -> t *)
+(** Shifts to the right, rounding towards 0.
+    This is equivalent to a division by a power of 2, with truncation.
+    The second argument must be non-negative.
+  *)
+
+val numbits : t -> int
+(** Returns the number of significant bits in the given number.
+    If [x] is zero, [numbits x] returns 0.  Otherwise,
+    [numbits x] returns a positive integer [n] such that
+    [2^{n-1} <= |x| < 2^n].  Note that [numbits] is defined
+    for negative arguments, and that [numbits (-x) = numbits x]. *)
+
+(* val trailing_zeros: t -> int *)
+(** Returns the number of trailing 0 bits in the given number.
+    If [x] is zero, [trailing_zeros x] returns [max_int].
+    Otherwise, [trailing_zeros x] returns a nonnegative integer [n]
+    which is the largest [n] such that [2^n] divides [x] evenly.
+    Note that [trailing_zeros] is defined for negative arguments,
+    and that [trailing_zeros (-x) = trailing_zeros x]. *)
+
+(* val testbit: t -> int -> bool *)
+(** [testbit x n] return the value of bit number [n] in [x]:
+    [true] if the bit is 1, [false] if the bit is 0.
+    Bits are numbered from 0.  Raise [Invalid_argument] if [n]
+    is negative. *)
+
+(* val popcount: t -> int *)
+(** Counts the number of bits set.
+    Raises [Overflow] for negative arguments, as those have an infinite
+    number of bits set.
+ *)
+
+(* val hamdist: t -> t -> int *)
+(** Counts the number of different bits.
+    Raises [Overflow] if the arguments have different signs
+    (in which case the distance is infinite).
+  *)
+
+(** {1 Conversions} *)
+
+(** Note that, when converting to an integer type that cannot represent the
+    converted value, an [Overflow] exception is raised.
+  *)
+
+val to_int: t -> int
+(** Converts to a base integer. May raise [Overflow]. *)
+
+val to_int32: t -> int32
+(** Converts to a 32-bit integer. May raise [Overflow]. *)
+
+val to_int64: t -> int64
+(** Converts to a 64-bit integer. May raise [Overflow]. *)
+
+val to_nativeint: t -> nativeint
+(** Converts to a native integer. May raise [Overflow]. *)
+
+val to_float: t -> float
+(** Converts to a floating-point value.
+    This function rounds the given integer according to the current
+    rounding mode of the processor.  In default mode, it returns
+    the floating-point number nearest to the given integer,
+    breaking ties by rounding to even. *)
+
+val round_to_float: t -> bool -> float
+
+val to_string: t -> string
+(** Gives a human-readable, decimal string representation of the argument. *)
+
+(* val format: string -> t -> string *)
+(** Gives a string representation of the argument in the specified
+    printf-like format.
+    The general specification has the following form:
+
+    [% \[flags\] \[width\] type]
+
+    Where the type actually indicates the base:
+
+    - [i], [d], [u]: decimal
+    - [b]: binary
+    - [o]: octal
+    - [x]: lowercase hexadecimal
+    - [X]: uppercase hexadecimal
+
+    Supported flags are:
+
+    - [+]: prefix positive numbers with a [+] sign
+    - space: prefix positive numbers with a space
+    - [-]: left-justify (default is right justification)
+    - [0]: pad with zeroes (instead of spaces)
+    - [#]: alternate formatting (actually, simply output a literal-like prefix: [0x], [0b], [0o])
+
+    Unlike the classic [printf], all numbers are signed (even hexadecimal ones),
+    there is no precision field, and characters that are not part of the format
+    are simply ignored (and not copied in the output).
+  *)
+
+(* val fits_int: t -> bool *)
+(** Whether the argument fits in a regular [int]. *)
+
+(* fits_int32: t -> bool *)
+(** Whether the argument fits in an [int32]. *)
+
+(* fits_int64: t -> bool *)
+(** Whether the argument fits in an [int64]. *)
+
+(* fits_nativeint: t -> bool *)
+(** Whether the argument fits in a [nativeint]. *)
 
 
-val (/) : int -> int -> int
+(** {1 Printing} *)
 
-Integer division. Raise Division_by_zero if the second argument is 0. Integer division rounds the real quotient of its arguments towards zero. More precisely, if x >= 0 and y > 0, x / y is the greatest integer less than or equal to the real quotient of x by y. Moreover, (- x) / y = x / (- y) = - (x / y). Left-associative operator at precedence level 7/11.
+(* val print: t -> unit *)
+(** Prints the argument on the standard output. *)
+
+(* val output: out_channel -> t -> unit *)
+(** Prints the argument on the specified channel.
+    Also intended to be used as [%a] format printer in [Printf.printf].
+ *)
+
+(* val sprint: unit -> t -> string *)
+(** To be used as [%a] format printer in [Printf.sprintf]. *)
+
+(* val bprint: Buffer.t -> t -> unit *)
+(** To be used as [%a] format printer in [Printf.bprintf]. *)
+
+(* val pp_print: Format.formatter -> t -> unit *)
+(** Prints the argument on the specified formatter.
+    Can be used as [%a] format printer in [Format.printf] and as
+    argument to [#install_printer] in the top-level.
+  *)
 
 
+(** {1 Ordering} *)
+
+val compare : t -> t -> int
+(** Comparison.  [compare x y] returns 0 if [x] equals [y],
+    -1 if [x] is smaller than [y], and 1 if [x] is greater than [y].
+
+    Note that Pervasive.compare can be used to compare reliably two integers
+    only on OCaml 3.12.1 and later versions.
+ *)
+
+val equal: t -> t -> bool
+(** Equality test. *)
+
+val leq: t -> t -> bool
+(** Less than or equal. *)
+
+val geq: t -> t -> bool
+(** Greater than or equal. *)
+
+val lt: t -> t -> bool
+(** Less than (and not equal). *)
+
+val gt: t -> t -> bool
+(** Greater than (and not equal). *)
+
+val sign: t -> int
+(** Returns -1, 0, or 1 when the argument is respectively negative, null, or
+    positive.
+ *)
+
+(* val min: t -> t -> t *)
+(** Returns the minimum of its arguments. *)
+
+(* val max: t -> t -> t *)
+(** Returns the maximum of its arguments. *)
+
+val is_even: t -> bool
+(** Returns true if the argument is even (divisible by 2), false if odd. *)
+
+val is_odd: t -> bool
+(** Returns true if the argument is odd, false if even. *)
+
+(* val hash: t -> int *)
+(** Hashes a number.
+    This functions gives the same result as OCaml's polymorphic hashing
+    function.
+    The result is consistent with equality: if [a] = [b], then [hash a] =
+    [hash b].
+  *)
+
+(** {1 Elementary number theory} *)
+
+val gcd: t -> t -> t
+(** Greatest common divisor.
+    The result is always positive.
+    Raises a [Division_by_zero] is either argument is null.
 *)
+
+(* val gcdext: t -> t -> (t * t * t) *)
+(** [gcdext u v] returns [(g,s,t)]  where [g] is the greatest common divisor
+    and [g=us+vt].
+    [g] is always positive.
+    Raises a [Division_by_zero] is either argument is null.
+
+    Note: the function is based on the GMP [mpn_gcdext] function. The exact choice of [s] and [t] such that [g=us+vt] is not specified, as it may vary from a version of GMP to another (it has changed notably in GMP 4.3.0 and 4.3.1).
+ *)
+
+(* val lcm: t -> t -> t *)
+(**
+    Least common multiple.
+    The result is always positive.
+    Raises a [Division_by_zero] is either argument is null.
+ *)
+
+(* val powm: t -> t -> t -> t *)
+(** [powm base exp mod] computes [base]^[exp] modulo [mod].
+    Negative [exp] are supported, in which case ([base]^-1)^(-[exp]) modulo
+    [mod] is computed.
+    However, if [exp] is negative but [base] has no inverse modulo [mod], then
+    a [Division_by_zero] is raised.
+ *)
+
+(* val powm_sec: t -> t -> t -> t *)
+(** [powm_sec base exp mod] computes [base]^[exp] modulo [mod].
+    Unlike [Z.powm], this function is designed to take the same time
+    and have the same cache access patterns for any two same-size
+    arguments.  Used in cryptographic applications, it provides better
+    resistance to side-channel attacks than [Z.powm].
+    The exponent [exp] must be positive, and the modulus [mod]
+    must be odd.  Otherwise, [Invalid_arg] is raised. *)
+
+(* val invert: t -> t -> t *)
+(** [invert base mod] returns the inverse of [base] modulo [mod].
+    Raises a [Division_by_zero] if [base] is not invertible modulo [mod].
+ *)
+
+(* val probab_prime: t -> int -> int *)
+(** [probab_prime x r] returns 0 if [x] is definitely composite,
+    1 if [x] is probably prime, and 2 if [x] is definitely prime.
+    The [r] argument controls how many Miller-Rabin probabilistic
+    primality tests are performed (5 to 10 is a reasonable value).
+ *)
+
+(* val nextprime: t -> t *)
+(** Returns the next prime greater than the argument.
+    The result is only prime with very high probability.
+  *)
+
+
+(** {1 Powers} *)
+
+val pow: t -> int -> t
+(** [pow base exp] raises [base] to the [exp] power.
+    [exp] must be non-negative.
+    Note that only exponents fitting in a machine integer are supported, as
+    larger exponents would surely make the result's size overflow the
+    address space.
+    Raises an [Invalid_argument] on negative [exp].    
+ *)
+
+(* val sqrt: t -> t *)
+(** Returns the square root. The result is truncated (rounded down
+    to an integer).
+    Raises an [Invalid_argument] on negative arguments.
+ *)
+
+(* val sqrt_rem: t -> (t * t) *)
+(** Returns the square root truncated, and the remainder.
+    Raises an [Invalid_argument] on negative arguments.
+ *)
+
+(* val root: t -> int -> t *)
+(** [root base n] computes the [n]-th root of [exp].
+    [n] must be non-negative.
+  *)
+
+(* val perfect_power: t -> bool *)
+(** True if the argument has the form [a^b], with [b>1] *)
+
+(* val perfect_square: t -> bool *)
+(** True if the argument has the form [a^2]. *)
+
+(* val log2: t -> int *)
+(** Returns the base-2 logarithm of its argument, rounded down to
+    an integer.  If [x] is positive, [log2 x] returns the largest [n]
+    such that [2^n <= x].  If [x] is negative or zero, [log2 x] raise
+    the [Invalid_argument] exception. *)
+
+(* val log2up: t -> int *)
+(** Returns the base-2 logarithm of its argument, rounded up to
+    an integer.  If [x] is positive, [log2up x] returns the smallest [n]
+    such that [x <= 2^n].  If [x] is negative or zero, [log2up x] raise
+    the [Invalid_argument] exception. *)
+
+
+(** {1 Representation} *)
+
+(* val size: t -> int *)
+(** Returns the number of machine words used to represent the number. *)
+
+(* val extract: t -> int -> int -> t *)
+(** [extract a off len] returns a non-negative number corresponding to bits
+    [off] to [off]+[len]-1 of [b].
+    Negative [a] are considered in infinite-length 2's complement
+    representation.
+ *)
+
+(* signed_extract: t -> int -> int -> t *)
+(** [signed_extract a off len] extracts bits [off] to [off]+[len]-1 of [b],
+    as [extract] does, then sign-extends bit [len-1] of the result
+    (that is, bit [off + len - 1] of [a]).  The result is between
+    [- 2{^[len]-1}] (included) and [2{^[len]-1}] (excluded),
+    and equal to [extract a off len] modulo [2{^len}].
+ *)
+
+(* val to_bits: t -> string *)
+(** Returns a binary representation of the argument.
+    The string result should be interpreted as a sequence of bytes,
+    corresponding to the binary representation of the absolute value of
+    the argument in little endian ordering.
+    The sign is not stored in the string.
+ *)
+
+(* val of_bits: string -> t *)
+(** Constructs a number from a binary string representation.
+    The string is interpreted as a sequence of bytes in little endian order,
+    and the result is always positive.
+    We have the identity: [of_bits (to_bits x) = abs x].
+    However, we can have [to_bits (of_bits s) <> s] due to the presence of
+    trailing zeros in s.
+  *)
+
+
+(** {1 Prefix and infix operators} *)
+
+(**
+   Classic (and less classic) prefix and infix [int] operators are
+   redefined on [t].
+
+   This makes it easy to typeset expressions.
+   Using OCaml 3.12's local open, you can simply write
+   [Z.(~$2 + ~$5 * ~$10)].
+ *)
+
+val (~-): t -> t
+(** Negation [neg]. *)
+
+(* val (~+): t -> t *)
+(** Identity. *)
+
+val (+): t -> t -> t
+(** Addition [add]. *)
+
+val (-): t -> t -> t
+(** Subtraction [sub]. *)
+
+val ( * ): t -> t -> t
+(** Multiplication [mul]. *)
+
+val (/): t -> t -> t
+(** Truncated division [div]. *)
+
+(* (/>): t -> t -> t *)
+(** Ceiling division [cdiv]. *)
+
+(* (/<): t -> t -> t *)
+(** Flooring division [fdiv]. *)
+
+val (/|): t -> t -> t
+(** Exact division [divexact]. *)
+
+(* (mod): t -> t -> t *)
+(** Remainder [rem]. *)
+
+(* (land): t -> t -> t *)
+(** Bit-wise logical and [logand]. *)
+
+(* (lor): t -> t -> t *)
+(** Bit-wise logical inclusive or [logor]. *)
+
+(* (lxor): t -> t -> t *)
+(** Bit-wise logical exclusive or [logxor]. *)
+
+(* (~!): t -> t *)
+(** Bit-wise logical negation [lognot]. *)
+
+val (lsl): t -> int -> t
+(** Bit-wise shift to the left [shift_left]. *)
+
+val (asr): t -> int -> t
+(** Bit-wise shift to the right [shift_right]. *)
+
+val (~$): int -> t
+(** Conversion from [int] [of_int]. *)
+
+val ( ** ): t -> int -> t
+(** Power [pow]. *)
+
+val (=): t -> t -> bool
+(** Same as [equal]. *)
+
+val (<): t -> t -> bool
+(** Same as [lt]. *)
+
+val (>): t -> t -> bool
+(** Same as [gt]. *)
+
+val (<=): t -> t -> bool
+(** Same as [leq]. *)
+
+val (>=): t -> t -> bool
+(** Same as [geq]. *)
+
+val (<>): t -> t -> bool
+(** [a <> b] is equivalent to [not (equal a b)]. *)
+
+
+(** {1 Miscellaneous} *)
+
+(* val version: string *)
+(** Library version (this file refers to version [@VERSION]). *)
+
+(**/**)
+
+(** For internal use in module [Q]. *)
+(* val round_to_float: t -> bool -> float *)
+end

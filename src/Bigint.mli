@@ -7,7 +7,7 @@ type sign = Pos | Neg
 (** Sum type representing the Bigint's sign. *)
 
 type t    = Bigint of sign * int list
-(** Type of Bigint, arbitrary lenght integer. *)
+(** Type of Bigint, arbitrary length integer. *)
 
 (** {1 Construction} *)
 
