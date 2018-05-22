@@ -60,5 +60,16 @@ describe "Zint" (fun () ->
 
   test "is_odd" (fun () ->
     expect @@ ZInt.(is_odd (of_int (9))) |> toEqual true);
+
+  
+  test "gcd 2 12" (fun () ->
+    expect @@ ZInt.(gcd (of_int 2) (of_int 12)) |> toEqual (ZInt.of_int 2));
+
+  test "gcd 12 20" (fun () ->
+    expect @@ ZInt.(gcd (of_int 12) (of_int 20)) |> toEqual (ZInt.of_int 4));
+
+  test "gcd 36 60" (fun () ->
+    expect @@ ZInt.(gcd (of_int 36) (of_int 60)) |> toEqual (ZInt.of_int 12));
+
   
   )

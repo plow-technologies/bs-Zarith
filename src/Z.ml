@@ -709,12 +709,12 @@ module ZInt : Z = struct
   (* val hash: t -> int *)
 
   let rec gcd' a b =
-    let c = (mod) a b in
-    if c == 0
-    then b
-    else gcd' b c
+    let c = erem a b
+    in if c = zero
+      then b
+      else gcd' b c
 
-  let gcd a b = gcd' a b
+  let gcd x y = gcd' x y
   
   (* val gcdext: t -> t -> (t * t * t) *)
   (* val lcm: t -> t -> t *)
