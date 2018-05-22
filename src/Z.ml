@@ -576,3 +576,189 @@ val (<>): t -> t -> bool
 (** For internal use in module [Q]. *)
 (* val round_to_float: t -> bool -> float *)
 end
+
+
+
+
+
+module ZInt : Z = struct
+  exception Overflow
+  type t = int
+
+  (** Construction *)
+  let zero = 0
+  let one = 1
+  let minus_one = -1
+
+  let of_int x = x
+  let of_int32 = Int32.to_int
+  let of_int64 = Int64.to_int
+  let of_nativeint = Nativeint.to_int
+  let of_float = int_of_float
+  let of_string = int_of_string
+  let of_substring s ~pos ~len = int_of_string (String.sub s pos len)
+
+  (** Basic arithmetic operations *)
+  let succ x = x + 1 
+  let pred x = x - 1
+
+  let abs = abs
+  let neg = (~-)
+  let add x y = x + y
+  let sub x y = x - y
+  let mul x y = x * y
+
+  let div x y = x / y
+  let rem x y = x mod y
+  let div_rem a b = (a / b, rem a b)
+
+  (* val cdiv: t -> t -> t *)
+  (* val fdiv: t -> t -> t = "ml_z_fdiv" *)
+
+  let sign n =
+    if n == 0
+    then 0
+    else
+      if n < 0
+      then -1
+      else 1
+
+  let ediv_rem a b =
+     let q,r = div_rem a b in
+     if sign r >= 0 then (q,r) else
+     if sign b >= 0 then (pred q, add r b)
+     else (succ q, sub r b)
+
+  let ediv a b = 0
+
+  let erem a b = 0
+  let divexact = div
+
+  (** Bit-level operations *)
+  (* val logand: t -> t -> t *)
+  (* val logor: t -> t -> t *)
+  (* val logxor: t -> t -> t *)
+  (* val lognot: t -> t *)
+  let shift_left = (lsl)
+  let shift_right = (asr)
+  (* val shift_right_trunc: t -> int -> t *)
+  let numbits n =
+    let nref  = ref n in
+    let count = ref 0 in
+    while (!nref > !count) do
+      if (!nref land !count == 1)
+      then (count := !count + 1)
+      else (nref := !nref lsr 1)
+    done;
+    !count
+  (* val trailing_zeros: t -> int *)
+  (* val testbit: t -> int -> bool *)
+  (* val popcount: t -> int *)
+  (* val hamdist: t -> t -> int *)
+  
+  (** Conversions *)
+  let to_int x = x
+  let to_int32 = Int32.of_int
+  let to_int64 = Int64.of_int
+  let to_nativeint = Nativeint.of_int
+  let to_float = float_of_int
+  let round_to_float x exact =
+    let m = to_int64 x in
+    (* Unless the fractional part is exactly 0, round m to an odd integer *)
+    let m = if exact then m else Int64.logor m 1L in
+    (* Then convert m to float, with the current rounding mode. *)
+    Int64.to_float m
+  let to_string = string_of_int
+  (* val format: string -> t -> string *)
+  (* val fits_int: t -> bool *)
+  (* fits_int32: t -> bool *)
+  (* fits_int64: t -> bool *)
+  (* fits_nativeint: t -> bool *)  
+ 
+  (** Printing *)
+  (* val print: t -> unit *)
+  (* val output: out_channel -> t -> unit *)
+  (* val sprint: unit -> t -> string *)
+  (* val bprint: Buffer.t -> t -> unit *)
+  (* val pp_print: Format.formatter -> t -> unit *)
+
+  (** Ordering *)
+  let compare = compare
+  let equal x y = x = y
+  let leq x y = x <= y
+  let geq x y = x >= y
+  let lt x y = x < y
+  let gt x y = x > y
+  let sign n =
+    if n == 0
+    then 0
+    else
+      if n < 0
+      then -1
+      else 1
+
+  (* val min: t -> t -> t *)
+  (* val max: t -> t -> t *)
+  let is_even i = false
+  let is_odd i = false
+  (* val hash: t -> int *)
+
+  let rec gcd' a b =
+    let c = (mod) a b in
+    if c == 0
+    then b
+    else gcd' b c
+
+  let gcd a b = gcd' a b
+  
+  (* val gcdext: t -> t -> (t * t * t) *)
+  (* val lcm: t -> t -> t *)
+  (* val powm: t -> t -> t -> t *)
+  (* val powm_sec: t -> t -> t -> t *)
+  (* val invert: t -> t -> t *)
+  (* val probab_prime: t -> int -> int *)
+  (* val nextprime: t -> t *)
+
+  (** Powers *)
+  let pow i x = 0
+  (* val sqrt: t -> t *)
+  (* val sqrt_rem: t -> (t * t) *)
+  (* val root: t -> int -> t *)
+  (* val perfect_power: t -> bool *)
+  (* val perfect_square: t -> bool *)
+  (* val log2: t -> int *)
+  (* val log2up: t -> int *)
+
+  (** Representation *)
+  (* val size: t -> int *)
+  (* val extract: t -> int -> int -> t *)
+  (* signed_extract: t -> int -> int -> t *)
+  (* val to_bits: t -> string *)
+  (* val of_bits: string -> t *)
+
+  (** Prefix and infix operators *)
+  let (~-) = neg
+  let (~+) x = x
+  let (+)  = add
+  let (-) = sub
+  let ( * ) = mul
+  let (/) = div
+  (* (/>): t -> t -> t *)
+  (* (/<): t -> t -> t *)
+  let (/|) = div
+  (* (mod): t -> t -> t *)
+  (* (land): t -> t -> t *)
+  (* (lor): t -> t -> t *)
+  (* (lxor): t -> t -> t *)
+  (* (~!): t -> t *)
+  let (lsl) = (lsl)
+  let (asr) = (asr)
+  let (~$) = of_int
+  let ( ** ) a b = 0
+  let (=) = equal
+  let (<) = (<)
+  let (>) = (>)
+  let (<=) = (<=)
+  let (>=) = (>=)
+  let (<>) a b = not (equal a b)
+end
