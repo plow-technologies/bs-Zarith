@@ -1,6 +1,8 @@
 {
-  "name": "bs-aeson",
+  "name": "bs-Zarith",
   "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
+  "bs-dependencies": [],
+  "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "sources": [
     "src",
     {
@@ -8,5 +10,5 @@
       "type": "dev"
     }
   ],
-  "bs-dev-dependencies": ["@glennsl/bs-jest"]
+
 }
