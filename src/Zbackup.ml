@@ -342,6 +342,76 @@ module ZNativeint : Z = struct
   let of_substring s ~pos ~len = Nativeint.of_string (String.sub s pos len)
 end
 
+module ZBigint : Z = struct
+  type t = Bigint.t
+  let zero = Bigint.zero
+  let one = Bigint.one
+  let minus_one = Bigint.minus_one
+  let shift_left = Bigint.shift_left
+  let shift_right = Bigint.shift_right
+  let neg = Bigint.neg
+  let sign n =
+    if n == (Bigint.of_int 0)
+    then 0
+    else
+      if (Bigint.compare n (Bigint.of_int 0)) < 0
+      then -1
+      else 1
+  let equal x y = x == y
+
+  let of_int = Bigint.of_int
+  let of_int32 = Bigint.of_int32
+  let of_int64 = Bigint.of_int64
+  let of_nativeint = Bigint.of_nativeint
+  let of_float = Bigint.of_float
+  let to_int = Bigint.to_int
+  let to_int32 = Bigint.to_int32
+  let to_int64 = Bigint.to_int64
+  let to_nativeint = Bigint.to_nativeint
+  let to_string = Bigint.to_string
+  let (mod) a n = Bigint.sub a (Bigint.mul n (Bigint.div a n))
+
+  let div = Bigint.div
+  let mul = Bigint.mul
+  let add = Bigint.add
+  let sub = Bigint.sub
+  let compare = Bigint.compare
+
+  let abs = Bigint.abs
+
+  let rec gcd a b =
+    let c = (mod) a b in
+    if c == zero
+    then b
+    else gcd b c
+
+  let numbits = Bigint.numbits
+  
+  let rem x y = x mod y
+  let div_rem = Bigint.div_rem
+
+  let ediv_rem a b =
+    (* we have a = q * b + r, but [Big_int]'s remainder satisfies 0 <= r < |b|,
+       while [Z]'s remainder satisfies -|b| < r < |b| and sign(r) = sign(a)
+     *)
+     let q,r = div_rem a b in
+     if sign r >= 0 then (q,r) else
+     if sign b >= 0 then (Bigint.pred q, add r b)
+     else (Bigint.succ q, sub r b)
+
+  let round_to_float x exact =
+    let m = to_int64 x in
+    (* Unless the fractional part is exactly 0, round m to an odd integer *)
+    let m = if exact then m else Int64.logor m 1L in
+    (* Then convert m to float, with the current rounding mode. *)
+    Int64.to_float m
+
+
+  let of_string = Bigint.of_string
+  let of_substring s ~pos ~len = Bigint.of_string (String.sub s pos len)
+end
+
+
 module Rational (Z: Z) = struct
   type t =
     { num : Z.t
@@ -677,6 +747,7 @@ module RationalInt = Rational(ZInt)
 module RationalInt32 = Rational(ZInt32)
 module RationalInt64 = Rational(ZInt64)
 module RationalNativeint = Rational(ZNativeint)
+module RationalBigint = Rational(ZBigint)
 
 
 (*

@@ -725,7 +725,20 @@ module ZInt : Z = struct
   (* val nextprime: t -> t *)
 
   (** Powers *)
-  let pow i x = 0
+  let rec pow' base exp acc =
+    if exp <= 0
+    then acc
+    else (pow' base (exp - 1) (mul acc base))
+
+  let pow base exp = 
+    if exp < 0
+    then raise (Invalid_argument "The exponent must be greater zero or greater.")
+    else if exp = 0
+      then one
+      else if exp = 1
+      then base
+      else pow' base exp one
+
   (* val sqrt: t -> t *)
   (* val sqrt_rem: t -> (t * t) *)
   (* val root: t -> int -> t *)
@@ -743,7 +756,7 @@ module ZInt : Z = struct
 
   (** Prefix and infix operators *)
   let (~-) = neg
-  let (~+) x = x
+  (* let (~+) x = x *)
   let (+)  = add
   let (-) = sub
   let ( * ) = mul
@@ -758,6 +771,164 @@ module ZInt : Z = struct
   (* (~!): t -> t *)
   let (lsl) = (lsl)
   let (asr) = (asr)
+  let (~$) = of_int
+  let ( ** ) a b = pow a b
+  let (=) = equal
+  let (<) = (<)
+  let (>) = (>)
+  let (<=) = (<=)
+  let (>=) = (>=)
+  let (<>) a b = not (equal a b)
+end
+
+module ZInt32 : Z = struct
+  exception Overflow
+  type t = Int32.t
+
+  (** Construction *)
+  let zero = Int32.zero
+  let one = Int32.one
+  let two = Int32.of_int 2
+  let minus_one = Int32.minus_one
+
+  let of_int = Int32.of_int
+  let of_int32 x = x
+  let of_int64 = Int64.to_int32
+  let of_nativeint = Nativeint.to_int32
+  let of_float = Int32.of_float
+  let of_string = Int32.of_string
+  let of_substring s ~pos ~len = Int32.of_string (String.sub s pos len)
+
+  (** Basic arithmetic operations *)
+  let succ x = Int32.add x one 
+  let pred x = Int32.sub x one
+
+  let abs = Int32.abs
+  let neg = Int32.neg
+  let add = Int32.add
+  let sub = Int32.sub
+  let mul = Int32.mul
+
+  let (mod) a n = Int32.sub a (Int32.mul n (Int32.div a n))
+  let div = Int32.div
+  let rem x y = x mod y
+  let div_rem a b = (div a b, rem a b)
+
+  let sign n =
+    if n == (Int32.of_int 0)
+    then 0
+    else
+      if (Int32.compare n (Int32.of_int 0)) < 0
+      then -1
+      else 1
+
+  let rec ediv_rem' a b cum =
+    let a = abs a in
+    let b = abs b in
+    let r = sub a b in
+    if (compare a b) = 1
+    then ediv_rem' r b (succ cum)
+    else (succ cum, r)
+
+  let gt x y = (Int32.compare x y) > 0
+
+  let ediv_rem a b =
+    if (gt a minus_one)
+    then div_rem a b
+    else
+      let q,r = ediv_rem' a b zero in
+      (neg q, abs r)
+
+  let ediv a b =
+    let quotient, _ = ediv_rem a b
+    in quotient
+
+  let erem a b =
+    let _, remainder = ediv_rem a b
+    in remainder
+
+  let divexact = div
+
+  (** Bit-level operations *)
+  let shift_left = Int32.shift_left
+  let shift_right = Int32.shift_right
+
+  let numbits n =
+    let nref  = ref n in
+    let count = ref zero in
+    while (!nref > !count) do
+      if (Int32.logand !nref !count == one)
+      then (count := Int32.add !count one)
+      else (nref := Int32.shift_right_logical !nref 1)
+    done;
+    Int32.to_int !count
+
+  (** Conversions *)
+  let to_int = Int32.to_int
+  let to_int32 x = x
+  let to_int64 = Int64.of_int32
+  let to_nativeint = Nativeint.of_int32
+  let to_float = Int32.to_float
+  let round_to_float x exact =
+    let m = to_int64 x in
+    (* Unless the fractional part is exactly 0, round m to an odd integer *)
+    let m = if exact then m else Int64.logor m 1L in
+    (* Then convert m to float, with the current rounding mode. *)
+    Int64.to_float m
+  let to_string = Int32.to_string
+
+  (** Ordering *)
+  let compare = Int32.compare
+  let equal x y = x == y
+  let leq x y = (compare x y) < 1
+  let geq x y = (compare x y) > -1
+  let lt x y = (compare x y) < 0
+  (* let gt x y = (Int32.compare x y) > 0 *)
+  let sign = sign
+
+  let is_even i = (i mod two) = zero
+  let is_odd i = (i mod two) <> zero
+
+  let rec gcd' a b =
+    let c = erem a b
+    in if c = zero
+      then b
+      else gcd' b c
+
+  let gcd x y = gcd' x y
+
+  (** Powers *)
+  let rec pow' base exp acc =
+    if exp <= 0
+    then acc
+    else (pow' base (exp - 1) (mul acc base))
+
+  let pow base exp = 
+    if exp < 0
+    then raise (Invalid_argument "The exponent must be greater zero or greater.")
+    else if exp = 0
+      then one
+      else if exp = 1
+      then base
+      else pow' base exp one
+
+  (** Prefix and infix operators *)
+  let (~-) = neg
+  (* let (~+) x = x *)
+  let (+)  = add
+  let (-) = sub
+  let ( * ) = mul
+  let (/) = div
+  (* (/>): t -> t -> t *)
+  (* (/<): t -> t -> t *)
+  let (/|) = div
+  (* (mod): t -> t -> t *)
+  (* (land): t -> t -> t *)
+  (* (lor): t -> t -> t *)
+  (* (lxor): t -> t -> t *)
+  (* (~!): t -> t *)
+  let (lsl) = (shift_left)
+  let (asr) = (shift_right)
   let (~$) = of_int
   let ( ** ) a b = pow a b
   let (=) = equal

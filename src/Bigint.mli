@@ -32,6 +32,9 @@ val of_int64: Int64.t -> t
 val of_nativeint: nativeint -> t
 (** Converts from a native integer. *)
 
+val of_float: float -> t
+(** Converts from a float. *)
+
 val of_string: string -> t
 (** Converts a string to an integer.
     An optional [-] prefix indicates a negative number.
@@ -338,6 +341,8 @@ val gcd: t -> t -> t
     The result is always positive.
     Raises a [Division_by_zero] is either argument is null.
 *)
+
+(* val gcd': t -> t -> t *)
 
 (* val gcdext: t -> t -> (t * t * t) *)
 (** [gcdext u v] returns [(g,s,t)]  where [g] is the greatest common divisor

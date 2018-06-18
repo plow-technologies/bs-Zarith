@@ -53,6 +53,7 @@ let of_int i = of_string (string_of_int i)
 let of_int32 i = of_string (Int32.to_string i)
 let of_int64 i = of_string (Int64.to_string i)
 let of_nativeint i = of_string (Nativeint.to_string i)
+let of_float i = of_string (Int64.to_string (Int64.of_float i))
 
 let to_string (Bigint (sign, value)) =
   match value with
