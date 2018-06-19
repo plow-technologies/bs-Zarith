@@ -319,10 +319,10 @@ val sign: t -> int
     positive.
  *)
 
-(* val min: t -> t -> t *)
+val min: t -> t -> t
 (** Returns the minimum of its arguments. *)
 
-(* val max: t -> t -> t *)
+val max: t -> t -> t
 (** Returns the maximum of its arguments. *)
 
 val is_even: t -> bool
@@ -496,7 +496,7 @@ val pow: t -> int -> t
 val (~-): t -> t
 (** Negation [neg]. *)
 
-(* val (~+): t -> t *)
+val (~+): t -> t
 (** Identity. *)
 
 val (+): t -> t -> t
@@ -702,8 +702,8 @@ module ZInt : Z = struct
   let gt x y = x > y
   let sign = sign
 
-  (* val min: t -> t -> t *)
-  (* val max: t -> t -> t *)
+  let min = min
+  let max = max
   let is_even i = (i mod 2) = 0
   let is_odd i = (i mod 2) <> 0
   (* val hash: t -> int *)
@@ -756,7 +756,7 @@ module ZInt : Z = struct
 
   (** Prefix and infix operators *)
   let (~-) = neg
-  (* let (~+) x = x *)
+  let (~+) x = x
   let (+)  = add
   let (-) = sub
   let ( * ) = mul
@@ -889,6 +889,11 @@ module ZInt32 : Z = struct
   let lt x y = (compare x y) < 0
   (* let gt x y = (Int32.compare x y) > 0 *)
   let sign = sign
+  let min x y =
+    if leq x y then x else y
+  let max x y =
+    if geq x y then x else y
+
 
   let is_even i = (i mod two) = zero
   let is_odd i = (i mod two) <> zero
@@ -918,7 +923,7 @@ module ZInt32 : Z = struct
 
   (** Prefix and infix operators *)
   let (~-) = neg
-  (* let (~+) x = x *)
+  let (~+) x = x
   let (+)  = add
   let (-) = sub
   let ( * ) = mul
@@ -1050,6 +1055,11 @@ module ZInt64 : Z = struct
   let lt x y = (compare x y) < 0
   (* let gt x y = (Int64.compare x y) > 0 *)
   let sign = sign
+  let min x y =
+    if leq x y then x else y
+
+  let max x y =
+    if geq x y then x else y
 
   let is_even i = (i mod two) = zero
   let is_odd i = (i mod two) <> zero
@@ -1079,7 +1089,7 @@ module ZInt64 : Z = struct
 
   (** Prefix and infix operators *)
   let (~-) = neg
-  (* let (~+) x = x *)
+  let (~+) x = x
   let (+)  = add
   let (-) = sub
   let ( * ) = mul
@@ -1172,6 +1182,8 @@ module ZBigint : Z = struct
   let lt = Bigint.lt
   let gt = Bigint.gt
   let sign = Bigint.sign
+  let min = Bigint.min
+  let max = Bigint.max
 
   let is_even = Bigint.is_even
   let is_odd = Bigint.is_odd
@@ -1183,7 +1195,7 @@ module ZBigint : Z = struct
 
   (** Prefix and infix operators *)
   let (~-) = neg
-  (* let (~+) x = x *)
+  let (~+) x = x
   let (+)  = add
   let (-) = sub
   let ( * ) = mul

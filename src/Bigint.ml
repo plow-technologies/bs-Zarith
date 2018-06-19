@@ -341,11 +341,15 @@ let lognot n1 =
   done;
   sub !byte_val n1
 
+let min x y =
+  if leq x y then x else y
 
+let max x y =
+  if geq x y then x else y
 
 let (~-) = neg
 
-(* val (~+): t -> t *)
+let (~+) x = x
 
 let (+) = add
 

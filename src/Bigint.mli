@@ -318,10 +318,10 @@ val sign: t -> int
     positive.
  *)
 
-(* val min: t -> t -> t *)
+val min: t -> t -> t
 (** Returns the minimum of its arguments. *)
 
-(* val max: t -> t -> t *)
+val max: t -> t -> t
 (** Returns the maximum of its arguments. *)
 
 val is_even: t -> bool
@@ -345,8 +345,6 @@ val gcd: t -> t -> t
     The result is always positive.
     Raises a [Division_by_zero] is either argument is null.
 *)
-
-(* val gcd': t -> t -> t *)
 
 (* val gcdext: t -> t -> (t * t * t) *)
 (** [gcdext u v] returns [(g,s,t)]  where [g] is the greatest common divisor
@@ -497,7 +495,7 @@ val pow: t -> int -> t
 val (~-): t -> t
 (** Negation [neg]. *)
 
-(* val (~+): t -> t *)
+val (~+): t -> t
 (** Identity. *)
 
 val (+): t -> t -> t
@@ -568,9 +566,6 @@ val (<>): t -> t -> bool
 
 
 (** {1 Miscellaneous} *)
-
-(* val version: string *)
-(** Library version (this file refers to version [@VERSION]). *)
 
 (**/**)
 

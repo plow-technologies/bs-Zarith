@@ -319,10 +319,10 @@ val sign: t -> int
     positive.
  *)
 
-(* val min: t -> t -> t *)
+val min: t -> t -> t
 (** Returns the minimum of its arguments. *)
 
-(* val max: t -> t -> t *)
+val max: t -> t -> t
 (** Returns the maximum of its arguments. *)
 
 val is_even: t -> bool
@@ -496,7 +496,7 @@ val pow: t -> int -> t
 val (~-): t -> t
 (** Negation [neg]. *)
 
-(* val (~+): t -> t *)
+val (~+): t -> t
 (** Identity. *)
 
 val (+): t -> t -> t
