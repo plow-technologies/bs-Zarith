@@ -578,3 +578,6 @@ val (<>): t -> t -> bool
 end
 
 module ZInt : Z
+module ZInt32 : Z
+module ZInt64 : Z
+module ZBigint : Z

@@ -352,3 +352,10 @@ let (>=) = geq
 let (<>) a b = not (equal a b)
 
 end
+
+
+module RationalInt = Rational(Z.ZInt)
+module RationalInt32 = Rational(Z.ZInt32)
+module RationalInt64 = Rational(Z.ZInt64)
+(* module RationalNativeint = Rational(ZNativeint) *)
+module RationalBigint = Rational(Z.ZBigint)
