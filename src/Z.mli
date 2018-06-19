@@ -129,13 +129,13 @@ val divexact: t -> t -> t
     1s.
   *)
 
-(* val logand: t -> t -> t *)
+val logand: t -> t -> t
 (** Bitwise logical and. *)
 
-(* val logor: t -> t -> t *)
+val logor: t -> t -> t
 (** Bitwise logical or. *)
 
-(* val logxor: t -> t -> t *)
+val logxor: t -> t -> t
 (** Bitwise logical exclusive or. *)
 
 (* val lognot: t -> t *)
@@ -523,13 +523,13 @@ val (/|): t -> t -> t
 (* (mod): t -> t -> t *)
 (** Remainder [rem]. *)
 
-(* (land): t -> t -> t *)
+val (land): t -> t -> t
 (** Bit-wise logical and [logand]. *)
 
-(* (lor): t -> t -> t *)
+val (lor): t -> t -> t
 (** Bit-wise logical inclusive or [logor]. *)
 
-(* (lxor): t -> t -> t *)
+val (lxor): t -> t -> t
 (** Bit-wise logical exclusive or [logxor]. *)
 
 (* (~!): t -> t *)

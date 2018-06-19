@@ -6,6 +6,7 @@ type t    = Bigint of sign * int list
 
 let zero      = Bigint (Pos, [])
 let one       = Bigint (Pos, [1])
+let two       = Bigint (Pos, [2])
 let minus_one = Bigint (Neg, [1])
 
 (* internal *)
@@ -48,6 +49,8 @@ let of_string str =
       in  if str.[0] = '-'
             then Bigint (Neg, to_intlist 1)
             else Bigint (Pos, to_intlist 0)
+
+let of_substring s ~pos ~len = of_string (String.sub s pos len)
 
 let of_int i = of_string (string_of_int i)
 let of_int32 i = of_string (Int32.to_string i)
@@ -146,7 +149,7 @@ let mul (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
 
 let rec div_rem' list1 list2' powerof2 =
   if (cmp list2' list1) = 1
-  then [0], list1
+  then [], list1
   else let quotient, remainder =
     div_rem' list1 (double list2') (double powerof2)
     in if (cmp remainder list2') = -1
@@ -160,6 +163,23 @@ let div_rem (Bigint (neg1, value1)) (Bigint (neg2, value2)) =
     in if neg1 = neg2
       then (Bigint (Pos, quotient), rem)
       else (Bigint (Neg, quotient), rem)
+
+let compare (Bigint (neg1, v1)) (Bigint (neg2, v2)) =
+  match (neg1, neg2) with
+  | (Neg,Pos) -> -1
+  | (Pos,Neg) -> 1
+  | (Neg,Neg) -> ~-(cmp v1 v2)
+  | (Pos,Pos) -> cmp v1 v2
+
+let sign n =
+  if n = zero
+  then 0
+  else
+    if (compare n zero) < 0
+    then -1
+    else 1
+
+let gt x y = (compare x y) > 0
 
 let div a b =
   let quotient, _ = div_rem a b
@@ -242,25 +262,18 @@ let pow base exp =
 
 let abs (Bigint (_neg, value)) = Bigint (Pos, value)
 
-  (* not complete *)
-  let numbits (Bigint (_neg, value)) = List.length value
+(* not complete *)
+let numbits (Bigint (_neg, value)) = List.length value
 
-  (* need to test theses *)
-  let shift_left x n = mul x (pow (of_int 2) n)
+(* need to test theses *)
+let shift_left x n = mul x (pow (of_int 2) n)
 
-  let shift_right x n = div x (pow (of_int 2) n)
+let shift_right x n = div x (pow (of_int 2) n)
 
 let neg (Bigint (sn, n)) =
   match sn with
   | Pos -> Bigint (Neg, n)
   | Neg -> Bigint (Pos, n)
-
-let compare (Bigint (neg1, v1)) (Bigint (neg2, v2)) =
-  match (neg1, neg2) with
-  | (Neg,Pos) -> -1
-  | (Pos,Neg) -> 1
-  | (Neg,Neg) -> ~-(cmp v1 v2)
-  | (Pos,Pos) -> cmp v1 v2
 
 let equal x y = (compare x y) = 0
 
@@ -269,16 +282,6 @@ let leq x y = (compare x y) < 1
 let geq x y = (compare x y) > -1
 
 let lt x y = (compare x y) < 0
-
-let gt x y = (compare x y) > 0
-
-let sign n =
-  if n = zero
-  then 0
-  else
-    if (compare n zero) < 0
-    then -1
-    else 1
 
 let succ x = add x one
 
@@ -372,6 +375,55 @@ let to_nativeint i =
 
 let to_float i =
   float_of_string (to_string i)
-(*
-9007199254740992 	18014398509481982
- *)
+
+let logand n1' n2' =
+  let byte_val = ref one in
+  let result = ref zero in
+  let n1 = ref n1' in
+  let n2 = ref n2' in
+  while (gt !n1 zero || gt !n2 zero) do
+    if (equal (rem !n1 two) one && equal (rem !n2 two) one)
+    then result := add !result !byte_val
+    else ();
+    n1 := div !n1 two;
+    n2 := div !n2 two;
+    byte_val := mul !byte_val two;
+  done;
+  !result
+
+let logor n1' n2' =
+  let byte_val = ref one in
+  let result = ref zero in
+  let n1 = ref n1' in
+  let n2 = ref n2' in
+  while (gt !n1 zero || gt !n2 zero) do
+    if (equal (rem !n1 two) one || equal (rem !n2 two) one)
+    then result := add !result !byte_val
+    else ();
+    n1 := div !n1 two;
+    n2 := div !n2 two;
+    byte_val := mul !byte_val two;
+  done;
+  !result
+
+let logxor n1' n2' =
+  let byte_val = ref one in
+  let result = ref zero in
+  let n1 = ref n1' in
+  let n2 = ref n2' in
+  while (gt !n1 zero || gt !n2 zero) do
+    if (not @@ equal (rem !n1 two) (rem !n2 two))
+    then result := add !result !byte_val
+    else ();
+    n1 := div !n1 two;
+    n2 := div !n2 two;
+    byte_val := mul !byte_val two;
+  done;
+  !result
+
+let round_to_float x exact =
+  let m = x in
+  (* Unless the fractional part is exactly 0, round m to an odd integer *)
+  let m = if exact then m else logor m one in
+  (* Then convert m to float, with the current rounding mode. *)
+  to_float m

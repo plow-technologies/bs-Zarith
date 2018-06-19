@@ -40,6 +40,10 @@ val of_string: string -> t
     An optional [-] prefix indicates a negative number.
 *)
 
+val of_substring : string -> pos:int -> len:int -> t
+(**
+
+*)
 
 (** {1 Basic arithmetic operations} *)
 
@@ -126,13 +130,13 @@ val divexact: t -> t -> t
     1s.
   *)
 
-(* val logand: t -> t -> t *)
+val logand: t -> t -> t
 (** Bitwise logical and. *)
 
-(* val logor: t -> t -> t *)
+val logor: t -> t -> t
 (** Bitwise logical or. *)
 
-(* val logxor: t -> t -> t *)
+val logxor: t -> t -> t
 (** Bitwise logical exclusive or. *)
 
 (* val lognot: t -> t *)
@@ -571,4 +575,4 @@ val (<>): t -> t -> bool
 (**/**)
 
 (** For internal use in module [Q]. *)
-(* val round_to_float: t -> bool -> float *)
+val round_to_float: t -> bool -> float

@@ -149,6 +149,8 @@ describe "Bigint" (fun () ->
   test "div_rem (-9) (-3)" (fun () ->
     expect @@ Bigint.(div_rem (of_int (-9)) (of_int (-3))) |> toEqual (Bigint.(of_int 3, of_int 0)));
 
+  test "div_rem (1) (2)" (fun () ->
+    expect @@ Bigint.(div_rem (of_int (1)) (of_int (2))) |> toEqual (Bigint.(zero, of_int 1)));
 
 
   test "ediv_rem 7 3" (fun () ->
@@ -180,6 +182,9 @@ describe "Bigint" (fun () ->
 
   test "ediv_rem (-9) (-3)" (fun () ->
     expect @@ Bigint.(ediv_rem (of_int (-9)) (of_int (-3))) |> toEqual (Bigint.(of_int (-3), zero )));
+
+  test "ediv_rem (1) (2)" (fun () ->
+    expect @@ Bigint.(ediv_rem (of_int 1) (of_int 2)) |> toEqual (Bigint.(zero, of_int 1 )));
 
   test "is_even" (fun () ->
     expect @@ Bigint.(is_even (of_int (8))) |> toEqual true);  
@@ -314,6 +319,9 @@ describe "Bigint" (fun () ->
   test "1 > 0" (fun () ->
     expect @@ Bigint.((of_int 1) > (of_int 0) ) |> toEqual true);
 
+  test "2 > 3" (fun () ->
+    expect @@ Bigint.((of_int 2) > (of_int 3) ) |> toEqual false);
+
   test "3 > 2" (fun () ->
     expect @@ Bigint.((of_int 3) > (of_int 2) ) |> toEqual true);
 
@@ -355,7 +363,6 @@ describe "Bigint" (fun () ->
     expect @@ (fun () -> Bigint.(to_int64 (of_string "9223372036854775808"))) |> toThrowException Bigint.Overflow );
 
   test "to_navtiveint max_int" (fun () ->
-    Js.log(Nativeint.max_int);                                
     expect @@ Bigint.(to_nativeint (of_nativeint (Nativeint.of_int 1 ))) |> toEqual (Nativeint.of_int 1));
 
   test "to_float" (fun () ->
@@ -389,6 +396,12 @@ describe "Bigint" (fun () ->
 
   test "gcd 36 60" (fun () ->
     expect @@ Bigint.(gcd (of_int 36) (of_int 60)) |> toEqual (Bigint.of_int 12));
+
+  test "logor" (fun () ->
+    expect @@ Bigint.(logor (of_int 6) (of_int 3)) |> toEqual (Bigint.of_int 7));
+
+  test "div" (fun () ->
+    expect @@ Bigint.(div (of_int 1) (of_int 2)) |> toEqual (Bigint.zero));
 
   test "pow" (fun () ->
     expect @@ Bigint.(pow (of_int 2) 2) |> toEqual (Bigint.of_int 4))

@@ -129,13 +129,13 @@ val divexact: t -> t -> t
     1s.
   *)
 
-(* val logand: t -> t -> t *)
+val logand: t -> t -> t
 (** Bitwise logical and. *)
 
-(* val logor: t -> t -> t *)
+val logor: t -> t -> t
 (** Bitwise logical or. *)
 
-(* val logxor: t -> t -> t *)
+val logxor: t -> t -> t
 (** Bitwise logical exclusive or. *)
 
 (* val lognot: t -> t *)
@@ -523,13 +523,13 @@ val (/|): t -> t -> t
 (* (mod): t -> t -> t *)
 (** Remainder [rem]. *)
 
-(* (land): t -> t -> t *)
+val (land): t -> t -> t
 (** Bit-wise logical and [logand]. *)
 
-(* (lor): t -> t -> t *)
+val (lor): t -> t -> t
 (** Bit-wise logical inclusive or [logor]. *)
 
-(* (lxor): t -> t -> t *)
+val (lxor): t -> t -> t
 (** Bit-wise logical exclusive or [logxor]. *)
 
 (* (~!): t -> t *)
@@ -646,9 +646,9 @@ module ZInt : Z = struct
   let divexact = div
 
   (** Bit-level operations *)
-  (* val logand: t -> t -> t *)
-  (* val logor: t -> t -> t *)
-  (* val logxor: t -> t -> t *)
+  let logand x y = x land y
+  let logor x y = x lor y
+  let logxor x y = x lxor y
   (* val lognot: t -> t *)
   let shift_left = (lsl)
   let shift_right = (asr)
@@ -765,9 +765,9 @@ module ZInt : Z = struct
   (* (/<): t -> t -> t *)
   let (/|) = div
   (* (mod): t -> t -> t *)
-  (* (land): t -> t -> t *)
-  (* (lor): t -> t -> t *)
-  (* (lxor): t -> t -> t *)
+  let (land) = (land)
+  let (lor) = (lor)
+  let (lxor) = (lxor)
   (* (~!): t -> t *)
   let (lsl) = (lsl)
   let (asr) = (asr)
@@ -850,6 +850,9 @@ module ZInt32 : Z = struct
   let divexact = div
 
   (** Bit-level operations *)
+  let logand = Int32.logand
+  let logor = Int32.logor
+  let logxor = Int32.logxor
   let shift_left = Int32.shift_left
   let shift_right = Int32.shift_right
 
@@ -923,9 +926,111 @@ module ZInt32 : Z = struct
   (* (/<): t -> t -> t *)
   let (/|) = div
   (* (mod): t -> t -> t *)
-  (* (land): t -> t -> t *)
-  (* (lor): t -> t -> t *)
-  (* (lxor): t -> t -> t *)
+  let (land) = logand
+  let (lor) = logor
+  let (lxor) = logxor
+  (* (~!): t -> t *)
+  let (lsl) = (shift_left)
+  let (asr) = (shift_right)
+  let (~$) = of_int
+  let ( ** ) a b = pow a b
+  let (=) = equal
+  let (<) = (<)
+  let (>) = (>)
+  let (<=) = (<=)
+  let (>=) = (>=)
+  let (<>) a b = not (equal a b)
+end
+
+module ZBigint : Z = struct
+  exception Overflow
+  type t = Bigint.t
+
+  (** Construction *)
+  let zero = Bigint.zero
+  let one = Bigint.one
+  let minus_one = Bigint.minus_one
+
+  let of_int = Bigint.of_int
+  let of_int32 = Bigint.of_int32
+  let of_int64 = Bigint.of_int64
+  let of_nativeint = Bigint.of_nativeint
+  let of_float = Bigint.of_float
+  let of_string = Bigint.of_string
+  let of_substring = Bigint.of_substring
+
+  (** Basic arithmetic operations *)
+  let succ = Bigint.succ
+  let pred = Bigint.pred
+
+  let abs = Bigint.abs
+  let neg = Bigint.neg
+  let add = Bigint.add
+  let sub = Bigint.sub
+  let mul = Bigint.mul
+
+  (* let mod = Bigint.rem *)
+  let div = Bigint.div
+  let rem = Bigint.rem
+  let div_rem = Bigint.div_rem
+
+  let ediv_rem = Bigint.ediv_rem
+
+  let ediv = Bigint.ediv
+
+  let erem = Bigint.erem
+
+  let divexact = div
+
+  (** Bit-level operations *)
+  let logand = Bigint.logand
+  let logor = Bigint.logor
+  let logxor = Bigint.logxor
+  let shift_left = Bigint.shift_left
+  let shift_right = Bigint.shift_right
+
+  let numbits = Bigint.numbits
+
+  (** Conversions *)
+  let to_int = Bigint.to_int
+  let to_int32 = Bigint.to_int32
+  let to_int64 = Bigint.to_int64
+  let to_nativeint = Bigint.to_nativeint
+  let to_float = Bigint.to_float
+  let round_to_float = Bigint.round_to_float
+  let to_string = Bigint.to_string
+
+  (** Ordering *)
+  let compare = Bigint.compare
+  let equal = Bigint.equal
+  let leq = Bigint.leq
+  let geq = Bigint.geq
+  let lt = Bigint.lt
+  let gt = Bigint.gt
+  let sign = Bigint.sign
+
+  let is_even = Bigint.is_even
+  let is_odd = Bigint.is_odd
+
+  let gcd = Bigint.gcd
+
+  (** Powers *)
+  let pow = Bigint.pow
+
+  (** Prefix and infix operators *)
+  let (~-) = neg
+  (* let (~+) x = x *)
+  let (+)  = add
+  let (-) = sub
+  let ( * ) = mul
+  let (/) = div
+  (* (/>): t -> t -> t *)
+  (* (/<): t -> t -> t *)
+  let (/|) = div
+  (* (mod): t -> t -> t *)
+  let (land) = logand
+  let (lor) = logor
+  let (lxor) = logxor
   (* (~!): t -> t *)
   let (lsl) = (shift_left)
   let (asr) = (shift_right)
