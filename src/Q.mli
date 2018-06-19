@@ -1,4 +1,4 @@
-module Rational (Z: Z.Z) : sig
+module Q (Z: Z.Z) : sig
 (** {1 Types} *)
 
 
@@ -274,13 +274,14 @@ val (<>): t -> t -> bool
 
 
 end
-module RationalInt :
+
+module QInt :
   sig
-    type t = Rational(Z.ZInt).t = { num : Z.ZInt.t; den : Z.ZInt.t; }
-    val mk : Z.ZInt.t -> Z.ZInt.t -> t
-    val make_real : Z.ZInt.t -> Z.ZInt.t -> t
-    val make : Z.ZInt.t -> Z.ZInt.t -> t
-    val of_bigint : Z.ZInt.t -> t
+    type t = Q(Z.Int).t = { num : Z.Int.t; den : Z.Int.t; }
+    val mk : Z.Int.t -> Z.Int.t -> t
+    val make_real : Z.Int.t -> Z.Int.t -> t
+    val make : Z.Int.t -> Z.Int.t -> t
+    val of_bigint : Z.Int.t -> t
     val of_int : int -> t
     val of_int32 : Int32.t -> t
     val of_int64 : Int64.t -> t
@@ -294,11 +295,11 @@ module RationalInt :
     val undef : t
     val of_float : float -> t
     val of_string : string -> t
-    type kind = Rational(Z.ZInt).kind = ZERO | INF | MINF | UNDEF | NZERO
+    type kind = Q(Z.Int).kind = ZERO | INF | MINF | UNDEF | NZERO
     val classify : t -> kind
     val is_real : t -> bool
-    val num : t -> Z.ZInt.t
-    val den : t -> Z.ZInt.t
+    val num : t -> Z.Int.t
+    val den : t -> Z.Int.t
     val sign : t -> int
     val equal : t -> t -> bool
     val compare : t -> t -> int
@@ -309,7 +310,7 @@ module RationalInt :
     val lt : t -> t -> bool
     val gt : t -> t -> bool
     val to_string : t -> string
-    val to_bigint : t -> Z.ZInt.t
+    val to_bigint : t -> Z.Int.t
     val to_int : t -> int
     val to_int32 : t -> int32
     val to_int64 : t -> int64
@@ -317,7 +318,7 @@ module RationalInt :
     val to_float : t -> float
     val neg : t -> t
     val abs : t -> t
-    val aors : (Z.ZInt.t -> Z.ZInt.t -> Z.ZInt.t) -> t -> t -> t
+    val aors : (Z.Int.t -> Z.Int.t -> Z.Int.t) -> t -> t -> t
     val add : t -> t -> t
     val sub : t -> t -> t
     val mul : t -> t -> t
@@ -340,8 +341,8 @@ module RationalInt :
     val ( asr ) : t -> int -> t
     val ( ~$ ) : int -> t
     val ( // ) : int -> int -> t
-    val ( ~$$ ) : Z.ZInt.t -> t
-    val ( /// ) : Z.ZInt.t -> Z.ZInt.t -> t
+    val ( ~$$ ) : Z.Int.t -> t
+    val ( /// ) : Z.Int.t -> Z.Int.t -> t
     val ( = ) : t -> t -> bool
     val ( < ) : t -> t -> bool
     val ( > ) : t -> t -> bool
@@ -349,13 +350,13 @@ module RationalInt :
     val ( >= ) : t -> t -> bool
     val ( <> ) : t -> t -> bool
   end
-module RationalInt32 :
+module QInt32 :
   sig
-    type t = Rational(Z.ZInt32).t = { num : Z.ZInt32.t; den : Z.ZInt32.t; }
-    val mk : Z.ZInt32.t -> Z.ZInt32.t -> t
-    val make_real : Z.ZInt32.t -> Z.ZInt32.t -> t
-    val make : Z.ZInt32.t -> Z.ZInt32.t -> t
-    val of_bigint : Z.ZInt32.t -> t
+    type t = Q(Z.Int32).t = { num : Z.Int32.t; den : Z.Int32.t; }
+    val mk : Z.Int32.t -> Z.Int32.t -> t
+    val make_real : Z.Int32.t -> Z.Int32.t -> t
+    val make : Z.Int32.t -> Z.Int32.t -> t
+    val of_bigint : Z.Int32.t -> t
     val of_int : int -> t
     val of_int32 : Int32.t -> t
     val of_int64 : Int64.t -> t
@@ -369,11 +370,11 @@ module RationalInt32 :
     val undef : t
     val of_float : float -> t
     val of_string : string -> t
-    type kind = Rational(Z.ZInt32).kind = ZERO | INF | MINF | UNDEF | NZERO
+    type kind = Q(Z.Int32).kind = ZERO | INF | MINF | UNDEF | NZERO
     val classify : t -> kind
     val is_real : t -> bool
-    val num : t -> Z.ZInt32.t
-    val den : t -> Z.ZInt32.t
+    val num : t -> Z.Int32.t
+    val den : t -> Z.Int32.t
     val sign : t -> int
     val equal : t -> t -> bool
     val compare : t -> t -> int
@@ -384,7 +385,7 @@ module RationalInt32 :
     val lt : t -> t -> bool
     val gt : t -> t -> bool
     val to_string : t -> string
-    val to_bigint : t -> Z.ZInt32.t
+    val to_bigint : t -> Z.Int32.t
     val to_int : t -> int
     val to_int32 : t -> int32
     val to_int64 : t -> int64
@@ -392,7 +393,7 @@ module RationalInt32 :
     val to_float : t -> float
     val neg : t -> t
     val abs : t -> t
-    val aors : (Z.ZInt32.t -> Z.ZInt32.t -> Z.ZInt32.t) -> t -> t -> t
+    val aors : (Z.Int32.t -> Z.Int32.t -> Z.Int32.t) -> t -> t -> t
     val add : t -> t -> t
     val sub : t -> t -> t
     val mul : t -> t -> t
@@ -415,8 +416,8 @@ module RationalInt32 :
     val ( asr ) : t -> int -> t
     val ( ~$ ) : int -> t
     val ( // ) : int -> int -> t
-    val ( ~$$ ) : Z.ZInt32.t -> t
-    val ( /// ) : Z.ZInt32.t -> Z.ZInt32.t -> t
+    val ( ~$$ ) : Z.Int32.t -> t
+    val ( /// ) : Z.Int32.t -> Z.Int32.t -> t
     val ( = ) : t -> t -> bool
     val ( < ) : t -> t -> bool
     val ( > ) : t -> t -> bool
@@ -424,13 +425,13 @@ module RationalInt32 :
     val ( >= ) : t -> t -> bool
     val ( <> ) : t -> t -> bool
   end
-module RationalInt64 :
+module QInt64 :
   sig
-    type t = Rational(Z.ZInt64).t = { num : Z.ZInt64.t; den : Z.ZInt64.t; }
-    val mk : Z.ZInt64.t -> Z.ZInt64.t -> t
-    val make_real : Z.ZInt64.t -> Z.ZInt64.t -> t
-    val make : Z.ZInt64.t -> Z.ZInt64.t -> t
-    val of_bigint : Z.ZInt64.t -> t
+    type t = Q(Z.Int64).t = { num : Z.Int64.t; den : Z.Int64.t; }
+    val mk : Z.Int64.t -> Z.Int64.t -> t
+    val make_real : Z.Int64.t -> Z.Int64.t -> t
+    val make : Z.Int64.t -> Z.Int64.t -> t
+    val of_bigint : Z.Int64.t -> t
     val of_int : int -> t
     val of_int32 : Int32.t -> t
     val of_int64 : Int64.t -> t
@@ -444,11 +445,11 @@ module RationalInt64 :
     val undef : t
     val of_float : float -> t
     val of_string : string -> t
-    type kind = Rational(Z.ZInt64).kind = ZERO | INF | MINF | UNDEF | NZERO
+    type kind = Q(Z.Int64).kind = ZERO | INF | MINF | UNDEF | NZERO
     val classify : t -> kind
     val is_real : t -> bool
-    val num : t -> Z.ZInt64.t
-    val den : t -> Z.ZInt64.t
+    val num : t -> Z.Int64.t
+    val den : t -> Z.Int64.t
     val sign : t -> int
     val equal : t -> t -> bool
     val compare : t -> t -> int
@@ -459,7 +460,7 @@ module RationalInt64 :
     val lt : t -> t -> bool
     val gt : t -> t -> bool
     val to_string : t -> string
-    val to_bigint : t -> Z.ZInt64.t
+    val to_bigint : t -> Z.Int64.t
     val to_int : t -> int
     val to_int32 : t -> int32
     val to_int64 : t -> int64
@@ -467,7 +468,7 @@ module RationalInt64 :
     val to_float : t -> float
     val neg : t -> t
     val abs : t -> t
-    val aors : (Z.ZInt64.t -> Z.ZInt64.t -> Z.ZInt64.t) -> t -> t -> t
+    val aors : (Z.Int64.t -> Z.Int64.t -> Z.Int64.t) -> t -> t -> t
     val add : t -> t -> t
     val sub : t -> t -> t
     val mul : t -> t -> t
@@ -490,8 +491,8 @@ module RationalInt64 :
     val ( asr ) : t -> int -> t
     val ( ~$ ) : int -> t
     val ( // ) : int -> int -> t
-    val ( ~$$ ) : Z.ZInt64.t -> t
-    val ( /// ) : Z.ZInt64.t -> Z.ZInt64.t -> t
+    val ( ~$$ ) : Z.Int64.t -> t
+    val ( /// ) : Z.Int64.t -> Z.Int64.t -> t
     val ( = ) : t -> t -> bool
     val ( < ) : t -> t -> bool
     val ( > ) : t -> t -> bool
@@ -499,17 +500,17 @@ module RationalInt64 :
     val ( >= ) : t -> t -> bool
     val ( <> ) : t -> t -> bool
   end
-module RationalNativeint :
+module QNativeint :
   sig
     type t =
-      Rational(Z.ZNativeint).t = {
-      num : Z.ZNativeint.t;
-      den : Z.ZNativeint.t;
+      Q(Z.Nativeint).t = {
+      num : Z.Nativeint.t;
+      den : Z.Nativeint.t;
     }
-    val mk : Z.ZNativeint.t -> Z.ZNativeint.t -> t
-    val make_real : Z.ZNativeint.t -> Z.ZNativeint.t -> t
-    val make : Z.ZNativeint.t -> Z.ZNativeint.t -> t
-    val of_bigint : Z.ZNativeint.t -> t
+    val mk : Z.Nativeint.t -> Z.Nativeint.t -> t
+    val make_real : Z.Nativeint.t -> Z.Nativeint.t -> t
+    val make : Z.Nativeint.t -> Z.Nativeint.t -> t
+    val of_bigint : Z.Nativeint.t -> t
     val of_int : int -> t
     val of_int32 : Int32.t -> t
     val of_int64 : Int64.t -> t
@@ -524,7 +525,7 @@ module RationalNativeint :
     val of_float : float -> t
     val of_string : string -> t
     type kind =
-      Rational(Z.ZNativeint).kind =
+      Q(Z.Nativeint).kind =
         ZERO
       | INF
       | MINF
@@ -532,8 +533,8 @@ module RationalNativeint :
       | NZERO
     val classify : t -> kind
     val is_real : t -> bool
-    val num : t -> Z.ZNativeint.t
-    val den : t -> Z.ZNativeint.t
+    val num : t -> Z.Nativeint.t
+    val den : t -> Z.Nativeint.t
     val sign : t -> int
     val equal : t -> t -> bool
     val compare : t -> t -> int
@@ -544,7 +545,7 @@ module RationalNativeint :
     val lt : t -> t -> bool
     val gt : t -> t -> bool
     val to_string : t -> string
-    val to_bigint : t -> Z.ZNativeint.t
+    val to_bigint : t -> Z.Nativeint.t
     val to_int : t -> int
     val to_int32 : t -> int32
     val to_int64 : t -> int64
@@ -553,7 +554,7 @@ module RationalNativeint :
     val neg : t -> t
     val abs : t -> t
     val aors :
-      (Z.ZNativeint.t -> Z.ZNativeint.t -> Z.ZNativeint.t) -> t -> t -> t
+      (Z.Nativeint.t -> Z.Nativeint.t -> Z.Nativeint.t) -> t -> t -> t
     val add : t -> t -> t
     val sub : t -> t -> t
     val mul : t -> t -> t
@@ -576,8 +577,8 @@ module RationalNativeint :
     val ( asr ) : t -> int -> t
     val ( ~$ ) : int -> t
     val ( // ) : int -> int -> t
-    val ( ~$$ ) : Z.ZNativeint.t -> t
-    val ( /// ) : Z.ZNativeint.t -> Z.ZNativeint.t -> t
+    val ( ~$$ ) : Z.Nativeint.t -> t
+    val ( /// ) : Z.Nativeint.t -> Z.Nativeint.t -> t
     val ( = ) : t -> t -> bool
     val ( < ) : t -> t -> bool
     val ( > ) : t -> t -> bool
@@ -585,17 +586,17 @@ module RationalNativeint :
     val ( >= ) : t -> t -> bool
     val ( <> ) : t -> t -> bool
   end
-module RationalBigint :
+module QBigint :
   sig
     type t =
-      Rational(Z.ZBigint).t = {
-      num : Z.ZBigint.t;
-      den : Z.ZBigint.t;
+      Q(Z.Bigint).t = {
+      num : Z.Bigint.t;
+      den : Z.Bigint.t;
     }
-    val mk : Z.ZBigint.t -> Z.ZBigint.t -> t
-    val make_real : Z.ZBigint.t -> Z.ZBigint.t -> t
-    val make : Z.ZBigint.t -> Z.ZBigint.t -> t
-    val of_bigint : Z.ZBigint.t -> t
+    val mk : Z.Bigint.t -> Z.Bigint.t -> t
+    val make_real : Z.Bigint.t -> Z.Bigint.t -> t
+    val make : Z.Bigint.t -> Z.Bigint.t -> t
+    val of_bigint : Z.Bigint.t -> t
     val of_int : int -> t
     val of_int32 : Int32.t -> t
     val of_int64 : Int64.t -> t
@@ -609,11 +610,11 @@ module RationalBigint :
     val undef : t
     val of_float : float -> t
     val of_string : string -> t
-    type kind = Rational(Z.ZBigint).kind = ZERO | INF | MINF | UNDEF | NZERO
+    type kind = Q(Z.Bigint).kind = ZERO | INF | MINF | UNDEF | NZERO
     val classify : t -> kind
     val is_real : t -> bool
-    val num : t -> Z.ZBigint.t
-    val den : t -> Z.ZBigint.t
+    val num : t -> Z.Bigint.t
+    val den : t -> Z.Bigint.t
     val sign : t -> int
     val equal : t -> t -> bool
     val compare : t -> t -> int
@@ -624,7 +625,7 @@ module RationalBigint :
     val lt : t -> t -> bool
     val gt : t -> t -> bool
     val to_string : t -> string
-    val to_bigint : t -> Z.ZBigint.t
+    val to_bigint : t -> Z.Bigint.t
     val to_int : t -> int
     val to_int32 : t -> int32
     val to_int64 : t -> int64
@@ -632,7 +633,7 @@ module RationalBigint :
     val to_float : t -> float
     val neg : t -> t
     val abs : t -> t
-    val aors : (Z.ZBigint.t -> Z.ZBigint.t -> Z.ZBigint.t) -> t -> t -> t
+    val aors : (Z.Bigint.t -> Z.Bigint.t -> Z.Bigint.t) -> t -> t -> t
     val add : t -> t -> t
     val sub : t -> t -> t
     val mul : t -> t -> t
@@ -655,8 +656,8 @@ module RationalBigint :
     val ( asr ) : t -> int -> t
     val ( ~$ ) : int -> t
     val ( // ) : int -> int -> t
-    val ( ~$$ ) : Z.ZBigint.t -> t
-    val ( /// ) : Z.ZBigint.t -> Z.ZBigint.t -> t
+    val ( ~$$ ) : Z.Bigint.t -> t
+    val ( /// ) : Z.Bigint.t -> Z.Bigint.t -> t
     val ( = ) : t -> t -> bool
     val ( < ) : t -> t -> bool
     val ( > ) : t -> t -> bool

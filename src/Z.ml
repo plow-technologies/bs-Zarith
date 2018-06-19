@@ -1386,3 +1386,9 @@ module ZBigint : Z = struct
   let (>=) = (>=)
   let (<>) a b = not (equal a b)
 end
+
+module Int = ZInt
+module Int32 = ZInt32
+module Int64 = ZInt64
+module Nativeint = ZNativeint
+module Bigint = ZBigint

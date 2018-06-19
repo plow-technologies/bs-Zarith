@@ -577,8 +577,8 @@ val (<>): t -> t -> bool
 (* val round_to_float: t -> bool -> float *)
 end
 
-module ZInt : Z
-module ZInt32 : Z
-module ZInt64 : Z
-module ZNativeint : Z
-module ZBigint : Z
+module Int : Z
+module Int32 : Z
+module Int64 : Z
+module Nativeint : Z
+module Bigint : Z

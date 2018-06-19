@@ -1,4 +1,4 @@
-module Rational (Z: Z.Z) = struct
+module Q (Z: Z.Z) = struct
   type t = {
       num: Z.t; (** Numerator. *)
       den: Z.t; (** Denominator, >= 0 *)
@@ -354,8 +354,8 @@ let (<>) a b = not (equal a b)
 end
 
 
-module RationalInt = Rational(Z.ZInt)
-module RationalInt32 = Rational(Z.ZInt32)
-module RationalInt64 = Rational(Z.ZInt64)
-module RationalNativeint = Rational(Z.ZNativeint)
-module RationalBigint = Rational(Z.ZBigint)
+module QInt       = Q(Z.Int)
+module QInt32     = Q(Z.Int32)
+module QInt64     = Q(Z.Int64)
+module QNativeint = Q(Z.Nativeint)
+module QBigint    = Q(Z.Bigint)
