@@ -138,7 +138,7 @@ val logor: t -> t -> t
 val logxor: t -> t -> t
 (** Bitwise logical exclusive or. *)
 
-(* val lognot: t -> t *)
+val lognot: t -> t
 (** Bitwise logical negation.
     The identity [lognot a]=[-a-1] always hold.
   *)
@@ -532,7 +532,7 @@ val (lor): t -> t -> t
 val (lxor): t -> t -> t
 (** Bit-wise logical exclusive or [logxor]. *)
 
-(* (~!): t -> t *)
+val (~!): t -> t
 (** Bit-wise logical negation [lognot]. *)
 
 val (lsl): t -> int -> t

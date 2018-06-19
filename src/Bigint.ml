@@ -421,6 +421,13 @@ let logxor n1' n2' =
   done;
   !result
 
+let lognot n1 =
+  let byte_val = ref one in
+  while (lt !byte_val n1) do
+    byte_val := mul !byte_val two;
+  done;
+  sub !byte_val n1
+
 let round_to_float x exact =
   let m = x in
   (* Unless the fractional part is exactly 0, round m to an odd integer *)

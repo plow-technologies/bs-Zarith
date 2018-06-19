@@ -138,7 +138,7 @@ val logor: t -> t -> t
 val logxor: t -> t -> t
 (** Bitwise logical exclusive or. *)
 
-(* val lognot: t -> t *)
+val lognot: t -> t
 (** Bitwise logical negation.
     The identity [lognot a]=[-a-1] always hold.
   *)
@@ -532,7 +532,7 @@ val (lor): t -> t -> t
 val (lxor): t -> t -> t
 (** Bit-wise logical exclusive or [logxor]. *)
 
-(* (~!): t -> t *)
+val (~!): t -> t
 (** Bit-wise logical negation [lognot]. *)
 
 val (lsl): t -> int -> t
@@ -649,7 +649,7 @@ module ZInt : Z = struct
   let logand x y = x land y
   let logor x y = x lor y
   let logxor x y = x lxor y
-  (* val lognot: t -> t *)
+  let lognot x = lnot x
   let shift_left = (lsl)
   let shift_right = (asr)
   (* val shift_right_trunc: t -> int -> t *)
@@ -768,7 +768,7 @@ module ZInt : Z = struct
   let (land) = (land)
   let (lor) = (lor)
   let (lxor) = (lxor)
-  (* (~!): t -> t *)
+  let (~!) x = lnot x
   let (lsl) = (lsl)
   let (asr) = (asr)
   let (~$) = of_int
@@ -853,6 +853,7 @@ module ZInt32 : Z = struct
   let logand = Int32.logand
   let logor = Int32.logor
   let logxor = Int32.logxor
+  let lognot = Int32.lognot
   let shift_left = Int32.shift_left
   let shift_right = Int32.shift_right
 
@@ -929,7 +930,7 @@ module ZInt32 : Z = struct
   let (land) = logand
   let (lor) = logor
   let (lxor) = logxor
-  (* (~!): t -> t *)
+  let (~!) = lognot
   let (lsl) = (shift_left)
   let (asr) = (shift_right)
   let (~$) = of_int
@@ -941,6 +942,168 @@ module ZInt32 : Z = struct
   let (>=) = (>=)
   let (<>) a b = not (equal a b)
 end
+
+module ZInt64 : Z = struct
+  exception Overflow
+  type t = Int64.t
+
+  (** Construction *)
+  let zero = Int64.zero
+  let one = Int64.one
+  let two = Int64.of_int 2
+  let minus_one = Int64.minus_one
+
+  let of_int = Int64.of_int
+  let of_int32 = Int64.of_int32
+  let of_int64 x = x
+  let of_nativeint = Int64.of_nativeint
+  let of_float = Int64.of_float
+  let of_string = Int64.of_string
+  let of_substring s ~pos ~len = Int64.of_string (String.sub s pos len)
+
+  (** Basic arithmetic operations *)
+  let succ x = Int64.add x one 
+  let pred x = Int64.sub x one
+
+  let abs = Int64.abs
+  let neg = Int64.neg
+  let add = Int64.add
+  let sub = Int64.sub
+  let mul = Int64.mul
+
+  let (mod) a n = Int64.sub a (Int64.mul n (Int64.div a n))
+  let div = Int64.div
+  let rem x y = x mod y
+  let div_rem a b = (div a b, rem a b)
+
+  let sign n =
+    if n == (Int64.of_int 0)
+    then 0
+    else
+      if (Int64.compare n (Int64.of_int 0)) < 0
+      then -1
+      else 1
+
+  let rec ediv_rem' a b cum =
+    let a = abs a in
+    let b = abs b in
+    let r = sub a b in
+    if (compare a b) = 1
+    then ediv_rem' r b (succ cum)
+    else (succ cum, r)
+
+  let gt x y = (Int64.compare x y) > 0
+
+  let ediv_rem a b =
+    if (gt a minus_one)
+    then div_rem a b
+    else
+      let q,r = ediv_rem' a b zero in
+      (neg q, abs r)
+
+  let ediv a b =
+    let quotient, _ = ediv_rem a b
+    in quotient
+
+  let erem a b =
+    let _, remainder = ediv_rem a b
+    in remainder
+
+  let divexact = div
+
+  (** Bit-level operations *)
+  let logand = Int64.logand
+  let logor = Int64.logor
+  let logxor = Int64.logxor
+  let lognot = Int64.lognot
+  let shift_left = Int64.shift_left
+  let shift_right = Int64.shift_right
+
+  let numbits n =
+    let nref  = ref n in
+    let count = ref zero in
+    while (!nref > !count) do
+      if (Int64.logand !nref !count == one)
+      then (count := Int64.add !count one)
+      else (nref := Int64.shift_right_logical !nref 1)
+    done;
+    Int64.to_int !count
+
+  (** Conversions *)
+  let to_int = Int64.to_int
+  let to_int32 = Int64.to_int32
+  let to_int64 x = x
+  let to_nativeint = Int64.to_nativeint
+  let to_float = Int64.to_float
+  let round_to_float x exact =
+    (* Unless the fractional part is exactly 0, round m to an odd integer *)
+    let m = if exact then x else Int64.logor x 1L in
+    (* Then convert m to float, with the current rounding mode. *)
+    Int64.to_float m
+  let to_string = Int64.to_string
+
+  (** Ordering *)
+  let compare = Int64.compare
+  let equal x y = x == y
+  let leq x y = (compare x y) < 1
+  let geq x y = (compare x y) > -1
+  let lt x y = (compare x y) < 0
+  (* let gt x y = (Int64.compare x y) > 0 *)
+  let sign = sign
+
+  let is_even i = (i mod two) = zero
+  let is_odd i = (i mod two) <> zero
+
+  let rec gcd' a b =
+    let c = erem a b
+    in if c = zero
+      then b
+      else gcd' b c
+
+  let gcd x y = gcd' x y
+
+  (** Powers *)
+  let rec pow' base exp acc =
+    if exp <= 0
+    then acc
+    else (pow' base (exp - 1) (mul acc base))
+
+  let pow base exp = 
+    if exp < 0
+    then raise (Invalid_argument "The exponent must be greater zero or greater.")
+    else if exp = 0
+      then one
+      else if exp = 1
+      then base
+      else pow' base exp one
+
+  (** Prefix and infix operators *)
+  let (~-) = neg
+  (* let (~+) x = x *)
+  let (+)  = add
+  let (-) = sub
+  let ( * ) = mul
+  let (/) = div
+  (* (/>): t -> t -> t *)
+  (* (/<): t -> t -> t *)
+  let (/|) = div
+  (* (mod): t -> t -> t *)
+  let (land) = logand
+  let (lor) = logor
+  let (lxor) = logxor
+  let (~!) = lognot
+  let (lsl) = (shift_left)
+  let (asr) = (shift_right)
+  let (~$) = of_int
+  let ( ** ) a b = pow a b
+  let (=) = equal
+  let (<) = (<)
+  let (>) = (>)
+  let (<=) = (<=)
+  let (>=) = (>=)
+  let (<>) a b = not (equal a b)
+end
+
 
 module ZBigint : Z = struct
   exception Overflow
@@ -986,6 +1149,7 @@ module ZBigint : Z = struct
   let logand = Bigint.logand
   let logor = Bigint.logor
   let logxor = Bigint.logxor
+  let lognot = Bigint.lognot
   let shift_left = Bigint.shift_left
   let shift_right = Bigint.shift_right
 
@@ -1031,7 +1195,7 @@ module ZBigint : Z = struct
   let (land) = logand
   let (lor) = logor
   let (lxor) = logxor
-  (* (~!): t -> t *)
+  let (~!) = (lognot)
   let (lsl) = (shift_left)
   let (asr) = (shift_right)
   let (~$) = of_int
