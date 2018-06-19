@@ -262,8 +262,6 @@ let pow base exp =
 
 let abs (Bigint (_neg, value)) = Bigint (Pos, value)
 
-(* not complete *)
-let numbits (Bigint (_neg, value)) = List.length value
 
 (* need to test theses *)
 let shift_left x n = mul x (pow (of_int 2) n)
@@ -288,6 +286,14 @@ let succ x = add x one
 
 let pred x = sub x one
 
+let numbits n' =
+  let result = ref 0 in
+  let n = ref @@ abs n' in
+  while (gt !n zero) do
+    result := !result + 1;
+    n := div !n two;
+  done;
+  !result
 
 let logand n1' n2' =
   let byte_val = ref one in

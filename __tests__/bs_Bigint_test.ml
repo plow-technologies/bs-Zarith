@@ -403,5 +403,30 @@ describe "Bigint" (fun () ->
   test "div" (fun () ->
     expect @@ Bigint.(div (of_int 1) (of_int 2)) |> toEqual (Bigint.zero));
 
+
+  test "numbits" (fun () ->
+    expect @@ Bigint.(numbits (of_int (-1))) |> toEqual 1);
+
+  test "numbits" (fun () ->
+    expect @@ Bigint.(numbits (of_int 1)) |> toEqual 1);
+
+  test "numbits" (fun () ->
+    expect @@ Bigint.(numbits zero) |> toEqual 0);
+
+  test "numbits" (fun () ->
+    expect @@ Bigint.(numbits (of_int 6)) |> toEqual 3);
+
+  test "numbits" (fun () ->
+    expect @@ Bigint.(numbits (of_int 5)) |> toEqual 3);
+
+  test "numbits" (fun () ->
+    expect @@ Bigint.(numbits (of_int 8)) |> toEqual 4);
+
+  test "numbits" (fun () ->
+    expect @@ Bigint.(numbits (of_int 16)) |> toEqual 5);
+
+  test "numbits" (fun () ->
+    expect @@ Bigint.(numbits (of_int (-8))) |> toEqual 4);
+
   test "pow" (fun () ->
     expect @@ Bigint.(pow (of_int 2) 2) |> toEqual (Bigint.of_int 4))
