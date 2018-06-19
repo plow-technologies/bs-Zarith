@@ -521,19 +521,19 @@ val (/): t -> t -> t
 val (/|): t -> t -> t
 (** Exact division [divexact]. *)
 
-(* (mod): t -> t -> t *)
+val (mod): t -> t -> t
 (** Remainder [rem]. *)
 
-(* (land): t -> t -> t *)
+val (land): t -> t -> t
 (** Bit-wise logical and [logand]. *)
 
-(* (lor): t -> t -> t *)
+val (lor): t -> t -> t
 (** Bit-wise logical inclusive or [logor]. *)
 
-(* (lxor): t -> t -> t *)
+val (lxor): t -> t -> t
 (** Bit-wise logical exclusive or [logxor]. *)
 
-(* (~!): t -> t *)
+val (~!): t -> t
 (** Bit-wise logical negation [lognot]. *)
 
 val (lsl): t -> int -> t

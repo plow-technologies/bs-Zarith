@@ -275,6 +275,7 @@ let neg (Bigint (sn, n)) =
   | Pos -> Bigint (Neg, n)
   | Neg -> Bigint (Pos, n)
 
+
 let equal x y = (compare x y) = 0
 
 let leq x y = (compare x y) < 1
@@ -287,94 +288,6 @@ let succ x = add x one
 
 let pred x = sub x one
 
-
-let (~-) = neg
-
-(* val (~+): t -> t *)
-
-let (+) = add
-
-let (-) = sub
-
-let ( * ) = mul
-
-let (/) = div
-
-(* (/>): t -> t -> t *)
-
-(* (/<): t -> t -> t *)
-
-let (/|) = divexact
-
-(* (mod): t -> t -> t *)
-
-(* (land): t -> t -> t *)
-
-(* (lor): t -> t -> t *)
-
-(* (lxor): t -> t -> t *)
-
-(* (~!): t -> t *)
-
-let (lsl) = shift_left
-
-let (asr) = shift_right
-
-let (~$) = of_int
-
-let ( ** ) = pow
-
-let (=) = equal
-
-let (<) = lt
-
-let (>) = gt
-
-let (<=) = leq
-
-let (>=) = geq
-
-let (<>) x y = not (equal x y)
-
-
-(*
-shift left
-x * (2 ** n)
-
-shift right
-x / (2 ** n)
- dividing it by 2**n, but it always rounds down (towards negative infinity).
-
-let rec pow a = function
-  | 0 -> 1
-  | 1 -> a
-  | n -> 
-    let b = pow a (n / 2) in
-    b * b * (if n mod 2 = 0 then 1 else a)
- *)
-
-let to_int i =
-  if ((i > of_int max_int) || (i < of_int min_int) )
-  then raise Overflow
-  else int_of_string (to_string i)
-
-let to_int32 i =
-  if ((i > of_int32 Int32.max_int) || (i < of_int32 Int32.min_int) )
-  then raise Overflow
-  else Int32.of_string (to_string i)
-
-let to_int64 i =
-  if ((i > of_int64 Int64.max_int) || (i < of_int64 Int64.min_int) )
-  then raise Overflow
-  else Int64.of_string (to_string i)
-
-let to_nativeint i =
-  if ((i > of_nativeint Nativeint.max_int) || (i < of_nativeint Nativeint.min_int) )
-  then raise Overflow
-  else Nativeint.of_string (to_string i)
-
-let to_float i =
-  float_of_string (to_string i)
 
 let logand n1' n2' =
   let byte_val = ref one in
@@ -427,6 +340,80 @@ let lognot n1 =
     byte_val := mul !byte_val two;
   done;
   sub !byte_val n1
+
+
+
+let (~-) = neg
+
+(* val (~+): t -> t *)
+
+let (+) = add
+
+let (-) = sub
+
+let ( * ) = mul
+
+let (/) = div
+
+(* (/>): t -> t -> t *)
+
+(* (/<): t -> t -> t *)
+
+let (/|) = divexact
+
+let (mod) = (rem)
+
+let (land) = (logand)
+
+let (lor) = (logor)
+
+let (lxor) = (logxor)
+
+let (~!) = (lognot)
+
+let (lsl) = shift_left
+
+let (asr) = shift_right
+
+let (~$) = of_int
+
+let ( ** ) = pow
+
+let (=) = equal
+
+let (<) = lt
+
+let (>) = gt
+
+let (<=) = leq
+
+let (>=) = geq
+
+let (<>) x y = not (equal x y)
+
+
+let to_int i =
+  if ((i > of_int max_int) || (i < of_int min_int) )
+  then raise Overflow
+  else int_of_string (to_string i)
+
+let to_int32 i =
+  if ((i > of_int32 Int32.max_int) || (i < of_int32 Int32.min_int) )
+  then raise Overflow
+  else Int32.of_string (to_string i)
+
+let to_int64 i =
+  if ((i > of_int64 Int64.max_int) || (i < of_int64 Int64.min_int) )
+  then raise Overflow
+  else Int64.of_string (to_string i)
+
+let to_nativeint i =
+  if ((i > of_nativeint Nativeint.max_int) || (i < of_nativeint Nativeint.min_int) )
+  then raise Overflow
+  else Nativeint.of_string (to_string i)
+
+let to_float i =
+  float_of_string (to_string i)
 
 let round_to_float x exact =
   let m = x in

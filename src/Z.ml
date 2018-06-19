@@ -520,7 +520,7 @@ val (/): t -> t -> t
 val (/|): t -> t -> t
 (** Exact division [divexact]. *)
 
-(* (mod): t -> t -> t *)
+val (mod): t -> t -> t
 (** Remainder [rem]. *)
 
 val (land): t -> t -> t
@@ -764,7 +764,7 @@ module ZInt : Z = struct
   (* (/>): t -> t -> t *)
   (* (/<): t -> t -> t *)
   let (/|) = div
-  (* (mod): t -> t -> t *)
+  let (mod) = (rem)
   let (land) = (land)
   let (lor) = (lor)
   let (lxor) = (lxor)
@@ -1191,7 +1191,7 @@ module ZBigint : Z = struct
   (* (/>): t -> t -> t *)
   (* (/<): t -> t -> t *)
   let (/|) = div
-  (* (mod): t -> t -> t *)
+  let (mod) = (rem)
   let (land) = logand
   let (lor) = logor
   let (lxor) = logxor

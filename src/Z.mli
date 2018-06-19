@@ -520,7 +520,7 @@ val (/): t -> t -> t
 val (/|): t -> t -> t
 (** Exact division [divexact]. *)
 
-(* (mod): t -> t -> t *)
+val (mod): t -> t -> t
 (** Remainder [rem]. *)
 
 val (land): t -> t -> t
