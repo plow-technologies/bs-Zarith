@@ -1114,6 +1114,173 @@ module ZInt64 : Z = struct
   let (<>) a b = not (equal a b)
 end
 
+module ZNativeint : Z = struct
+  exception Overflow
+  type t = Nativeint.t
+
+  (** Construction *)
+  let zero = Nativeint.zero
+  let one = Nativeint.one
+  let two = Nativeint.of_int 2
+  let minus_one = Nativeint.minus_one
+
+  let of_int = Nativeint.of_int
+  let of_int32 = Nativeint.of_int32
+  let of_int64 = Int64.to_nativeint
+  let of_nativeint x = x
+  let of_float = Nativeint.of_float
+  let of_string = Nativeint.of_string
+  let of_substring s ~pos ~len = Nativeint.of_string (String.sub s pos len)
+
+  (** Basic arithmetic operations *)
+  let succ x = Nativeint.add x one 
+  let pred x = Nativeint.sub x one
+
+  let abs = Nativeint.abs
+  let neg = Nativeint.neg
+  let add = Nativeint.add
+  let sub = Nativeint.sub
+  let mul = Nativeint.mul
+
+  let (mod) a n = Nativeint.sub a (Nativeint.mul n (Nativeint.div a n))
+  let div = Nativeint.div
+  let rem x y = x mod y
+  let div_rem a b = (div a b, rem a b)
+
+  let sign n =
+    if n == (Nativeint.of_int 0)
+    then 0
+    else
+      if (Nativeint.compare n (Nativeint.of_int 0)) < 0
+      then -1
+      else 1
+
+  let rec ediv_rem' a b cum =
+    let a = abs a in
+    let b = abs b in
+    let r = sub a b in
+    if (compare a b) = 1
+    then ediv_rem' r b (succ cum)
+    else (succ cum, r)
+
+  let gt x y = (Nativeint.compare x y) > 0
+
+  let ediv_rem a b =
+    if (gt a minus_one)
+    then div_rem a b
+    else
+      let q,r = ediv_rem' a b zero in
+      (neg q, abs r)
+
+  let ediv a b =
+    let quotient, _ = ediv_rem a b
+    in quotient
+
+  let erem a b =
+    let _, remainder = ediv_rem a b
+    in remainder
+
+  let divexact = div
+
+  (** Bit-level operations *)
+  let logand = Nativeint.logand
+  let logor = Nativeint.logor
+  let logxor = Nativeint.logxor
+  let lognot = Nativeint.lognot
+  let shift_left = Nativeint.shift_left
+  let shift_right = Nativeint.shift_right
+
+  let numbits n =
+    let nref  = ref n in
+    let count = ref zero in
+    while (!nref > !count) do
+      if (Nativeint.logand !nref !count == one)
+      then (count := Nativeint.add !count one)
+      else (nref := Nativeint.shift_right_logical !nref 1)
+    done;
+    Nativeint.to_int !count
+
+  (** Conversions *)
+  let to_int = Nativeint.to_int
+  let to_int32 = Nativeint.to_int32
+  let to_int64 = Int64.of_nativeint
+  let to_nativeint x = x
+  let to_float = Nativeint.to_float
+  let round_to_float x exact =
+    let m = to_int64 x in
+    (* Unless the fractional part is exactly 0, round m to an odd integer *)
+    let m = if exact then m else Int64.logor m 1L in
+    (* Then convert m to float, with the current rounding mode. *)
+    Int64.to_float m
+  let to_string = Nativeint.to_string
+
+  (** Ordering *)
+  let compare = Nativeint.compare
+  let equal x y = x == y
+  let leq x y = (compare x y) < 1
+  let geq x y = (compare x y) > -1
+  let lt x y = (compare x y) < 0
+  (* let gt x y = (Nativeint.compare x y) > 0 *)
+  let sign = sign
+  let min x y =
+    if leq x y then x else y
+  let max x y =
+    if geq x y then x else y
+
+
+  let is_even i = (i mod two) = zero
+  let is_odd i = (i mod two) <> zero
+
+  let rec gcd' a b =
+    let c = erem a b
+    in if c = zero
+      then b
+      else gcd' b c
+
+  let gcd x y = gcd' x y
+
+  (** Powers *)
+  let rec pow' base exp acc =
+    if exp <= 0
+    then acc
+    else (pow' base (exp - 1) (mul acc base))
+
+  let pow base exp = 
+    if exp < 0
+    then raise (Invalid_argument "The exponent must be greater zero or greater.")
+    else if exp = 0
+      then one
+      else if exp = 1
+      then base
+      else pow' base exp one
+
+  (** Prefix and infix operators *)
+  let (~-) = neg
+  let (~+) x = x
+  let (+)  = add
+  let (-) = sub
+  let ( * ) = mul
+  let (/) = div
+  (* (/>): t -> t -> t *)
+  (* (/<): t -> t -> t *)
+  let (/|) = div
+  (* (mod): t -> t -> t *)
+  let (land) = logand
+  let (lor) = logor
+  let (lxor) = logxor
+  let (~!) = lognot
+  let (lsl) = (shift_left)
+  let (asr) = (shift_right)
+  let (~$) = of_int
+  let ( ** ) a b = pow a b
+  let (=) = equal
+  let (<) = (<)
+  let (>) = (>)
+  let (<=) = (<=)
+  let (>=) = (>=)
+  let (<>) a b = not (equal a b)
+end
+
 
 module ZBigint : Z = struct
   exception Overflow

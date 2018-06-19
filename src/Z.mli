@@ -580,4 +580,5 @@ end
 module ZInt : Z
 module ZInt32 : Z
 module ZInt64 : Z
+module ZNativeint : Z
 module ZBigint : Z
