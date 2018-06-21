@@ -1,10 +1,11 @@
 {
   "name": "bs-Zarith",
   "version": "1.0.0",
-  "description": "Support arithmetic and logical operations over arbitrary-precision integers and rational numbers in BuckleScript",
+  "description": "Support Bigint, Q (rational numbers) and Z (integer numbers) in BuckleScript",
   "main": "index.js",
   "scripts": {
     "build": "bsb -make-world",
+    "clean": "bsb -clean-world",
     "start": "bsb -make-world -w",
     "test": "npm run build && jest",
     "watch:bsb": "bsb -make-world -w"
@@ -16,14 +17,14 @@
   "keywords": [
     "bucklescript"
   ],
-  "author": "mchaver",
-  "license": "MIT",
+  "author": "James M.C. Haver II",
+  "license": "BSD-3",
   "bugs": {
     "url": "https://github.com/plow-technologies/bs-Zarith/issues"
   },
   "homepage": "https://github.com/plow-technologies/bs-Zarith#readme",
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.2",
-    "bs-platform": "^3.0.0"
+    "bs-platform": "^3.1.5"
   }
 }
