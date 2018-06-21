@@ -1,5 +1,7 @@
 module Q (Z: Z.Z) : sig
   (** {1 Types} *)
+
+
   type t = {
       num: Z.t; (** Numerator. *)
       den: Z.t; (** Denominator, >= 0 *)
@@ -32,7 +34,7 @@ module Q (Z: Z.Z) : sig
   val undef: t
   (** 0/0. *)
 
-  val of_bigint: Z.t -> t
+  val of_bigint: Bigint.t -> t
   val of_int: int -> t
   val of_int32: int32 -> t
   val of_int64: int64 -> t
@@ -64,6 +66,7 @@ module Q (Z: Z.Z) : sig
 
   val den: t -> Z.t
   (** Get the denominator. *)
+
 
   (** {1 Testing} *)
 
@@ -128,7 +131,7 @@ module Q (Z: Z.Z) : sig
 
   (** {1 Conversions} *)
 
-  val to_bigint: t -> Z.t
+  val to_bigint: t -> Bigint.t
   val to_int: t -> int
   val to_int32: t -> int32
   val to_int64: t -> int64
@@ -267,5 +270,397 @@ module Q (Z: Z.Z) : sig
   (** Same as [geq]. *)
 
   val (<>): t -> t -> bool
-  (** [a <> b] is equivalent to [not (equal a b)]. *)
+                        (** [a <> b] is equivalent to [not (equal a b)]. *)
+end
+
+module QInt : sig
+  module M : sig
+    type t = Q(Z.Int).t = { num : Z.Int.t; den : Z.Int.t; }
+    val mk : Z.Int.t -> Z.Int.t -> t
+    val make_real : Z.Int.t -> Z.Int.t -> t
+    val make : Z.Int.t -> Z.Int.t -> t
+    val of_bigint : Bigint.t -> t
+    val of_int : int -> t
+    val of_int32 : Int32.t -> t
+    val of_int64 : Int64.t -> t
+    val of_nativeint : nativeint -> t
+    val of_ints : int -> int -> t
+    val zero : t
+    val one : t
+    val minus_one : t
+    val inf : t
+    val minus_inf : t
+    val undef : t
+    val of_float : float -> t
+    val of_string : string -> t
+    type kind = Q(Z.Int).kind = ZERO | INF | MINF | UNDEF | NZERO
+    val classify : t -> kind
+    val is_real : t -> bool
+    val num : t -> Z.Int.t
+    val den : t -> Z.Int.t
+    val sign : t -> int
+    val equal : t -> t -> bool
+    val compare : t -> t -> int
+    val min : t -> t -> t
+    val max : t -> t -> t
+    val leq : t -> t -> bool
+    val geq : t -> t -> bool
+    val lt : t -> t -> bool
+    val gt : t -> t -> bool
+    val to_string : t -> string
+    val to_bigint: t -> Bigint.t
+    val to_int : t -> int
+    val to_int32 : t -> int32
+    val to_int64 : t -> int64
+    val to_nativeint : t -> nativeint
+    val to_float : t -> float
+    val neg : t -> t
+    val abs : t -> t
+    val aors : (Z.Int.t -> Z.Int.t -> Z.Int.t) -> t -> t -> t
+    val add : t -> t -> t
+    val sub : t -> t -> t
+    val mul : t -> t -> t
+    val inv : t -> t
+    val div : t -> t -> t
+    val mul_2exp : t -> int -> t
+    val div_2exp : t -> int -> t
+    val print : t -> unit
+    val output : out_channel -> t -> unit
+    val sprint : unit -> t -> string
+    val bprint : Buffer.t -> t -> unit
+    val pp_print : Format.formatter -> t -> unit
+    val ( ~- ) : t -> t
+    val ( ~+ ) : 'a -> 'a
+    val ( + ) : t -> t -> t
+    val ( - ) : t -> t -> t
+    val ( * ) : t -> t -> t
+    val ( / ) : t -> t -> t
+    val ( lsl ) : t -> int -> t
+    val ( asr ) : t -> int -> t
+    val ( ~$ ) : int -> t
+    val ( // ) : int -> int -> t
+    val ( ~$$ ) : Z.Int.t -> t
+    val ( /// ) : Z.Int.t -> Z.Int.t -> t
+    val ( = ) : t -> t -> bool
+    val ( < ) : t -> t -> bool
+    val ( > ) : t -> t -> bool
+    val ( <= ) : t -> t -> bool
+    val ( >= ) : t -> t -> bool
+    val ( <> ) : t -> t -> bool
+  end
+end
+module QInt32 : sig
+  module M : sig
+    type t = Q(Z.Int32).t = { num : Z.Int32.t; den : Z.Int32.t; }
+    val mk : Z.Int32.t -> Z.Int32.t -> t
+    val make_real : Z.Int32.t -> Z.Int32.t -> t
+    val make : Z.Int32.t -> Z.Int32.t -> t
+    val of_bigint : Bigint.t -> t
+    val of_int : int -> t
+    val of_int32 : Int32.t -> t
+    val of_int64 : Int64.t -> t
+    val of_nativeint : nativeint -> t
+    val of_ints : int -> int -> t
+    val zero : t
+    val one : t
+    val minus_one : t
+    val inf : t
+    val minus_inf : t
+    val undef : t
+    val of_float : float -> t
+    val of_string : string -> t
+    type kind = Q(Z.Int32).kind = ZERO | INF | MINF | UNDEF | NZERO
+    val classify : t -> kind
+    val is_real : t -> bool
+    val num : t -> Z.Int32.t
+    val den : t -> Z.Int32.t
+    val sign : t -> int
+    val equal : t -> t -> bool
+    val compare : t -> t -> int
+    val min : t -> t -> t
+    val max : t -> t -> t
+    val leq : t -> t -> bool
+    val geq : t -> t -> bool
+    val lt : t -> t -> bool
+    val gt : t -> t -> bool
+    val to_string : t -> string
+    val to_bigint: t -> Bigint.t
+    val to_int : t -> int
+    val to_int32 : t -> int32
+    val to_int64 : t -> int64
+    val to_nativeint : t -> nativeint
+    val to_float : t -> float
+    val neg : t -> t
+    val abs : t -> t
+    val aors : (Z.Int32.t -> Z.Int32.t -> Z.Int32.t) -> t -> t -> t
+    val add : t -> t -> t
+    val sub : t -> t -> t
+    val mul : t -> t -> t
+    val inv : t -> t
+    val div : t -> t -> t
+    val mul_2exp : t -> int -> t
+    val div_2exp : t -> int -> t
+    val print : t -> unit
+    val output : out_channel -> t -> unit
+    val sprint : unit -> t -> string
+    val bprint : Buffer.t -> t -> unit
+    val pp_print : Format.formatter -> t -> unit
+    val ( ~- ) : t -> t
+    val ( ~+ ) : 'a -> 'a
+    val ( + ) : t -> t -> t
+    val ( - ) : t -> t -> t
+    val ( * ) : t -> t -> t
+    val ( / ) : t -> t -> t
+    val ( lsl ) : t -> int -> t
+    val ( asr ) : t -> int -> t
+    val ( ~$ ) : int -> t
+    val ( // ) : int -> int -> t
+    val ( ~$$ ) : Z.Int32.t -> t
+    val ( /// ) : Z.Int32.t -> Z.Int32.t -> t
+    val ( = ) : t -> t -> bool
+    val ( < ) : t -> t -> bool
+    val ( > ) : t -> t -> bool
+    val ( <= ) : t -> t -> bool
+    val ( >= ) : t -> t -> bool
+    val ( <> ) : t -> t -> bool
+  end
+end
+module QInt64 : sig
+  module M : sig
+    type t = Q(Z.Int64).t = { num : Z.Int64.t; den : Z.Int64.t; }
+    val mk : Z.Int64.t -> Z.Int64.t -> t
+    val make_real : Z.Int64.t -> Z.Int64.t -> t
+    val make : Z.Int64.t -> Z.Int64.t -> t
+    val of_bigint : Bigint.t -> t
+    val of_int : int -> t
+    val of_int32 : Int32.t -> t
+    val of_int64 : Int64.t -> t
+    val of_nativeint : nativeint -> t
+    val of_ints : int -> int -> t
+    val zero : t
+    val one : t
+    val minus_one : t
+    val inf : t
+    val minus_inf : t
+    val undef : t
+    val of_float : float -> t
+    val of_string : string -> t
+    type kind = Q(Z.Int64).kind = ZERO | INF | MINF | UNDEF | NZERO
+    val classify : t -> kind
+    val is_real : t -> bool
+    val num : t -> Z.Int64.t
+    val den : t -> Z.Int64.t
+    val sign : t -> int
+    val equal : t -> t -> bool
+    val compare : t -> t -> int
+    val min : t -> t -> t
+    val max : t -> t -> t
+    val leq : t -> t -> bool
+    val geq : t -> t -> bool
+    val lt : t -> t -> bool
+    val gt : t -> t -> bool
+    val to_string : t -> string
+    val to_bigint: t -> Bigint.t
+    val to_int : t -> int
+    val to_int32 : t -> int32
+    val to_int64 : t -> int64
+    val to_nativeint : t -> nativeint
+    val to_float : t -> float
+    val neg : t -> t
+    val abs : t -> t
+    val aors : (Z.Int64.t -> Z.Int64.t -> Z.Int64.t) -> t -> t -> t
+    val add : t -> t -> t
+    val sub : t -> t -> t
+    val mul : t -> t -> t
+    val inv : t -> t
+    val div : t -> t -> t
+    val mul_2exp : t -> int -> t
+    val div_2exp : t -> int -> t
+    val print : t -> unit
+    val output : out_channel -> t -> unit
+    val sprint : unit -> t -> string
+    val bprint : Buffer.t -> t -> unit
+    val pp_print : Format.formatter -> t -> unit
+    val ( ~- ) : t -> t
+    val ( ~+ ) : 'a -> 'a
+    val ( + ) : t -> t -> t
+    val ( - ) : t -> t -> t
+    val ( * ) : t -> t -> t
+    val ( / ) : t -> t -> t
+    val ( lsl ) : t -> int -> t
+    val ( asr ) : t -> int -> t
+    val ( ~$ ) : int -> t
+    val ( // ) : int -> int -> t
+    val ( ~$$ ) : Z.Int64.t -> t
+    val ( /// ) : Z.Int64.t -> Z.Int64.t -> t
+    val ( = ) : t -> t -> bool
+    val ( < ) : t -> t -> bool
+    val ( > ) : t -> t -> bool
+    val ( <= ) : t -> t -> bool
+    val ( >= ) : t -> t -> bool
+    val ( <> ) : t -> t -> bool
+  end
+end
+module QNativeint : sig     
+  module M : sig
+    type t = Q(Z.Nativeint).t = {num : Z.Nativeint.t; den : Z.Nativeint.t;}
+    val mk : Z.Nativeint.t -> Z.Nativeint.t -> t
+    val make_real : Z.Nativeint.t -> Z.Nativeint.t -> t
+    val make : Z.Nativeint.t -> Z.Nativeint.t -> t
+    val of_bigint : Bigint.t -> t
+    val of_int : int -> t
+    val of_int32 : Int32.t -> t
+    val of_int64 : Int64.t -> t
+    val of_nativeint : nativeint -> t
+    val of_ints : int -> int -> t
+    val zero : t
+    val one : t
+    val minus_one : t
+    val inf : t
+    val minus_inf : t
+    val undef : t
+    val of_float : float -> t
+    val of_string : string -> t
+    type kind =
+           Q(Z.Nativeint).kind =
+      ZERO
+    | INF
+    | MINF
+    | UNDEF
+    | NZERO
+    val classify : t -> kind
+    val is_real : t -> bool
+    val num : t -> Z.Nativeint.t
+    val den : t -> Z.Nativeint.t
+    val sign : t -> int
+    val equal : t -> t -> bool
+    val compare : t -> t -> int
+    val min : t -> t -> t
+    val max : t -> t -> t
+    val leq : t -> t -> bool
+    val geq : t -> t -> bool
+    val lt : t -> t -> bool
+    val gt : t -> t -> bool
+    val to_string : t -> string
+    val to_bigint: t -> Bigint.t
+    val to_int : t -> int
+    val to_int32 : t -> int32
+    val to_int64 : t -> int64
+    val to_nativeint : t -> nativeint
+    val to_float : t -> float
+    val neg : t -> t
+    val abs : t -> t
+    val aors :
+      (Z.Nativeint.t -> Z.Nativeint.t -> Z.Nativeint.t) -> t -> t -> t
+    val add : t -> t -> t
+    val sub : t -> t -> t
+    val mul : t -> t -> t
+    val inv : t -> t
+    val div : t -> t -> t
+    val mul_2exp : t -> int -> t
+    val div_2exp : t -> int -> t
+    val print : t -> unit
+    val output : out_channel -> t -> unit
+    val sprint : unit -> t -> string
+    val bprint : Buffer.t -> t -> unit
+    val pp_print : Format.formatter -> t -> unit
+    val ( ~- ) : t -> t
+    val ( ~+ ) : 'a -> 'a
+    val ( + ) : t -> t -> t
+    val ( - ) : t -> t -> t
+    val ( * ) : t -> t -> t
+    val ( / ) : t -> t -> t
+    val ( lsl ) : t -> int -> t
+    val ( asr ) : t -> int -> t
+    val ( ~$ ) : int -> t
+    val ( // ) : int -> int -> t
+    val ( ~$$ ) : Z.Nativeint.t -> t
+    val ( /// ) : Z.Nativeint.t -> Z.Nativeint.t -> t
+    val ( = ) : t -> t -> bool
+    val ( < ) : t -> t -> bool
+    val ( > ) : t -> t -> bool
+    val ( <= ) : t -> t -> bool
+    val ( >= ) : t -> t -> bool
+    val ( <> ) : t -> t -> bool
+  end
+end
+module QBigint : sig
+  module M : sig
+    type t =
+           Q(Z.Bigint).t = {
+        num : Z.Bigint.t;
+        den : Z.Bigint.t;
+      }
+    val mk : Z.Bigint.t -> Z.Bigint.t -> t
+    val make_real : Z.Bigint.t -> Z.Bigint.t -> t
+    val make : Z.Bigint.t -> Z.Bigint.t -> t
+    val of_bigint : Bigint.t -> t
+    val of_int : int -> t
+    val of_int32 : Int32.t -> t
+    val of_int64 : Int64.t -> t
+    val of_nativeint : nativeint -> t
+    val of_ints : int -> int -> t
+    val zero : t
+    val one : t
+    val minus_one : t
+    val inf : t
+    val minus_inf : t
+    val undef : t
+    val of_float : float -> t
+    val of_string : string -> t
+    type kind = Q(Z.Bigint).kind = ZERO | INF | MINF | UNDEF | NZERO
+    val classify : t -> kind
+    val is_real : t -> bool
+    val num : t -> Z.Bigint.t
+    val den : t -> Z.Bigint.t
+    val sign : t -> int
+    val equal : t -> t -> bool
+    val compare : t -> t -> int
+    val min : t -> t -> t
+    val max : t -> t -> t
+    val leq : t -> t -> bool
+    val geq : t -> t -> bool
+    val lt : t -> t -> bool
+    val gt : t -> t -> bool
+    val to_string : t -> string
+    val to_bigint: t -> Bigint.t
+    val to_int : t -> int
+    val to_int32 : t -> int32
+    val to_int64 : t -> int64
+    val to_nativeint : t -> nativeint
+    val to_float : t -> float
+    val neg : t -> t
+    val abs : t -> t
+    val aors : (Z.Bigint.t -> Z.Bigint.t -> Z.Bigint.t) -> t -> t -> t
+    val add : t -> t -> t
+    val sub : t -> t -> t
+    val mul : t -> t -> t
+    val inv : t -> t
+    val div : t -> t -> t
+    val mul_2exp : t -> int -> t
+    val div_2exp : t -> int -> t
+    val print : t -> unit
+    val output : out_channel -> t -> unit
+    val sprint : unit -> t -> string
+    val bprint : Buffer.t -> t -> unit
+    val pp_print : Format.formatter -> t -> unit
+    val ( ~- ) : t -> t
+    val ( ~+ ) : 'a -> 'a
+    val ( + ) : t -> t -> t
+    val ( - ) : t -> t -> t
+    val ( * ) : t -> t -> t
+    val ( / ) : t -> t -> t
+    val ( lsl ) : t -> int -> t
+    val ( asr ) : t -> int -> t
+    val ( ~$ ) : int -> t
+    val ( // ) : int -> int -> t
+    val ( ~$$ ) : Z.Bigint.t -> t
+    val ( /// ) : Z.Bigint.t -> Z.Bigint.t -> t
+    val ( = ) : t -> t -> bool
+    val ( < ) : t -> t -> bool
+    val ( > ) : t -> t -> bool
+    val ( <= ) : t -> t -> bool
+    val ( >= ) : t -> t -> bool
+    val ( <> ) : t -> t -> bool
+  end
 end

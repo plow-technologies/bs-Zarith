@@ -34,26 +34,28 @@ module Q (Z: Z.Z) = struct
       if sd > 0 then make_real n d else
         make_real (Z.neg n) (Z.neg d)
 
-  let of_bigint n = mk n Z.one
+  let eval_of_int n = mk n Z.one
   (* n/1 *)
 
-  let of_int n = of_bigint (Z.of_int n)
+  let of_int n = eval_of_int (Z.of_int n)
 
-  let of_int32 n = of_bigint (Z.of_int32 n)
+  let of_int32 n = eval_of_int (Z.of_int32 n)
 
-  let of_int64 n = of_bigint (Z.of_int64 n)
+  let of_int64 n = eval_of_int (Z.of_int64 n)
 
-  let of_nativeint n = of_bigint (Z.of_nativeint n)
+  let of_nativeint n = eval_of_int (Z.of_nativeint n)
 
+  let of_bigint n = eval_of_int (Z.of_bigint n)
+                     
   let of_ints n d = make (Z.of_int n) (Z.of_int d)
 
-  let zero = of_bigint Z.zero
+  let zero = eval_of_int Z.zero
   (* 0/1 *)
 
-  let one = of_bigint Z.one
+  let one = eval_of_int Z.one
   (* 1/1 *)
 
-  let minus_one = of_bigint Z.minus_one
+  let minus_one = eval_of_int Z.minus_one
   (* -1/1 *)
 
   let inf = mk Z.one Z.zero
@@ -72,7 +74,7 @@ module Q (Z: Z.Z) = struct
           let m,e = frexp d in
           (* put into the form m * 2^e, where m is an integer *)
           let m,e = Z.of_float (ldexp m 53), e-53 in
-          if e >= 0 then of_bigint (Z.shift_left m e)
+          if e >= 0 then eval_of_int (Z.shift_left m e)
           else make_real m (Z.shift_left Z.one (-e))
 
   let of_string s =
@@ -85,7 +87,7 @@ module Q (Z: Z.Z) = struct
       if s = "inf" || s = "+inf" then inf
       else if s = "-inf" then minus_inf
       else if s = "undef" then undef
-      else of_bigint (Z.of_string s)
+      else eval_of_int (Z.of_string s)
 
 
   (* queries *)
@@ -159,17 +161,19 @@ module Q (Z: Z.Z) = struct
        if Z.equal n.den Z.one then Z.to_string n.num
        else (Z.to_string n.num) ^ "/" ^ (Z.to_string n.den)
 
-  let to_bigint x = Z.div x.num x.den
   (* raises a Division by zero in case x is undefined or infinity *)
+  let eval_to_int x = Z.div x.num x.den
 
-  let to_int x = Z.to_int (to_bigint x)
+  let to_int x = Z.to_int (eval_to_int x)
 
-  let to_int32 x = Z.to_int32 (to_bigint x)
+  let to_int32 x = Z.to_int32 (eval_to_int x)
 
-  let to_int64 x = Z.to_int64 (to_bigint x)
+  let to_int64 x = Z.to_int64 (eval_to_int x)
 
-  let to_nativeint x = Z.to_nativeint (to_bigint x)
+  let to_nativeint x = Z.to_nativeint (eval_to_int x)
 
+  let to_bigint x = Z.to_bigint (eval_to_int x)
+                     
   let to_float x =
     match classify x with
     | ZERO -> 0.0
@@ -340,7 +344,7 @@ module Q (Z: Z.Z) = struct
   let (asr) = div_2exp
   let (~$) = of_int
   let (//) = of_ints
-  let (~$$) = of_bigint
+  let (~$$) = eval_of_int
   let (///) = make
   let (=) = equal
   let (<) = lt
@@ -348,4 +352,30 @@ module Q (Z: Z.Z) = struct
   let (<=) = leq
   let (>=) = geq
   let (<>) a b = not (equal a b)
+end
+
+(* store in separate name spaces to avoid conflict. we want to expose them as Q.Int, Q.Int32, Q.Int64, Q.Nativeint, Q.Bigint *)
+module QInt = struct
+  include Q(Z.Int)  
+  module M = Q(Z.Int)
+end
+
+module QInt32 = struct
+  include Q(Z.Int32)
+  module M = Q(Z.Int32)
+end
+
+module QInt64 = struct
+  include Q(Z.Int64)
+  module M = Q(Z.Int64)
+end
+
+module QNativeint = struct
+  include Q(Z.Nativeint)
+  module M = Q(Z.Nativeint)
+end
+                     
+module QBigint = struct
+  include Q(Z.Bigint)
+  module M = Q(Z.Bigint)
 end
