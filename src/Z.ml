@@ -30,6 +30,9 @@ module type Z = sig
   val of_nativeint: nativeint -> t
   (** Converts from a native integer. *)
 
+  val of_bigint: Bigint.t -> t
+  (** Converts from an arbitrary length integer. *)
+    
   val of_float: float -> t
   (** Converts a float to an integer. *)
 
@@ -212,6 +215,9 @@ module type Z = sig
   val to_nativeint: t -> nativeint
   (** Converts to a native integer. May raise [Overflow]. *)
 
+  val to_bigint: t -> Bigint.t
+  (** Converts to an arbitrary length integer. May raise [Overflow]. *)
+    
   val to_float: t -> float
   (** Converts to a floating-point value.
     This function rounds the given integer according to the current
@@ -590,6 +596,7 @@ module ZInt : Z = struct
   let of_int32 = Int32.to_int
   let of_int64 = Int64.to_int
   let of_nativeint = Nativeint.to_int
+  let of_bigint = Bigint.to_int                 
   let of_float = int_of_float
   let of_string = int_of_string
   let of_substring s ~pos ~len = int_of_string (String.sub s pos len)
@@ -671,6 +678,7 @@ module ZInt : Z = struct
   let to_int32 = Int32.of_int
   let to_int64 = Int64.of_int
   let to_nativeint = Nativeint.of_int
+  let to_bigint = Bigint.of_int
   let to_float = float_of_int
   let round_to_float x exact =
     let m = to_int64 x in
@@ -793,6 +801,7 @@ module ZInt32 : Z = struct
   let of_int = Int32.of_int
   let of_int32 x = x
   let of_int64 = Int64.to_int32
+  let of_bigint = Bigint.to_int32
   let of_nativeint = Nativeint.to_int32
   let of_float = Int32.of_float
   let of_string = Int32.of_string
@@ -870,6 +879,7 @@ module ZInt32 : Z = struct
   let to_int = Int32.to_int
   let to_int32 x = x
   let to_int64 = Int64.of_int32
+  let to_bigint = Bigint.of_int32
   let to_nativeint = Nativeint.of_int32
   let to_float = Int32.to_float
   let round_to_float x exact =
@@ -960,6 +970,7 @@ module ZInt64 : Z = struct
   let of_int = Int64.of_int
   let of_int32 = Int64.of_int32
   let of_int64 x = x
+  let of_bigint = Bigint.to_int64
   let of_nativeint = Int64.of_nativeint
   let of_float = Int64.of_float
   let of_string = Int64.of_string
@@ -1037,6 +1048,7 @@ module ZInt64 : Z = struct
   let to_int = Int64.to_int
   let to_int32 = Int64.to_int32
   let to_int64 x = x
+  let to_bigint = Bigint.of_int64
   let to_nativeint = Int64.to_nativeint
   let to_float = Int64.to_float
   let round_to_float x exact =
@@ -1126,6 +1138,7 @@ module ZNativeint : Z = struct
   let of_int = Nativeint.of_int
   let of_int32 = Nativeint.of_int32
   let of_int64 = Int64.to_nativeint
+  let of_bigint = Bigint.to_nativeint
   let of_nativeint x = x
   let of_float = Nativeint.of_float
   let of_string = Nativeint.of_string
@@ -1203,6 +1216,7 @@ module ZNativeint : Z = struct
   let to_int = Nativeint.to_int
   let to_int32 = Nativeint.to_int32
   let to_int64 = Int64.of_nativeint
+  let to_bigint = Bigint.of_nativeint
   let to_nativeint x = x
   let to_float = Nativeint.to_float
   let round_to_float x exact =
@@ -1294,6 +1308,7 @@ module ZBigint : Z = struct
   let of_int32 = Bigint.of_int32
   let of_int64 = Bigint.of_int64
   let of_nativeint = Bigint.of_nativeint
+  let of_bigint x = x
   let of_float = Bigint.of_float
   let of_string = Bigint.of_string
   let of_substring = Bigint.of_substring
@@ -1336,6 +1351,7 @@ module ZBigint : Z = struct
   let to_int32 = Bigint.to_int32
   let to_int64 = Bigint.to_int64
   let to_nativeint = Bigint.to_nativeint
+  let to_bigint x = x
   let to_float = Bigint.to_float
   let round_to_float = Bigint.round_to_float
   let to_string = Bigint.to_string

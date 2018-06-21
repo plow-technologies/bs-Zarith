@@ -1,5 +1,4 @@
 module type Z = sig
-
   exception Overflow
   (** Raised by conversion functions when the value cannot be represented in
     the destination type.
@@ -31,6 +30,9 @@ module type Z = sig
   val of_nativeint: nativeint -> t
   (** Converts from a native integer. *)
 
+  val of_bigint: Bigint.t -> t
+  (** Converts from an arbitrary length integer. *)
+    
   val of_float: float -> t
   (** Converts a float to an integer. *)
 
@@ -213,6 +215,9 @@ module type Z = sig
   val to_nativeint: t -> nativeint
   (** Converts to a native integer. May raise [Overflow]. *)
 
+  val to_bigint: t -> Bigint.t
+  (** Converts to an arbitrary length integer. May raise [Overflow]. *)
+    
   val to_float: t -> float
   (** Converts to a floating-point value.
     This function rounds the given integer according to the current

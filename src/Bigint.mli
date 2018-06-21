@@ -1,7 +1,7 @@
 exception Overflow
 (** Raised by conversion functions when the value cannot be represented in
     the destination type.
-  *)
+ *)
 
 type sign = Pos | Neg
 (** Sum type representing the Bigint's sign. *)
@@ -38,12 +38,12 @@ val of_float: float -> t
 val of_string: string -> t
 (** Converts a string to an integer.
     An optional [-] prefix indicates a negative number.
-*)
+ *)
 
 val of_substring : string -> pos:int -> len:int -> t
 (**
 
-*)
+ *)
 
 (** {1 Basic arithmetic operations} *)
 
@@ -72,20 +72,20 @@ val div: t -> t -> t
 (** Integer division. The result is truncated towards zero
     and obeys the rule of signs.
     Raises [Division_by_zero] if the divisor (second argument) is 0.
-  *)
+ *)
 
 val rem: t -> t -> t
 (** Integer remainder. Can raise a [Division_by_zero].
     The result of [rem a b] has the sign of [a], and its absolute value is
     strictly smaller than the absolute value of [b].
     The result satisfies the equality [a = b * div a b + rem a b].
-  *)
+ *)
 
 val div_rem: t -> t -> (t * t)
 (** Computes both the integer quotient and the remainder.
     [div_rem a b] is equal to [(div a b, rem a b)].
     Raises [Division_by_zero] if [b = 0].
-  *)
+ *)
 
 (* val cdiv: t -> t -> t *)
 (** Integer division with rounding towards +oo (ceiling).
@@ -113,14 +113,14 @@ val erem: t -> t -> t
 (** Euclidean remainder.  [erem a b] is equal to [snd (ediv_rem a b)].
     The result satisfies [0 <= erem a b < |b|] and
     [a = b * ediv a b + erem a b].  Raises [Division_by_zero] if [b = 0].
-*)
+ *)
 
 val divexact: t -> t -> t
 (** [divexact a b] divides [a] by [b], only producing correct result when the
     division is exact, i.e., when [b] evenly divides [a].
     It should be faster than general division.
     Can raise a [Division_by_zero].
-*)
+ *)
 
 
 (** {1 Bit-level operations} *)
@@ -128,7 +128,7 @@ val divexact: t -> t -> t
 (** For all bit-level operations, negative numbers are considered in 2's
     complement representation, starting with a virtual infinite number of
     1s.
-  *)
+ *)
 
 val logand: t -> t -> t
 (** Bitwise logical and. *)
@@ -142,26 +142,26 @@ val logxor: t -> t -> t
 val lognot: t -> t
 (** Bitwise logical negation.
     The identity [lognot a]=[-a-1] always hold.
-  *)
+ *)
 
 val shift_left : t -> int -> t
 (** Shifts to the left.
     Equivalent to a multiplication by a power of 2.
     The second argument must be non-negative.
-  *)
+ *)
 
 val shift_right : t -> int -> t
 (** Shifts to the right.
     This is an arithmetic shift,
     equivalent to a division by a power of 2 with rounding towards -oo.
     The second argument must be non-negative.
-  *)
+ *)
 
 (* val shift_right_trunc: t -> int -> t *)
 (** Shifts to the right, rounding towards 0.
     This is equivalent to a division by a power of 2, with truncation.
     The second argument must be non-negative.
-  *)
+ *)
 
 val numbits : t -> int
 (** Returns the number of significant bits in the given number.
@@ -194,13 +194,13 @@ val numbits : t -> int
 (** Counts the number of different bits.
     Raises [Overflow] if the arguments have different signs
     (in which case the distance is infinite).
-  *)
+ *)
 
 (** {1 Conversions} *)
 
 (** Note that, when converting to an integer type that cannot represent the
     converted value, an [Overflow] exception is raised.
-  *)
+ *)
 
 val to_int: t -> int
 (** Converts to a base integer. May raise [Overflow]. *)
@@ -250,7 +250,7 @@ val to_string: t -> string
     Unlike the classic [printf], all numbers are signed (even hexadecimal ones),
     there is no precision field, and characters that are not part of the format
     are simply ignored (and not copied in the output).
-  *)
+ *)
 
 (* val fits_int: t -> bool *)
 (** Whether the argument fits in a regular [int]. *)
@@ -285,7 +285,7 @@ val to_string: t -> string
 (** Prints the argument on the specified formatter.
     Can be used as [%a] format printer in [Format.printf] and as
     argument to [#install_printer] in the top-level.
-  *)
+ *)
 
 
 (** {1 Ordering} *)
@@ -336,7 +336,7 @@ val is_odd: t -> bool
     function.
     The result is consistent with equality: if [a] = [b], then [hash a] =
     [hash b].
-  *)
+ *)
 
 (** {1 Elementary number theory} *)
 
@@ -344,7 +344,7 @@ val gcd: t -> t -> t
 (** Greatest common divisor.
     The result is always positive.
     Raises a [Division_by_zero] is either argument is null.
-*)
+ *)
 
 (* val gcdext: t -> t -> (t * t * t) *)
 (** [gcdext u v] returns [(g,s,t)]  where [g] is the greatest common divisor
@@ -394,7 +394,7 @@ val gcd: t -> t -> t
 (* val nextprime: t -> t *)
 (** Returns the next prime greater than the argument.
     The result is only prime with very high probability.
-  *)
+ *)
 
 
 (** {1 Powers} *)
@@ -422,7 +422,7 @@ val pow: t -> int -> t
 (* val root: t -> int -> t *)
 (** [root base n] computes the [n]-th root of [exp].
     [n] must be non-negative.
-  *)
+ *)
 
 (* val perfect_power: t -> bool *)
 (** True if the argument has the form [a^b], with [b>1] *)
@@ -478,7 +478,7 @@ val pow: t -> int -> t
     We have the identity: [of_bits (to_bits x) = abs x].
     However, we can have [to_bits (of_bits s) <> s] due to the presence of
     trailing zeros in s.
-  *)
+ *)
 
 
 (** {1 Prefix and infix operators} *)
