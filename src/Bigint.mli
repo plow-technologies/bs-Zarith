@@ -87,12 +87,12 @@ val div_rem: t -> t -> (t * t)
     Raises [Division_by_zero] if [b = 0].
  *)
 
-(* val cdiv: t -> t -> t *)
+val cdiv: t -> t -> t
 (** Integer division with rounding towards +oo (ceiling).
     Can raise a [Division_by_zero].
  *)
 
-(* val fdiv: t -> t -> t = "ml_z_fdiv" *)
+val fdiv: t -> t -> t
 (** Integer division with rounding towards -oo (floor).
     Can raise a [Division_by_zero].
  *)
@@ -510,10 +510,10 @@ val ( * ): t -> t -> t
 val (/): t -> t -> t
 (** Truncated division [div]. *)
 
-(* (/>): t -> t -> t *)
+val (/>): t -> t -> t
 (** Ceiling division [cdiv]. *)
 
-(* (/<): t -> t -> t *)
+val (/<): t -> t -> t
 (** Flooring division [fdiv]. *)
 
 val (/|): t -> t -> t

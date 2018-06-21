@@ -1323,7 +1323,6 @@ module ZBigint : Z = struct
   let sub = Bigint.sub
   let mul = Bigint.mul
 
-  (* let mod = Bigint.rem *)
   let div = Bigint.div
   let rem = Bigint.rem
   let div_rem = Bigint.div_rem
@@ -1382,8 +1381,8 @@ module ZBigint : Z = struct
   let (-) = sub
   let ( * ) = mul
   let (/) = div
-  (* (/>): t -> t -> t *)
-  (* (/<): t -> t -> t *)
+  (* (/>): t -> t -> t
+   * (/<): t -> t -> t *)
   let (/|) = div
   let (mod) = (rem)
   let (land) = logand
@@ -1402,8 +1401,8 @@ module ZBigint : Z = struct
   let (<>) a b = not (equal a b)
 end
 
-module Int = ZInt
-module Int32 = ZInt32
-module Int64 = ZInt64
+module Int       = ZInt
+module Int32     = ZInt32
+module Int64     = ZInt64
 module Nativeint = ZNativeint
-module Bigint = ZBigint
+module Bigint    = ZBigint

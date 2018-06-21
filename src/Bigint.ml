@@ -181,6 +181,8 @@ let sign n =
 
 let gt x y = (compare x y) > 0
 
+let lt x y = (compare x y) < 0
+           
 let div a b =
   let quotient, _ = div_rem a b
   in quotient
@@ -225,6 +227,14 @@ let erem a b =
   let _, remainder = ediv_rem a b
   in remainder
 
+let cdiv a b =
+  let quotient, remainder = div_rem a b in
+  if gt remainder zero then (add quotient one) else quotient
+
+let fdiv a b =
+  let quotient, remainder = div_rem a b in
+  if lt remainder zero then (sub quotient one) else quotient
+                          
 let divexact a b =
   let quotient, _ = div_rem a b
   in quotient
@@ -279,8 +289,6 @@ let equal x y = (compare x y) = 0
 let leq x y = (compare x y) < 1
 
 let geq x y = (compare x y) > -1
-
-let lt x y = (compare x y) < 0
 
 let succ x = add x one
 
@@ -365,9 +373,9 @@ let ( * ) = mul
 
 let (/) = div
 
-(* (/>): t -> t -> t *)
+let (/>) = cdiv
 
-(* (/<): t -> t -> t *)
+let (/<) = fdiv
 
 let (/|) = divexact
 

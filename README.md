@@ -1,3 +1,3 @@
 # bs-Zarith
 
-Still in development. Do not use this library yet. Alpha development.
+The API should be pretty stable, but there is not a lot of testing yet.

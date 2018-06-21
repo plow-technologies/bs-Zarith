@@ -403,6 +403,17 @@ describe "Bigint" (fun () ->
   test "div" (fun () ->
     expect @@ Bigint.(div (of_int 1) (of_int 2)) |> toEqual (Bigint.zero));
 
+  test "div" (fun () ->
+    expect @@ Bigint.(div (of_int 2) (of_int 2)) |> toEqual (Bigint.one));
+
+  test "div" (fun () ->
+    expect @@ Bigint.(div (of_int 3) (of_int 2)) |> toEqual (Bigint.one));
+
+  test "div" (fun () ->
+    expect @@ Bigint.(div (of_int 4) (of_int 2)) |> toEqual (Bigint.of_int 2));
+
+  test "div" (fun () ->
+    expect @@ Bigint.(div (of_int 9) (of_int 2)) |> toEqual (Bigint.of_int 4));  
 
   test "numbits" (fun () ->
     expect @@ Bigint.(numbits (of_int (-1))) |> toEqual 1);
@@ -428,5 +439,29 @@ describe "Bigint" (fun () ->
   test "numbits" (fun () ->
     expect @@ Bigint.(numbits (of_int (-8))) |> toEqual 4);
 
+  test "cdiv" (fun () ->
+    expect @@ Bigint.(cdiv (of_int 9) (of_int 2)) |> toEqual (Bigint.of_int 5));
+
+  test "cdiv" (fun () ->
+    expect @@ Bigint.(cdiv (of_int (-9)) (of_int 2)) |> toEqual (Bigint.of_int (-4)));
+
+  test "cdiv" (fun () ->
+    expect @@ Bigint.(cdiv (of_int (-3)) (of_int 2)) |> toEqual (Bigint.of_int (-1)));
+
+  test "cdiv" (fun () ->
+    expect @@ Bigint.(cdiv (of_int (100)) (of_int 40)) |> toEqual (Bigint.of_int 3));
+  
+  test "fdiv" (fun () ->
+    expect @@ Bigint.(fdiv (of_int 9) (of_int 2)) |> toEqual (Bigint.of_int 4));
+
+  test "fdiv" (fun () ->
+    expect @@ Bigint.(fdiv (of_int (-9)) (of_int 2)) |> toEqual (Bigint.of_int (-5)));
+
+  test "div" (fun () ->
+    expect @@ Bigint.(fdiv (of_int (-3)) (of_int 2)) |> toEqual (Bigint.of_int (-2)));
+
+  test "div" (fun () ->
+    expect @@ Bigint.(fdiv (of_int (100)) (of_int 40)) |> toEqual (Bigint.of_int 2));
+  
   test "pow" (fun () ->
     expect @@ Bigint.(pow (of_int 2) 2) |> toEqual (Bigint.of_int 4))
