@@ -3,7 +3,7 @@ open Expect
 
 let () = 
 
-describe "Zint" (fun () ->
+describe "Z.Int" (fun () ->
   test "rem" (fun () ->
     expect @@ Z.Int.(rem (of_int 7) (of_int 3)) |> toEqual (Z.Int.of_int 1));
 

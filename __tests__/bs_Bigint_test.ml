@@ -44,6 +44,12 @@ describe "Bigint" (fun () ->
 
     expect @@ z |> toEqual (Bigint.of_string "2000000000000000000000000000000"));
 
+  test "addition with numbers larger than int64 can hold" (fun () ->
+    let x = Bigint.of_string "1000000000000000000000000000000000000000" in
+    let y = Bigint.of_int 1 in
+    let z = Bigint.(y + x) in
+    expect @@ z |> toEqual (Bigint.of_string "1000000000000000000000000000000000000001"));  
+  
   test "zero to string" (fun () ->
     expect @@ Bigint.to_string(Bigint.zero) |> toEqual "0");
 

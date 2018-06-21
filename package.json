@@ -1,7 +1,7 @@
 {
   "name": "bs-Zarith",
   "version": "1.0.0",
-  "description": "Support arithmetic and logical operations over arbitrary-precision integers and rational numbers in BuckleScript",
+  "description": "Support Bigint, Q (rational numbers) and Z (integer numbers) in BuckleScript",
   "main": "index.js",
   "scripts": {
     "build": "bsb -make-world",
@@ -17,8 +17,8 @@
   "keywords": [
     "bucklescript"
   ],
-  "author": "mchaver",
-  "license": "MIT",
+  "author": "James M.C. Haver II",
+  "license": "BSD-3",
   "bugs": {
     "url": "https://github.com/plow-technologies/bs-Zarith/issues"
   },
