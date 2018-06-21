@@ -349,10 +349,3 @@ module Q (Z: Z.Z) = struct
   let (>=) = geq
   let (<>) a b = not (equal a b)
 end
-
-
-module QInt       = Q(Z.Int)
-module QInt32     = Q(Z.Int32)
-module QInt64     = Q(Z.Int64)
-module QNativeint = Q(Z.Nativeint)
-module QBigint    = Q(Z.Bigint)

@@ -274,9 +274,9 @@ val (<>): t -> t -> bool
 
 
 end
-
 module QInt :
-  sig
+sig
+
     type t = Q(Z.Int).t = { num : Z.Int.t; den : Z.Int.t; }
     val mk : Z.Int.t -> Z.Int.t -> t
     val make_real : Z.Int.t -> Z.Int.t -> t
@@ -349,7 +349,7 @@ module QInt :
     val ( <= ) : t -> t -> bool
     val ( >= ) : t -> t -> bool
     val ( <> ) : t -> t -> bool
-  end
+     end
 module QInt32 :
   sig
     type t = Q(Z.Int32).t = { num : Z.Int32.t; den : Z.Int32.t; }
