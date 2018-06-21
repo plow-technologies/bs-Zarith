@@ -88,12 +88,12 @@ module type Z = sig
     Raises [Division_by_zero] if [b = 0].
    *)
 
-  (* val cdiv: t -> t -> t *)
+  val cdiv: t -> t -> t
   (** Integer division with rounding towards +oo (ceiling).
     Can raise a [Division_by_zero].
    *)
 
-  (* val fdiv: t -> t -> t = "ml_z_fdiv" *)
+  val fdiv: t -> t -> t
   (** Integer division with rounding towards -oo (floor).
     Can raise a [Division_by_zero].
    *)
@@ -516,10 +516,10 @@ module type Z = sig
   val (/): t -> t -> t
   (** Truncated division [div]. *)
 
-  (* (/>): t -> t -> t *)
+  val (/>): t -> t -> t
   (** Ceiling division [cdiv]. *)
 
-  (* (/<): t -> t -> t *)
+  val (/<): t -> t -> t
   (** Flooring division [fdiv]. *)
 
   val (/|): t -> t -> t
@@ -615,9 +615,6 @@ module ZInt : Z = struct
   let rem x y = x mod y
   let div_rem a b = (a / b, rem a b)
 
-  (* val cdiv: t -> t -> t *)
-  (* val fdiv: t -> t -> t = "ml_z_fdiv" *)
-
   let sign n =
     if n == 0
     then 0
@@ -709,6 +706,14 @@ module ZInt : Z = struct
   let gt x y = x > y
   let sign = sign
 
+  let cdiv a b =
+    let quotient, remainder = div_rem a b in
+    if gt remainder zero then (add quotient one) else quotient
+
+  let fdiv a b =
+    let quotient, remainder = div_rem a b in
+    if lt remainder zero then (sub quotient one) else quotient           
+
   let min = min
   let max = max
   let is_even i = (i mod 2) = 0
@@ -768,8 +773,8 @@ module ZInt : Z = struct
   let (-) = sub
   let ( * ) = mul
   let (/) = div
-  (* (/>): t -> t -> t *)
-  (* (/<): t -> t -> t *)
+  let (/>) = cdiv
+  let (/<) = fdiv
   let (/|) = div
   let (mod) = (rem)
   let (land) = (land)
@@ -896,14 +901,23 @@ module ZInt32 : Z = struct
   let leq x y = (compare x y) < 1
   let geq x y = (compare x y) > -1
   let lt x y = (compare x y) < 0
-  (* let gt x y = (Int32.compare x y) > 0 *)
+
   let sign = sign
+
   let min x y =
     if leq x y then x else y
+
   let max x y =
     if geq x y then x else y
 
+  let cdiv a b =
+    let quotient, remainder = div_rem a b in
+    if gt remainder zero then (add quotient one) else quotient
 
+  let fdiv a b =
+    let quotient, remainder = div_rem a b in
+    if lt remainder zero then (sub quotient one) else quotient
+    
   let is_even i = (i mod two) = zero
   let is_odd i = (i mod two) <> zero
 
@@ -937,8 +951,8 @@ module ZInt32 : Z = struct
   let (-) = sub
   let ( * ) = mul
   let (/) = div
-  (* (/>): t -> t -> t *)
-  (* (/<): t -> t -> t *)
+  let (/>) = cdiv
+  let (/<) = fdiv
   let (/|) = div
   (* (mod): t -> t -> t *)
   let (land) = logand
@@ -1072,6 +1086,14 @@ module ZInt64 : Z = struct
   let max x y =
     if geq x y then x else y
 
+  let cdiv a b =
+    let quotient, remainder = div_rem a b in
+    if gt remainder zero then (add quotient one) else quotient
+
+  let fdiv a b =
+    let quotient, remainder = div_rem a b in
+    if lt remainder zero then (sub quotient one) else quotient
+    
   let is_even i = (i mod two) = zero
   let is_odd i = (i mod two) <> zero
 
@@ -1105,8 +1127,8 @@ module ZInt64 : Z = struct
   let (-) = sub
   let ( * ) = mul
   let (/) = div
-  (* (/>): t -> t -> t *)
-  (* (/<): t -> t -> t *)
+  let (/>) = cdiv
+  let (/<) = fdiv
   let (/|) = div
   (* (mod): t -> t -> t *)
   let (land) = logand
@@ -1240,6 +1262,13 @@ module ZNativeint : Z = struct
   let max x y =
     if geq x y then x else y
 
+  let cdiv a b =
+    let quotient, remainder = div_rem a b in
+    if gt remainder zero then (add quotient one) else quotient
+
+  let fdiv a b =
+    let quotient, remainder = div_rem a b in
+    if lt remainder zero then (sub quotient one) else quotient           
 
   let is_even i = (i mod two) = zero
   let is_odd i = (i mod two) <> zero
@@ -1274,8 +1303,8 @@ module ZNativeint : Z = struct
   let (-) = sub
   let ( * ) = mul
   let (/) = div
-  (* (/>): t -> t -> t *)
-  (* (/<): t -> t -> t *)
+  let (/>) = cdiv
+  let (/<) = fdiv
   let (/|) = div
   (* (mod): t -> t -> t *)
   let (land) = logand
@@ -1333,6 +1362,9 @@ module ZBigint : Z = struct
 
   let erem = Bigint.erem
 
+  let cdiv = Bigint.cdiv
+  let fdiv = Bigint.fdiv
+
   let divexact = div
 
   (** Bit-level operations *)
@@ -1381,8 +1413,8 @@ module ZBigint : Z = struct
   let (-) = sub
   let ( * ) = mul
   let (/) = div
-  (* (/>): t -> t -> t
-   * (/<): t -> t -> t *)
+  let (/>) = cdiv
+  let (/<) = fdiv
   let (/|) = div
   let (mod) = (rem)
   let (land) = logand
