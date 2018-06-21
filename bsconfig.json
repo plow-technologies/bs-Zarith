@@ -1,5 +1,5 @@
 {
-  "name": "bs-Zarith",
+  "name": "bs-zarith",
   "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
   "bs-dependencies": [],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
