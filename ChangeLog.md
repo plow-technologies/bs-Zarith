@@ -1,4 +1,8 @@
-# Revision history for bs-Zarith
+# Revision history for bs-zarith
+
+## 1.0.1 -- 2018-04-23
+
+* Add warnings "+A-44" to bsconfig.json.
 
 ## 1.0.0 -- 2018-06-21
 

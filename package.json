@@ -1,6 +1,6 @@
 {
   "name": "bs-zarith",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Support Bigint, Q (rational numbers) and Z (integer numbers) in BuckleScript",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "bucklescript"
   ],
   "author": "James M.C. Haver II",
-  "license": "BSD-3",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/plow-technologies/bs-zarith/issues"
   },

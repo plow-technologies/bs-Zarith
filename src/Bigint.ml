@@ -11,7 +11,6 @@ let minus_one = Bigint (Neg, [1])
 
 (* internal *)
 let radix     = 10
-let radixlen  = 1
 let car       = List.hd
 let cdr       = List.tl
 let map       = List.map
