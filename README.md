@@ -1,6 +1,6 @@
 # bs-zarith
 
-The API should be pretty stable, but there is not a lot of testing yet. Use with caution.
+The API is stable, but there is not a lot of testing. Use with caution.
 
 ## Bigint
 
