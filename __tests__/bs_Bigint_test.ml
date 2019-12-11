@@ -74,6 +74,25 @@ describe "Bigint" (fun () ->
   test "pow" (fun () ->
     expect @@ Bigint.(pow (of_int 4) 4) |> toEqual (Bigint.of_int 256));
 
+  (* test that multiplications are handled correctly *)
+  test "1 * 1 = 1" (fun () ->
+    expect @@ Bigint.(mul one one) |> toEqual (Bigint.of_int 1));
+  
+  test "1 * 0 = 0" (fun () ->
+    expect @@ Bigint.(mul one zero) |> toEqual Bigint.zero);
+  
+  test "0 * 0 = 0" (fun () ->
+    expect @@ Bigint.(mul zero zero) |> toEqual Bigint.zero);
+
+  test "-1 * 1 = -1" (fun () ->
+    expect @@ Bigint.(mul (of_int (-1)) one) |> toEqual (Bigint.of_int (-1)));
+
+  test "20 * 2 = 40" (fun () ->
+    expect @@ Bigint.(mul (of_int 20) (of_int 2)) |> toEqual (Bigint.of_int 40));
+  
+  test "20 * -1 = -20" (fun () ->
+    expect @@ Bigint.(mul (of_int 20) (of_int (-1))) |> toEqual (Bigint.of_int (-20)));
+
   (* test that div handles signs correctly *)
   test "div" (fun () ->
     expect @@ Bigint.(div (of_int 6) (of_int 3)) |> toEqual (Bigint.of_int 2));

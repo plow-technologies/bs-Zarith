@@ -109,7 +109,7 @@ let double listy = add' listy listy 0
 
 let rec mul' list1 list2' powerof2 =
   if (cmp powerof2 list1) = 1
-  then list1, [0]
+  then list1, []
   else let remainder, product =
     mul' list1 (double list2') (double powerof2)
     in if (cmp remainder powerof2) = -1
