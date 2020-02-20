@@ -1,6 +1,6 @@
 {
   "name": "bs-zarith",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Support Bigint, Q (rational numbers) and Z (integer numbers) in BuckleScript",
   "main": "index.js",
   "scripts": {

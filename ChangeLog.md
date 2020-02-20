@@ -1,5 +1,9 @@
 # Revision history for bs-zarith
 
+## 1.1.0 -- 2020-02-20
+
+* Fix Bigint multiplication bug.
+
 ## 1.0.1 -- 2018-04-23
 
 * Add warnings "+A-44" to bsconfig.json.
