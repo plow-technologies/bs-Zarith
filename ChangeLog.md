@@ -1,5 +1,9 @@
 # Revision history for bs-zarith
 
+## 2.0.0 -- 2020-06-44
+
+* Support unsigned integers.
+
 ## 1.1.0 -- 2020-02-20
 
 * Fix Bigint multiplication bug.
