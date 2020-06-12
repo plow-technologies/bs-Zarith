@@ -40,6 +40,10 @@ val of_string: string -> t
     An optional [-] prefix indicates a negative number.
  *)
 
+val of_string_opt: string -> t option
+(** Safe version of of_string
+ *)
+  
 val of_substring : string -> pos:int -> len:int -> t
 (**
 
@@ -571,3 +575,5 @@ val (<>): t -> t -> bool
 
 (** For internal use in module [Q]. *)
 val round_to_float: t -> bool -> float
+
+val firstNonZero: t -> int option                 
