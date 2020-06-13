@@ -1,3 +1,12 @@
+(* 
+ * Module:     Bigint
+ * Copyright:  Plow Technologies, 2020
+ * Maintainer: james.haver@plowtech.net 
+ * Status:     Experimental
+ * 
+ * Support arbitrary percision integers in OCaml.
+ *)
+
 exception Overflow
 
 type sign = Pos | Neg
@@ -49,6 +58,23 @@ let of_string str =
             then Bigint (Neg, to_intlist 1)
             else Bigint (Pos, to_intlist 0)
 
+let explode s = List.init (String.length s) (String.get s)
+
+let is_digit char = let c = Char.code char in (c >= 48) && (c <= 57)
+        
+let is_string_of_digits s =
+  if (String.length s) == 0
+  then false
+  else
+    let chars = explode s in
+    let chars = if List.hd chars == '-' then List.tl chars else chars in
+    List.fold_right (fun c  -> fun x  -> (is_digit c) && x) chars true
+        
+let of_string_opt s =
+  if is_string_of_digits s
+  then Some (of_string s)
+  else None
+        
 let of_substring s ~pos ~len = of_string (String.sub s pos len)
 
 let of_int i = of_string (string_of_int i)
@@ -360,6 +386,22 @@ let min x y =
 let max x y =
   if geq x y then x else y
 
+
+let firstNonZero x =
+  let str = to_string x in
+  let strChars = explode str in
+  let (_,m) =
+    List.fold_right
+      (fun (s: char)  ->
+         fun (i,x)  ->
+           if Belt.Option.isNone x
+           then
+             (if s <> '0'
+              then (i, Some i)
+              else ((i + 1), x))
+           else (i, x)) strChars (0, None) in
+  m
+  
 let (~-) = neg
 
 let (~+) x = x

@@ -1,3 +1,12 @@
+(* 
+ * Module:     Bigint
+ * Copyright:  Plow Technologies, 2020
+ * Maintainer: james.haver@plowtech.net 
+ * Status:     Experimental
+ * 
+ * Support arbitrary percision integers in OCaml.
+ *)
+
 exception Overflow
 (** Raised by conversion functions when the value cannot be represented in
     the destination type.
@@ -40,6 +49,10 @@ val of_string: string -> t
     An optional [-] prefix indicates a negative number.
  *)
 
+val of_string_opt: string -> t option
+(** Safe version of of_string
+ *)
+  
 val of_substring : string -> pos:int -> len:int -> t
 (**
 
@@ -571,3 +584,5 @@ val (<>): t -> t -> bool
 
 (** For internal use in module [Q]. *)
 val round_to_float: t -> bool -> float
+
+val firstNonZero: t -> int option                 
