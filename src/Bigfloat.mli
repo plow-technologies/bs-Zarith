@@ -1,21 +1,31 @@
+(* 
+ * Module:     Bigfloat
+ * Copyright:  Plow Technologies, 2020
+ * Maintainer: james.haver@plowtech.net 
+ * Status:     Experimental
+ * 
+ * Support arbitrary percision floating point numbers in OCaml.
+ * The user declares the level of precision
+ *)
+
 type t = {
   value: Bigint.t;
-  decimals: int;
+  decimalPos: int;
   }
-(** Product type with a Bigint.t value decimals is a non-negative number 
+(** Product type with a Bigint.t value and decimalPos is a non-negative number 
     representing the location of the decimal point 
   *)
 
 val mkBigfloat: Bigint.t -> int -> t
        
 val zero: t
-(** The number 0 with 0 decimals. *)
+(** The number 0 with 0 decimalPos. *)
 
 val one: t
-(** The number 1 with 0 decimals. *)
+(** The number 1 with 0 decimalPos. *)
 
 val minusOne: t
-(** The number -1 with 0 decimals. *)
+(** The number -1 with 0 decimalPos. *)
 
 
 (** of conversions *)
@@ -36,7 +46,7 @@ val ofNativeint: nativeint -> t
 val ofFloat: float -> int -> t
 (** Converts from a float. *)
   
-val ofString: string -> int -> (t, string) Belt.Result.t
+val ofString: string -> int -> t option
 (** Converts a string to an integer.
     An optional [-] prefix indicates a negative number.
  *)
@@ -68,7 +78,7 @@ val toStringWithCommas: t -> string
 
 (** queries *)
 
-val adjustDecimals: t -> t -> (t * t)
+val adjustDecimalPos: t -> t -> (t * t)
 
 (** arithmetic *)
 

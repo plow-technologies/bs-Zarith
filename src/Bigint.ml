@@ -1,3 +1,12 @@
+(* 
+ * Module:     Bigint
+ * Copyright:  Plow Technologies, 2020
+ * Maintainer: james.haver@plowtech.net 
+ * Status:     Experimental
+ * 
+ * Support arbitrary percision integers in OCaml.
+ *)
+
 exception Overflow
 
 type sign = Pos | Neg

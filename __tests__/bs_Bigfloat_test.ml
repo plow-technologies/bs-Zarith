@@ -136,16 +136,16 @@ let _ =
               (toEqual (Some 4))))
 let _ =
   describe
-    "Bigfloat.adjustDecimals"
+    "Bigfloat.adjustDecimalPos"
     (fun ()  ->
        test "0, 0"
          (fun _  ->
-            (expect (B.adjustDecimals (mk Bigint.one 0) (mk Bigint.one 0)))
+            (expect (B.adjustDecimalPos (mk Bigint.one 0) (mk Bigint.one 0)))
               |> (toEqual ((mk Bigint.one 0), (mk Bigint.one 0))));
        test "12.34, 5.6"
          (fun _  ->
             (expect
-               (B.adjustDecimals (mk (Bigint.of_int 1234) 2)
+               (B.adjustDecimalPos (mk (Bigint.of_int 1234) 2)
                   (mk (Bigint.of_int 56) 1)))
               |>
               (toEqual
@@ -153,7 +153,7 @@ let _ =
        test "59.787800, 5"
          (fun _  ->
             (expect
-               (B.adjustDecimals (mk (Bigint.of_int64 59787800L) 6)
+               (B.adjustDecimalPos (mk (Bigint.of_int64 59787800L) 6)
                   (mk (Bigint.of_int 5) 0)))
               |>
               (toEqual
@@ -242,28 +242,28 @@ let _ =
          (fun _  ->
             (expect (B.ofString "0" 0)) |>
               (toEqual
-                 ((Belt.Result.Ok ((mk Bigint.zero 0))))));
+                 ((Some ((mk Bigint.zero 0))))));
        test "'1'"
          (fun _  ->
             (expect (B.ofString "1" 1)) |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int 10) 1))))));
+                 ((Some ((mk (Bigint.of_int 10) 1))))));
        test "'1.0'"
          (fun _  ->
             (expect (B.ofString "1.0" 1)) |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int 10) 1))))));
+                 ((Some ((mk (Bigint.of_int 10) 1))))));
        test "'1.01'"
          (fun _  ->
             (expect (B.ofString "1.01" 2)) |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int 101) 2))))));
+                 ((Some ((mk (Bigint.of_int 101) 2))))));
        test "'1.023'"
          (fun _  ->
             (expect (B.ofString "1.023" 3))
               |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int 1023) 3))))));
+                 ((Some ((mk (Bigint.of_int 1023) 3))))));
        test "'123.456789'"
          (fun _  ->
             (expect
@@ -271,7 +271,7 @@ let _ =
                   6))
               |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int 123456789) 6)))
+                 ((Some ((mk (Bigint.of_int 123456789) 6)))
                  )));
        test "'0.0089'"
          (fun _  ->
@@ -279,25 +279,25 @@ let _ =
                (B.ofString "00.0089" 4))
               |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int 89) 4))))));
+                 ((Some ((mk (Bigint.of_int 89) 4))))));
        test "'984'"
          (fun _  ->
             (expect (B.ofString "984" 6)) |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int 984000000) 6))))));
+                 ((Some ((mk (Bigint.of_int 984000000) 6))))));
        test "'3,267'"
          (fun _  ->
             (expect (B.ofString "3,267" 6))
               |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int64 3267000000L) 6))))));
+                 ((Some ((mk (Bigint.of_int64 3267000000L) 6))))));
        test "'3,267.1'"
          (fun _  ->
             (expect
                (B.ofString "3,267.1" 6))
               |>
               (toEqual
-                 ((Belt.Result.Ok ((mk (Bigint.of_int64 3267100000L) 6)))))))
+                 ((Some ((mk (Bigint.of_int64 3267100000L) 6)))))))
 let _ =
   describe "Bigfloat.toString"
     (fun ()  ->

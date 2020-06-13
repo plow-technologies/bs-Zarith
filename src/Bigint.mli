@@ -1,3 +1,12 @@
+(* 
+ * Module:     Bigint
+ * Copyright:  Plow Technologies, 2020
+ * Maintainer: james.haver@plowtech.net 
+ * Status:     Experimental
+ * 
+ * Support arbitrary percision integers in OCaml.
+ *)
+
 exception Overflow
 (** Raised by conversion functions when the value cannot be represented in
     the destination type.

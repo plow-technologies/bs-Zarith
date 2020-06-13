@@ -1,3 +1,11 @@
+(* 
+ * Module:     U
+ * Copyright:  Plow Technologies, 2020
+ * Maintainer: james.haver@plowtech.net 
+ *
+ * Support unsigned integers in OCaml.
+ *)
+
 (** Types and operations for unsigned integers. *)
 
 module type Infix = sig

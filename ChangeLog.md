@@ -1,6 +1,11 @@
 # Revision history for bs-zarith
 
-## 2.0.0 -- 2020-06-44
+## 3.0.0 -- 2020-06-12
+
+* New module Bigfloat. Experimental status.
+* New module Natural.
+
+## 2.0.0 -- 2020-06-04
 
 * Support unsigned integers.
 
