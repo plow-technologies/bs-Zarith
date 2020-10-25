@@ -34,9 +34,6 @@ val ofInt32: Int32.t -> t option
 val ofInt64: Int64.t -> t option
 (** Converts from a 64-bit integer. *)
 
-val ofNativeint: nativeint -> t option
-(** Converts from a native integer. *)
-
 val ofFloat: float -> t option
 (** Converts from a float. *)
 
@@ -51,9 +48,6 @@ val unsafeOfInt32: Int32.t -> t
 
 val unsafeOfInt64: Int64.t -> t
 (** Unsafely converts from a 64-bit integer. *)
-
-val unsafeOfNativeint: nativeint -> t
-(** Unsafely converts from a native integer. *)
 
 val unsafeOfFloat: float -> t
 (** Unsafely converts from a float. *)
@@ -71,9 +65,6 @@ val toInt32: t -> int32
 
 val toInt64: t -> int64
 (** Converts to a 64-bit integer. May raise [Overflow]. *)
-
-val toNativeint: t -> nativeint
-(** Converts to a native integer. May raise [Overflow]. *)
 
 val toFloat: t -> float
 (** Converts to a floating-point value. *)

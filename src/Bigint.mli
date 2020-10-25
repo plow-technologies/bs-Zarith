@@ -38,9 +38,6 @@ val of_int32: Int32.t -> t
 val of_int64: Int64.t -> t
 (** Converts from a 64-bit integer. *)
 
-val of_nativeint: nativeint -> t
-(** Converts from a native integer. *)
-
 val of_float: float -> t
 (** Converts from a float. *)
 
@@ -223,9 +220,6 @@ val to_int32: t -> int32
 
 val to_int64: t -> int64
 (** Converts to a 64-bit integer. May raise [Overflow]. *)
-
-val to_nativeint: t -> nativeint
-(** Converts to a native integer. May raise [Overflow]. *)
 
 val to_float: t -> float
 (** Converts to a floating-point value.
