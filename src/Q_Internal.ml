@@ -43,8 +43,6 @@ module Q (Z: Z.Z) = struct
 
   let of_int64 n = eval_of_int (Z.of_int64 n)
 
-  let of_nativeint n = eval_of_int (Z.of_nativeint n)
-
   let of_bigint n = eval_of_int (Z.of_bigint n)
                      
   let of_ints n d = make (Z.of_int n) (Z.of_int d)
@@ -169,8 +167,6 @@ module Q (Z: Z.Z) = struct
   let to_int32 x = Z.to_int32 (eval_to_int x)
 
   let to_int64 x = Z.to_int64 (eval_to_int x)
-
-  let to_nativeint x = Z.to_nativeint (eval_to_int x)
 
   let to_bigint x = Z.to_bigint (eval_to_int x)
                      
@@ -354,7 +350,7 @@ module Q (Z: Z.Z) = struct
   let (<>) a b = not (equal a b)
 end
 
-(* store in separate name spaces to avoid conflict. we want to expose them as Q.Int, Q.Int32, Q.Int64, Q.Nativeint, Q.Bigint *)
+(* store in separate name spaces to avoid conflict. we want to expose them as Q.Int, Q.Int32, Q.Int64, Q.Bigint *)
 module QInt = struct
   include Q(Z.Int)  
   module M = Q(Z.Int)
@@ -368,11 +364,6 @@ end
 module QInt64 = struct
   include Q(Z.Int64)
   module M = Q(Z.Int64)
-end
-
-module QNativeint = struct
-  include Q(Z.Nativeint)
-  module M = Q(Z.Nativeint)
 end
                      
 module QBigint = struct

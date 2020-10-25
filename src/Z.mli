@@ -27,9 +27,6 @@ module type Z = sig
   val of_int64: Int64.t -> t
   (** Converts from a 64-bit integer. *)
 
-  val of_nativeint: nativeint -> t
-  (** Converts from a native integer. *)
-
   val of_bigint: Bigint.t -> t
   (** Converts from an arbitrary length integer. *)
     
@@ -212,9 +209,6 @@ module type Z = sig
   val to_int64: t -> int64
   (** Converts to a 64-bit integer. May raise [Overflow]. *)
 
-  val to_nativeint: t -> nativeint
-  (** Converts to a native integer. May raise [Overflow]. *)
-
   val to_bigint: t -> Bigint.t
   (** Converts to an arbitrary length integer. May raise [Overflow]. *)
     
@@ -266,9 +260,6 @@ module type Z = sig
 
   (* fits_int64: t -> bool *)
   (** Whether the argument fits in an [int64]. *)
-
-  (* fits_nativeint: t -> bool *)
-  (** Whether the argument fits in a [nativeint]. *)
 
 
   (** {1 Printing} *)
@@ -577,5 +568,4 @@ end
 module Int : Z
 module Int32 : Z
 module Int64 : Z
-module Nativeint : Z
 module Bigint : Z

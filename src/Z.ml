@@ -27,9 +27,6 @@ module type Z = sig
   val of_int64: Int64.t -> t
   (** Converts from a 64-bit integer. *)
 
-  val of_nativeint: nativeint -> t
-  (** Converts from a native integer. *)
-
   val of_bigint: Bigint.t -> t
   (** Converts from an arbitrary length integer. *)
     
@@ -212,9 +209,6 @@ module type Z = sig
   val to_int64: t -> int64
   (** Converts to a 64-bit integer. May raise [Overflow]. *)
 
-  val to_nativeint: t -> nativeint
-  (** Converts to a native integer. May raise [Overflow]. *)
-
   val to_bigint: t -> Bigint.t
   (** Converts to an arbitrary length integer. May raise [Overflow]. *)
     
@@ -266,10 +260,6 @@ module type Z = sig
 
   (* fits_int64: t -> bool *)
   (** Whether the argument fits in an [int64]. *)
-
-  (* fits_nativeint: t -> bool *)
-  (** Whether the argument fits in a [nativeint]. *)
-
 
   (** {1 Printing} *)
 
@@ -595,7 +585,6 @@ module ZInt : Z = struct
   let of_int x = x
   let of_int32 = Int32.to_int
   let of_int64 = Int64.to_int
-  let of_nativeint = Nativeint.to_int
   let of_bigint = Bigint.to_int                 
   let of_float = int_of_float
   let of_string = int_of_string
@@ -674,7 +663,6 @@ module ZInt : Z = struct
   let to_int x = x
   let to_int32 = Int32.of_int
   let to_int64 = Int64.of_int
-  let to_nativeint = Nativeint.of_int
   let to_bigint = Bigint.of_int
   let to_float = float_of_int
   let round_to_float x exact =
@@ -688,7 +676,6 @@ module ZInt : Z = struct
   (* val fits_int: t -> bool *)
   (* fits_int32: t -> bool *)
   (* fits_int64: t -> bool *)
-  (* fits_nativeint: t -> bool *)  
                 
   (** Printing *)
   (* val print: t -> unit *)
@@ -807,7 +794,6 @@ module ZInt32 : Z = struct
   let of_int32 x = x
   let of_int64 = Int64.to_int32
   let of_bigint = Bigint.to_int32
-  let of_nativeint = Nativeint.to_int32
   let of_float = Int32.of_float
   let of_string = Int32.of_string
   let of_substring s ~pos ~len = Int32.of_string (String.sub s pos len)
@@ -885,7 +871,6 @@ module ZInt32 : Z = struct
   let to_int32 x = x
   let to_int64 = Int64.of_int32
   let to_bigint = Bigint.of_int32
-  let to_nativeint = Nativeint.of_int32
   let to_float = Int32.to_float
   let round_to_float x exact =
     let m = to_int64 x in
@@ -985,7 +970,6 @@ module ZInt64 : Z = struct
   let of_int32 = Int64.of_int32
   let of_int64 x = x
   let of_bigint = Bigint.to_int64
-  let of_nativeint = Int64.of_nativeint
   let of_float = Int64.of_float
   let of_string = Int64.of_string
   let of_substring s ~pos ~len = Int64.of_string (String.sub s pos len)
@@ -1063,7 +1047,6 @@ module ZInt64 : Z = struct
   let to_int32 = Int64.to_int32
   let to_int64 x = x
   let to_bigint = Bigint.of_int64
-  let to_nativeint = Int64.to_nativeint
   let to_float = Int64.to_float
   let round_to_float x exact =
     (* Unless the fractional part is exactly 0, round m to an odd integer *)
@@ -1147,183 +1130,6 @@ module ZInt64 : Z = struct
   let (<>) a b = not (equal a b)
 end
 
-module ZNativeint : Z = struct
-  exception Overflow
-  type t = Nativeint.t
-
-  (** Construction *)
-  let zero = Nativeint.zero
-  let one = Nativeint.one
-  let two = Nativeint.of_int 2
-  let minus_one = Nativeint.minus_one
-
-  let of_int = Nativeint.of_int
-  let of_int32 = Nativeint.of_int32
-  let of_int64 = Int64.to_nativeint
-  let of_bigint = Bigint.to_nativeint
-  let of_nativeint x = x
-  let of_float = Nativeint.of_float
-  let of_string = Nativeint.of_string
-  let of_substring s ~pos ~len = Nativeint.of_string (String.sub s pos len)
-
-  (** Basic arithmetic operations *)
-  let succ x = Nativeint.add x one 
-  let pred x = Nativeint.sub x one
-
-  let abs = Nativeint.abs
-  let neg = Nativeint.neg
-  let add = Nativeint.add
-  let sub = Nativeint.sub
-  let mul = Nativeint.mul
-
-  let (mod) a n = Nativeint.sub a (Nativeint.mul n (Nativeint.div a n))
-  let div = Nativeint.div
-  let rem x y = x mod y
-  let div_rem a b = (div a b, rem a b)
-
-  let sign n =
-    if n == (Nativeint.of_int 0)
-    then 0
-    else
-      if (Nativeint.compare n (Nativeint.of_int 0)) < 0
-      then -1
-      else 1
-
-  let rec ediv_rem' a b cum =
-    let a = abs a in
-    let b = abs b in
-    let r = sub a b in
-    if (compare a b) = 1
-    then ediv_rem' r b (succ cum)
-    else (succ cum, r)
-
-  let gt x y = (Nativeint.compare x y) > 0
-
-  let ediv_rem a b =
-    if (gt a minus_one)
-    then div_rem a b
-    else
-      let q,r = ediv_rem' a b zero in
-      (neg q, abs r)
-
-  let ediv a b =
-    let quotient, _ = ediv_rem a b
-    in quotient
-
-  let erem a b =
-    let _, remainder = ediv_rem a b
-    in remainder
-
-  let divexact = div
-
-  (** Bit-level operations *)
-  let logand = Nativeint.logand
-  let logor = Nativeint.logor
-  let logxor = Nativeint.logxor
-  let lognot = Nativeint.lognot
-  let shift_left = Nativeint.shift_left
-  let shift_right = Nativeint.shift_right
-
-  let numbits n =
-    let nref  = ref n in
-    let count = ref zero in
-    while (!nref > !count) do
-      if (Nativeint.logand !nref !count == one)
-      then (count := Nativeint.add !count one)
-      else (nref := Nativeint.shift_right_logical !nref 1)
-    done;
-    Nativeint.to_int !count
-
-  (** Conversions *)
-  let to_int = Nativeint.to_int
-  let to_int32 = Nativeint.to_int32
-  let to_int64 = Int64.of_nativeint
-  let to_bigint = Bigint.of_nativeint
-  let to_nativeint x = x
-  let to_float = Nativeint.to_float
-  let round_to_float x exact =
-    let m = to_int64 x in
-    (* Unless the fractional part is exactly 0, round m to an odd integer *)
-    let m = if exact then m else Int64.logor m 1L in
-    (* Then convert m to float, with the current rounding mode. *)
-    Int64.to_float m
-  let to_string = Nativeint.to_string
-
-  (** Ordering *)
-  let compare = Nativeint.compare
-  let equal x y = x == y
-  let leq x y = (compare x y) < 1
-  let geq x y = (compare x y) > -1
-  let lt x y = (compare x y) < 0
-  (* let gt x y = (Nativeint.compare x y) > 0 *)
-  let sign = sign
-  let min x y =
-    if leq x y then x else y
-  let max x y =
-    if geq x y then x else y
-
-  let cdiv a b =
-    let quotient, remainder = div_rem a b in
-    if gt remainder zero then (add quotient one) else quotient
-
-  let fdiv a b =
-    let quotient, remainder = div_rem a b in
-    if lt remainder zero then (sub quotient one) else quotient           
-
-  let is_even i = (i mod two) = zero
-  let is_odd i = (i mod two) <> zero
-
-  let rec gcd' a b =
-    let c = erem a b
-    in if c = zero
-       then b
-       else gcd' b c
-
-  let gcd x y = gcd' x y
-
-  (** Powers *)
-  let rec pow' base exp acc =
-    if exp <= 0
-    then acc
-    else (pow' base (exp - 1) (mul acc base))
-
-  let pow base exp = 
-    if exp < 0
-    then raise (Invalid_argument "The exponent must be greater zero or greater.")
-    else if exp = 0
-    then one
-    else if exp = 1
-    then base
-    else pow' base exp one
-
-  (** Prefix and infix operators *)
-  let (~-) = neg
-  let (~+) x = x
-  let (+)  = add
-  let (-) = sub
-  let ( * ) = mul
-  let (/) = div
-  let (/>) = cdiv
-  let (/<) = fdiv
-  let (/|) = div
-  (* (mod): t -> t -> t *)
-  let (land) = logand
-  let (lor) = logor
-  let (lxor) = logxor
-  let (~!) = lognot
-  let (lsl) = (shift_left)
-  let (asr) = (shift_right)
-  let (~$) = of_int
-  let ( ** ) a b = pow a b
-  let (=) = equal
-  let (<) = (<)
-  let (>) = (>)
-  let (<=) = (<=)
-  let (>=) = (>=)
-  let (<>) a b = not (equal a b)
-end
-
-
 module ZBigint : Z = struct
   exception Overflow
   type t = Bigint.t
@@ -1336,7 +1142,6 @@ module ZBigint : Z = struct
   let of_int = Bigint.of_int
   let of_int32 = Bigint.of_int32
   let of_int64 = Bigint.of_int64
-  let of_nativeint = Bigint.of_nativeint
   let of_bigint x = x
   let of_float = Bigint.of_float
   let of_string = Bigint.of_string
@@ -1381,7 +1186,6 @@ module ZBigint : Z = struct
   let to_int = Bigint.to_int
   let to_int32 = Bigint.to_int32
   let to_int64 = Bigint.to_int64
-  let to_nativeint = Bigint.to_nativeint
   let to_bigint x = x
   let to_float = Bigint.to_float
   let round_to_float = Bigint.round_to_float
@@ -1436,5 +1240,4 @@ end
 module Int       = ZInt
 module Int32     = ZInt32
 module Int64     = ZInt64
-module Nativeint = ZNativeint
 module Bigint    = ZBigint

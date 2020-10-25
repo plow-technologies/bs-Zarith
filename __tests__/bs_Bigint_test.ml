@@ -396,9 +396,6 @@ describe "Bigint" (fun () ->
   test "to_int64 greater than max_int should throw Overflow" (fun () ->
     expect @@ (fun () -> Bigint.(to_int64 (of_string "9223372036854775808"))) |> toThrowException Bigint.Overflow );
 
-  test "to_navtiveint max_int" (fun () ->
-    expect @@ Bigint.(to_nativeint (of_nativeint (Nativeint.of_int 1 ))) |> toEqual (Nativeint.of_int 1));
-
   test "to_float" (fun () ->
     expect @@ Bigint.(to_float (of_string "9007199254740992")) |> toEqual (9007199254740993.0));
 

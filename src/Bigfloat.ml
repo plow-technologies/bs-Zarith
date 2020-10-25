@@ -57,9 +57,6 @@ let ofInt32 i =
 let ofInt64 i =
   { value = (Bigint.of_int64 i); decimalPos = 0 }
 
-let ofNativeint i =
-  { value = (Bigint.of_nativeint i); decimalPos = 0 }
-
 let ofString (string : string) decimalPos =
   let s = removeCommas string in
   let a = Js.String.split "." s in
@@ -121,9 +118,6 @@ let toInt32 t =
   
 let toInt64 t =
    Bigint.to_int64 (Bigint.div t.value (Bigint.pow (Bigint.of_int 10) t.decimalPos))
-
-let toNativeint t =
-   Bigint.to_nativeint (Bigint.div t.value (Bigint.pow (Bigint.of_int 10) t.decimalPos))
   
 let toString (t : t) =
   let s = Bigint.to_string t.value in

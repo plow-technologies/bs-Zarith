@@ -34,12 +34,6 @@ let ofInt64 x =
   then None
   else Some (Natural r)
 
-let ofNativeint x =
-  let r = Bigint.of_nativeint x in
-  if Bigint.lt r Bigint.zero
-  then None
-  else Some (Natural r)
-
 let ofFloat x =
   let r = Bigint.of_float x in
   if Bigint.lt r Bigint.zero
@@ -70,11 +64,6 @@ let unsafeOfInt64 x =
   | Some x -> x
   | None -> raise Underflow
 
-let unsafeOfNativeint x =
-  match ofNativeint x with
-  | Some x -> x
-  | None -> raise Underflow
-
 let unsafeOfFloat x =
   match ofFloat x with
   | Some x -> x
@@ -98,10 +87,6 @@ let toInt32 x =
 let toInt64 x =
   match x with
   | Natural x -> Bigint.to_int64 x
-
-let toNativeint x =
-  match x with
-  | Natural x -> Bigint.to_nativeint x
 
 let toFloat x =
   match x with

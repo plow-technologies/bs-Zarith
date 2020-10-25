@@ -80,7 +80,6 @@ let of_substring s ~pos ~len = of_string (String.sub s pos len)
 let of_int i = of_string (string_of_int i)
 let of_int32 i = of_string (Int32.to_string i)
 let of_int64 i = of_string (Int64.to_string i)
-let of_nativeint i = of_string (Nativeint.to_string i)
 let of_float i = of_string (Int64.to_string (Int64.of_float i))
 
 let to_string (Bigint (sign, value)) =
@@ -465,11 +464,6 @@ let to_int64 i =
   if ((i > of_int64 Int64.max_int) || (i < of_int64 Int64.min_int) )
   then raise Overflow
   else Int64.of_string (to_string i)
-
-let to_nativeint i =
-  if ((i > of_nativeint Nativeint.max_int) || (i < of_nativeint Nativeint.min_int) )
-  then raise Overflow
-  else Nativeint.of_string (to_string i)
 
 let to_float i =
   float_of_string (to_string i)
