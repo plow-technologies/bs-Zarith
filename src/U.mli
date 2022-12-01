@@ -129,9 +129,6 @@ module type S = sig
   val min : t -> t -> t
   (** [min x y] is the lesser of [x] and [y] *)
 
-  val pp : Format.formatter -> t -> unit
-  (** Output the result of {!toString} on a formatter. *)
-
   module Infix : Infix with type t := t
 end
 
