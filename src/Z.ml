@@ -612,7 +612,7 @@ module ZInt32 : Z = struct
   let to_int32 x = x
   let to_int64 = Int64.of_int32
   let to_bigint = Bigint.of_int32
-  let to_float = Int32.to_float
+  let to_float x = Int64.to_float (Int64.of_int32 x) (* there is strange parameter required with Int32.to_float that doesn't seem to match the offical OCaml API, so this is an easy work around *)
   let round_to_float x exact =
     let m = to_int64 x in
     (* Unless the fractional part is exactly 0, round m to an odd integer *)
