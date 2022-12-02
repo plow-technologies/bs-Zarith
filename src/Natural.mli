@@ -10,6 +10,7 @@ exception Underflow
 (** Raised by conversion and sub functions when the value cannot be represented 
     as a Natural number.
  *)
+
 exception DecodeError
 (** Raised by unsafeToString conversion if the string is not a valid 
     Natural number *)        

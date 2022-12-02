@@ -168,32 +168,6 @@ module type Z = sig
     [2^{n-1} <= |x| < 2^n].  Note that [numbits] is defined
     for negative arguments, and that [numbits (-x) = numbits x]. *)
 
-  (* val trailing_zeros: t -> int *)
-  (** Returns the number of trailing 0 bits in the given number.
-    If [x] is zero, [trailing_zeros x] returns [max_int].
-    Otherwise, [trailing_zeros x] returns a nonnegative integer [n]
-    which is the largest [n] such that [2^n] divides [x] evenly.
-    Note that [trailing_zeros] is defined for negative arguments,
-    and that [trailing_zeros (-x) = trailing_zeros x]. *)
-
-  (* val testbit: t -> int -> bool *)
-  (** [testbit x n] return the value of bit number [n] in [x]:
-    [true] if the bit is 1, [false] if the bit is 0.
-    Bits are numbered from 0.  Raise [Invalid_argument] if [n]
-    is negative. *)
-
-  (* val popcount: t -> int *)
-  (** Counts the number of bits set.
-    Raises [Overflow] for negative arguments, as those have an infinite
-    number of bits set.
-   *)
-
-  (* val hamdist: t -> t -> int *)
-  (** Counts the number of different bits.
-    Raises [Overflow] if the arguments have different signs
-    (in which case the distance is infinite).
-   *)
-
   (** {1 Conversions} *)
 
   (** Note that, when converting to an integer type that cannot represent the
@@ -223,66 +197,6 @@ module type Z = sig
 
   val to_string: t -> string
   (** Gives a human-readable, decimal string representation of the argument. *)
-
-  (* val format: string -> t -> string *)
-  (** Gives a string representation of the argument in the specified
-    printf-like format.
-    The general specification has the following form:
-
-    [% \[flags\] \[width\] type]
-
-    Where the type actually indicates the base:
-
-    - [i], [d], [u]: decimal
-    - [b]: binary
-    - [o]: octal
-    - [x]: lowercase hexadecimal
-    - [X]: uppercase hexadecimal
-
-    Supported flags are:
-
-    - [+]: prefix positive numbers with a [+] sign
-    - space: prefix positive numbers with a space
-    - [-]: left-justify (default is right justification)
-    - [0]: pad with zeroes (instead of spaces)
-    - [#]: alternate formatting (actually, simply output a literal-like prefix: [0x], [0b], [0o])
-
-    Unlike the classic [printf], all numbers are signed (even hexadecimal ones),
-    there is no precision field, and characters that are not part of the format
-    are simply ignored (and not copied in the output).
-   *)
-
-  (* val fits_int: t -> bool *)
-  (** Whether the argument fits in a regular [int]. *)
-
-  (* fits_int32: t -> bool *)
-  (** Whether the argument fits in an [int32]. *)
-
-  (* fits_int64: t -> bool *)
-  (** Whether the argument fits in an [int64]. *)
-
-  (** {1 Printing} *)
-
-  (* val print: t -> unit *)
-  (** Prints the argument on the standard output. *)
-
-  (* val output: out_channel -> t -> unit *)
-  (** Prints the argument on the specified channel.
-    Also intended to be used as [%a] format printer in [Printf.printf].
-   *)
-
-  (* val sprint: unit -> t -> string *)
-  (** To be used as [%a] format printer in [Printf.sprintf]. *)
-
-  (* val bprint: Buffer.t -> t -> unit *)
-  (** To be used as [%a] format printer in [Printf.bprintf]. *)
-
-  (* val pp_print: Format.formatter -> t -> unit *)
-  (** Prints the argument on the specified formatter.
-    Can be used as [%a] format printer in [Format.printf] and as
-    argument to [#install_printer] in the top-level.
-   *)
-
 
   (** {1 Ordering} *)
 
@@ -342,57 +256,6 @@ module type Z = sig
     Raises a [Division_by_zero] is either argument is null.
    *)
 
-  (* val gcdext: t -> t -> (t * t * t) *)
-  (** [gcdext u v] returns [(g,s,t)]  where [g] is the greatest common divisor
-    and [g=us+vt].
-    [g] is always positive.
-    Raises a [Division_by_zero] is either argument is null.
-
-    Note: the function is based on the GMP [mpn_gcdext] function. The exact choice of [s] and [t] such that [g=us+vt] is not specified, as it may vary from a version of GMP to another (it has changed notably in GMP 4.3.0 and 4.3.1).
-   *)
-
-  (* val lcm: t -> t -> t *)
-  (**
-    Least common multiple.
-    The result is always positive.
-    Raises a [Division_by_zero] is either argument is null.
-   *)
-
-  (* val powm: t -> t -> t -> t *)
-  (** [powm base exp mod] computes [base]^[exp] modulo [mod].
-    Negative [exp] are supported, in which case ([base]^-1)^(-[exp]) modulo
-    [mod] is computed.
-    However, if [exp] is negative but [base] has no inverse modulo [mod], then
-    a [Division_by_zero] is raised.
-   *)
-
-  (* val powm_sec: t -> t -> t -> t *)
-  (** [powm_sec base exp mod] computes [base]^[exp] modulo [mod].
-    Unlike [Z.powm], this function is designed to take the same time
-    and have the same cache access patterns for any two same-size
-    arguments.  Used in cryptographic applications, it provides better
-    resistance to side-channel attacks than [Z.powm].
-    The exponent [exp] must be positive, and the modulus [mod]
-    must be odd.  Otherwise, [Invalid_arg] is raised. *)
-
-  (* val invert: t -> t -> t *)
-  (** [invert base mod] returns the inverse of [base] modulo [mod].
-    Raises a [Division_by_zero] if [base] is not invertible modulo [mod].
-   *)
-
-  (* val probab_prime: t -> int -> int *)
-  (** [probab_prime x r] returns 0 if [x] is definitely composite,
-    1 if [x] is probably prime, and 2 if [x] is definitely prime.
-    The [r] argument controls how many Miller-Rabin probabilistic
-    primality tests are performed (5 to 10 is a reasonable value).
-   *)
-
-  (* val nextprime: t -> t *)
-  (** Returns the next prime greater than the argument.
-    The result is only prime with very high probability.
-   *)
-
-
   (** {1 Powers} *)
 
   val pow: t -> int -> t
@@ -403,79 +266,6 @@ module type Z = sig
     address space.
     Raises an [Invalid_argument] on negative [exp].    
    *)
-
-  (* val sqrt: t -> t *)
-  (** Returns the square root. The result is truncated (rounded down
-    to an integer).
-    Raises an [Invalid_argument] on negative arguments.
-   *)
-
-  (* val sqrt_rem: t -> (t * t) *)
-  (** Returns the square root truncated, and the remainder.
-    Raises an [Invalid_argument] on negative arguments.
-   *)
-
-  (* val root: t -> int -> t *)
-  (** [root base n] computes the [n]-th root of [exp].
-    [n] must be non-negative.
-   *)
-
-  (* val perfect_power: t -> bool *)
-  (** True if the argument has the form [a^b], with [b>1] *)
-
-  (* val perfect_square: t -> bool *)
-  (** True if the argument has the form [a^2]. *)
-
-  (* val log2: t -> int *)
-  (** Returns the base-2 logarithm of its argument, rounded down to
-    an integer.  If [x] is positive, [log2 x] returns the largest [n]
-    such that [2^n <= x].  If [x] is negative or zero, [log2 x] raise
-    the [Invalid_argument] exception. *)
-
-  (* val log2up: t -> int *)
-  (** Returns the base-2 logarithm of its argument, rounded up to
-    an integer.  If [x] is positive, [log2up x] returns the smallest [n]
-    such that [x <= 2^n].  If [x] is negative or zero, [log2up x] raise
-    the [Invalid_argument] exception. *)
-
-
-  (** {1 Representation} *)
-
-  (* val size: t -> int *)
-  (** Returns the number of machine words used to represent the number. *)
-
-  (* val extract: t -> int -> int -> t *)
-  (** [extract a off len] returns a non-negative number corresponding to bits
-    [off] to [off]+[len]-1 of [b].
-    Negative [a] are considered in infinite-length 2's complement
-    representation.
-   *)
-
-  (* signed_extract: t -> int -> int -> t *)
-  (** [signed_extract a off len] extracts bits [off] to [off]+[len]-1 of [b],
-    as [extract] does, then sign-extends bit [len-1] of the result
-    (that is, bit [off + len - 1] of [a]).  The result is between
-    [- 2{^[len]-1}] (included) and [2{^[len]-1}] (excluded),
-    and equal to [extract a off len] modulo [2{^len}].
-   *)
-
-  (* val to_bits: t -> string *)
-  (** Returns a binary representation of the argument.
-    The string result should be interpreted as a sequence of bytes,
-    corresponding to the binary representation of the absolute value of
-    the argument in little endian ordering.
-    The sign is not stored in the string.
-   *)
-
-  (* val of_bits: string -> t *)
-  (** Constructs a number from a binary string representation.
-    The string is interpreted as a sequence of bytes in little endian order,
-    and the result is always positive.
-    We have the identity: [of_bits (to_bits x) = abs x].
-    However, we can have [to_bits (of_bits s) <> s] due to the presence of
-    trailing zeros in s.
-   *)
-
 
   (** {1 Prefix and infix operators} *)
 
@@ -558,18 +348,7 @@ module type Z = sig
   (** Same as [geq]. *)
 
   val (<>): t -> t -> bool
-                        (** [a <> b] is equivalent to [not (equal a b)]. *)
-
-
-                        (** {1 Miscellaneous} *)
-
-                        (* val version: string *)
-                        (** Library version (this file refers to version [@VERSION]). *)
-
-                        (**/**)
-
-                        (** For internal use in module [Q]. *)
-                        (* val round_to_float: t -> bool -> float *)
+  (** [a <> b] is equivalent to [not (equal a b)]. *)
 end
 
 
@@ -644,7 +423,7 @@ module ZInt : Z = struct
   let lognot x = lnot x
   let shift_left = (lsl)
   let shift_right = (asr)
-  (* val shift_right_trunc: t -> int -> t *)
+
   let numbits n =
     let nref  = ref n in
     let count = ref 0 in
@@ -654,10 +433,6 @@ module ZInt : Z = struct
       else (nref := !nref lsr 1)
     done;
     !count
-  (* val trailing_zeros: t -> int *)
-  (* val testbit: t -> int -> bool *)
-  (* val popcount: t -> int *)
-  (* val hamdist: t -> t -> int *)
     
   (** Conversions *)
   let to_int x = x
@@ -672,17 +447,6 @@ module ZInt : Z = struct
     (* Then convert m to float, with the current rounding mode. *)
     Int64.to_float m
   let to_string = string_of_int
-  (* val format: string -> t -> string *)
-  (* val fits_int: t -> bool *)
-  (* fits_int32: t -> bool *)
-  (* fits_int64: t -> bool *)
-                
-  (** Printing *)
-  (* val print: t -> unit *)
-  (* val output: out_channel -> t -> unit *)
-  (* val sprint: unit -> t -> string *)
-  (* val bprint: Buffer.t -> t -> unit *)
-  (* val pp_print: Format.formatter -> t -> unit *)
 
   (** Ordering *)
   let compare = compare
@@ -714,14 +478,6 @@ module ZInt : Z = struct
        else gcd' b c
 
   let gcd x y = gcd' x y
-              
-  (* val gcdext: t -> t -> (t * t * t) *)
-  (* val lcm: t -> t -> t *)
-  (* val powm: t -> t -> t -> t *)
-  (* val powm_sec: t -> t -> t -> t *)
-  (* val invert: t -> t -> t *)
-  (* val probab_prime: t -> int -> int *)
-  (* val nextprime: t -> t *)
 
   (** Powers *)
   let rec pow' base exp acc =
@@ -737,21 +493,6 @@ module ZInt : Z = struct
     else if exp = 1
     then base
     else pow' base exp one
-
-  (* val sqrt: t -> t *)
-  (* val sqrt_rem: t -> (t * t) *)
-  (* val root: t -> int -> t *)
-  (* val perfect_power: t -> bool *)
-  (* val perfect_square: t -> bool *)
-  (* val log2: t -> int *)
-  (* val log2up: t -> int *)
-
-  (** Representation *)
-  (* val size: t -> int *)
-  (* val extract: t -> int -> int -> t *)
-  (* signed_extract: t -> int -> int -> t *)
-  (* val to_bits: t -> string *)
-  (* val of_bits: string -> t *)
 
   (** Prefix and infix operators *)
   let (~-) = neg
@@ -871,7 +612,7 @@ module ZInt32 : Z = struct
   let to_int32 x = x
   let to_int64 = Int64.of_int32
   let to_bigint = Bigint.of_int32
-  let to_float = Int32.to_float
+  let to_float x = Int64.to_float (Int64.of_int32 x) (* there is strange parameter required with Int32.to_float that doesn't seem to match the offical OCaml API, so this is an easy work around *)
   let round_to_float x exact =
     let m = to_int64 x in
     (* Unless the fractional part is exactly 0, round m to an odd integer *)
@@ -1113,7 +854,6 @@ module ZInt64 : Z = struct
   let (/>) = cdiv
   let (/<) = fdiv
   let (/|) = div
-  (* (mod): t -> t -> t *)
   let (land) = logand
   let (lor) = logor
   let (lxor) = logxor

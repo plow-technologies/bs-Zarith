@@ -187,29 +187,6 @@ module Q (Z: Z.Z) : sig
   val div_2exp: t -> int -> t
   (** [div_2exp x n] divides [x] by 2 to the power of [n]. *)
 
-
-  (** {1 Printing} *)
-
-  val print: t -> unit
-  (** Prints the argument on the standard output. *)
-
-  val output: out_channel -> t -> unit
-  (** Prints the argument on the specified channel.
-    Also intended to be used as [%a] format printer in [Printf.printf].
-   *)
-
-  val sprint: unit -> t -> string
-  (** To be used as [%a] format printer in [Printf.sprintf]. *)
-
-  val bprint: Buffer.t -> t -> unit
-  (** To be used as [%a] format printer in [Printf.bprintf]. *)
-
-  val pp_print: Format.formatter -> t -> unit
-  (** Prints the argument on the specified formatter.
-    Also intended to be used as [%a] format printer in [Format.printf].
-   *)
-
-
   (** {1 Prefix and infix operators} *)
 
   (**
@@ -320,11 +297,6 @@ module QInt : sig
     val div : t -> t -> t
     val mul_2exp : t -> int -> t
     val div_2exp : t -> int -> t
-    val print : t -> unit
-    val output : out_channel -> t -> unit
-    val sprint : unit -> t -> string
-    val bprint : Buffer.t -> t -> unit
-    val pp_print : Format.formatter -> t -> unit
     val ( ~- ) : t -> t
     val ( ~+ ) : 'a -> 'a
     val ( + ) : t -> t -> t
@@ -394,11 +366,6 @@ module QInt32 : sig
     val div : t -> t -> t
     val mul_2exp : t -> int -> t
     val div_2exp : t -> int -> t
-    val print : t -> unit
-    val output : out_channel -> t -> unit
-    val sprint : unit -> t -> string
-    val bprint : Buffer.t -> t -> unit
-    val pp_print : Format.formatter -> t -> unit
     val ( ~- ) : t -> t
     val ( ~+ ) : 'a -> 'a
     val ( + ) : t -> t -> t
@@ -468,11 +435,6 @@ module QInt64 : sig
     val div : t -> t -> t
     val mul_2exp : t -> int -> t
     val div_2exp : t -> int -> t
-    val print : t -> unit
-    val output : out_channel -> t -> unit
-    val sprint : unit -> t -> string
-    val bprint : Buffer.t -> t -> unit
-    val pp_print : Format.formatter -> t -> unit
     val ( ~- ) : t -> t
     val ( ~+ ) : 'a -> 'a
     val ( + ) : t -> t -> t
@@ -546,11 +508,6 @@ module QBigint : sig
     val div : t -> t -> t
     val mul_2exp : t -> int -> t
     val div_2exp : t -> int -> t
-    val print : t -> unit
-    val output : out_channel -> t -> unit
-    val sprint : unit -> t -> string
-    val bprint : Buffer.t -> t -> unit
-    val pp_print : Format.formatter -> t -> unit
     val ( ~- ) : t -> t
     val ( ~+ ) : 'a -> 'a
     val ( + ) : t -> t -> t

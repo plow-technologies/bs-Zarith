@@ -316,17 +316,6 @@ module Q (Z: Z.Z) = struct
     if x.den == Z.zero then x
     else make_real x.num (Z.shift_left x.den n)
 
-
-  (* printing *)
-  (* -------- *)
-
-  let print x = print_string (to_string x)
-  let output chan x = output_string chan (to_string x)
-  let sprint () x = to_string x
-  let bprint b x = Buffer.add_string b (to_string x)
-  let pp_print f x = Format.pp_print_string f (to_string x)
-
-
   (* prefix and infix *)
   (* ---------------- *)
 
